@@ -1,17 +1,25 @@
 {
   "name": "EdgeAuth-core",
   "version": "0.0.1",
-  "description": "EdgeAuth core - Technical implementations",
+  "description": "EdgeAuth core - Authentication logic (password hashing, JWT)",
   "private": true,
   "type": "module",
   "main": "./index.ts",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./crypto": "./crypto/index.ts",
+    "./jwt": "./jwt/index.ts"
   },
   "keywords": [
     "EdgeAuth",
-    "core"
+    "core",
+    "authentication",
+    "jwt",
+    "crypto"
   ],
   "author": "Deepractice",
-  "license": "MIT"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "EdgeAuth-domain": "workspace:*"
+  }
 }

@@ -1,17 +1,19 @@
 {
   "name": "EdgeAuth-domain",
   "version": "0.0.1",
-  "description": "EdgeAuth domain - Business logic (reserved for future use)",
+  "description": "EdgeAuth domain models and business rules",
   "private": true,
   "type": "module",
   "main": "./index.ts",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./user": "./user/index.ts"
   },
   "keywords": [
     "EdgeAuth",
-    "domain"
+    "domain",
+    "user-model"
   ],
   "author": "Deepractice",
-  "license": "MIT"
+  "license": "Apache-2.0"
 }

@@ -1,7 +1,7 @@
 /**
  * EdgeAuth Domain Layer
  *
- * Reserved for future business logic with DDD patterns.
+ * Domain models and business rules for authentication
  */
 
-export {};
+export * from './user/index.js';
