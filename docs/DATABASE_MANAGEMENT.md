@@ -4,49 +4,42 @@
 
 EdgeAuth uses a **centralized schema management** approach:
 
-- **Admin Worker** = Single source of truth for all database schemas
-- **Other Workers** = Business logic services that bind to databases as needed
+- **Migrations** = Centralized in `src/migrations/` as single source of truth
+- **Service APIs** = Business logic services that bind to databases as needed
 
 ## Database Structure
 
 ```
-edgeauth-users (Managed by Admin Worker)
+edgeauth-users
 ├── users table
-└── Shared by: Admin Worker, SSO Worker
+└── Used by: Admin API, SSO API
 
-edgeauth-sso (Managed by Admin Worker)
+edgeauth-sso
 ├── sso_sessions table
-└── Used by: SSO Worker
+└── Used by: SSO API
 
-edgeauth-oauth (Managed by Admin Worker)
+edgeauth-oauth
 ├── oauth_clients table
 ├── oauth_tokens table
-└── Used by: OAuth Worker
+└── Used by: OAuth API
 ```
 
 ## Responsibilities
 
-### Admin Worker
+### Migrations (`src/migrations/`)
 
-**Schema Management** (Exclusive):
-- Owns all migration files
-- Creates and manages all database tables
-- Executes all schema changes
-- Handles database initialization
-
-**Database Bindings**:
-- `DB` → edgeauth-users
-- `SSO_DB` → edgeauth-sso
-- `OAUTH_DB` → edgeauth-oauth
-
-**Location**: `/services/admin-worker/migrations/`
+**Schema Management** (Centralized):
+- Single source of truth for all database schemas
+- All migration files stored here
+- Independent of service APIs
 
 **Migrations**:
 - `0001_create_users_table.sql` - Users table
 - `0002_create_sso_sessions_table.sql` - SSO sessions table
-- `0003_create_oauth_tables.sql` - OAuth clients and tokens (future)
+- `0003_add_email_verification.sql` - Email verification
+- `0004_create_oauth_tables.sql` - OAuth clients and tokens
 
-### SSO Worker
+### SSO API
 
 **Business Logic Only**:
 - User authentication
@@ -57,9 +50,9 @@ edgeauth-oauth (Managed by Admin Worker)
 - `DB` → edgeauth-users (read users)
 - `SSO_DB` → edgeauth-sso (read/write sessions)
 
-**No Migrations**: SSO Worker does not manage schemas
+**No Migrations**: SSO API does not manage schemas
 
-### OAuth Worker
+### OAuth API
 
 **Business Logic Only**:
 - OAuth 2.0 authorization flows
@@ -69,19 +62,19 @@ edgeauth-oauth (Managed by Admin Worker)
 **Database Bindings** (Read/Write):
 - `OAUTH_DB` → edgeauth-oauth (read/write clients and tokens)
 
-**No Migrations**: OAuth Worker does not manage schemas
+**No Migrations**: OAuth API does not manage schemas
 
 ## Why This Architecture?
 
 ### Problem with Distributed Migrations
 
-**Before** (Each worker has migrations):
+**Before** (Each service has migrations):
 ```
-SSO Worker migrations/
+services/sso-api/migrations/
   0001_create_users_table.sql
   0002_create_sessions_table.sql
 
-Admin Worker migrations/
+services/admin-api/migrations/
   0001_create_users_table.sql  ❌ Conflict!
   0002_manage_users.sql
 ```
@@ -94,17 +87,18 @@ Admin Worker migrations/
 
 ### Solution: Centralized Schema Management
 
-**Now** (Admin Worker owns all migrations):
+**Now** (Migrations in `src/migrations/`):
 ```
-Admin Worker migrations/
+src/migrations/
   0001_create_users_table.sql
   0002_create_sso_sessions_table.sql
-  0003_create_oauth_tables.sql
+  0003_add_email_verification.sql
+  0004_create_oauth_tables.sql
 
-SSO Worker
+services/sso-api/
   ❌ No migrations directory
 
-OAuth Worker
+services/oauth-api/
   ❌ No migrations directory
 ```
 
@@ -123,7 +117,7 @@ Workers still share domain logic through packages:
 import { UserService } from 'edge-auth-domain';
 import { D1UserRepository } from 'edge-auth-core';
 
-// SSO Worker example
+// SSO API example
 const userRepo = new D1UserRepository(c.env.DB);
 const userService = new UserService(userRepo);
 ```
@@ -137,38 +131,37 @@ const userService = new UserService(userRepo);
 
 ### 1. Create New Migration
 
-Add migration file to Admin Worker:
+Add migration file to `src/migrations/`:
 
 ```bash
-cd services/admin-worker
-touch migrations/000X_description.sql
+touch src/migrations/000X_description.sql
 ```
 
 ### 2. Apply Migration
 
 ```bash
 # Development (local D1)
-wrangler d1 execute edgeauth-users --local --file=migrations/000X_description.sql
-wrangler d1 execute edgeauth-sso --local --file=migrations/000X_description.sql
+wrangler d1 execute edgeauth-users --local --file=src/migrations/000X_description.sql
+wrangler d1 execute edgeauth-sso --local --file=src/migrations/000X_description.sql
 
 # Production
-wrangler d1 execute edgeauth-users --file=migrations/000X_description.sql
-wrangler d1 execute edgeauth-sso --file=migrations/000X_description.sql
+wrangler d1 execute edgeauth-users --file=src/migrations/000X_description.sql
+wrangler d1 execute edgeauth-sso --file=src/migrations/000X_description.sql
 ```
 
 ### 3. Deploy Services
 
-Deploy in any order (no dependencies):
+Deploy in any order (migrations are independent):
 
 ```bash
-# Admin Worker
-cd services/admin-worker && wrangler deploy
+# Admin API
+cd services/admin-api && wrangler deploy
 
-# SSO Worker
-cd services/sso-worker && wrangler deploy
+# SSO API
+cd services/sso-api && wrangler deploy
 
-# OAuth Worker
-cd services/oauth-worker && wrangler deploy
+# OAuth API
+cd services/oauth-api && wrangler deploy
 ```
 
 ## Database Initialization
@@ -181,10 +174,11 @@ wrangler d1 create edgeauth-users --local
 wrangler d1 create edgeauth-sso --local
 wrangler d1 create edgeauth-oauth --local
 
-# Apply all migrations
-cd services/admin-worker
-wrangler d1 execute edgeauth-users --local --file=migrations/0001_create_users_table.sql
-wrangler d1 execute edgeauth-sso --local --file=migrations/0002_create_sso_sessions_table.sql
+# Apply all migrations from src/migrations/
+wrangler d1 execute edgeauth-users --local --file=src/migrations/0001_create_users_table.sql
+wrangler d1 execute edgeauth-sso --local --file=src/migrations/0002_create_sso_sessions_table.sql
+wrangler d1 execute edgeauth-users --local --file=src/migrations/0003_add_email_verification.sql
+wrangler d1 execute edgeauth-users --local --file=src/migrations/0004_create_oauth_tables.sql
 ```
 
 ### Production
@@ -197,20 +191,21 @@ wrangler d1 create edgeauth-oauth
 
 # Update wrangler.toml with database IDs
 
-# Apply migrations
-cd services/admin-worker
-wrangler d1 execute edgeauth-users --file=migrations/0001_create_users_table.sql
-wrangler d1 execute edgeauth-sso --file=migrations/0002_create_sso_sessions_table.sql
+# Apply migrations from src/migrations/
+wrangler d1 execute edgeauth-users --file=src/migrations/0001_create_users_table.sql
+wrangler d1 execute edgeauth-sso --file=src/migrations/0002_create_sso_sessions_table.sql
+wrangler d1 execute edgeauth-users --file=src/migrations/0003_add_email_verification.sql
+wrangler d1 execute edgeauth-users --file=src/migrations/0004_create_oauth_tables.sql
 ```
 
 ## Adding a New Table
 
 ### Example: Add `audit_logs` table
 
-1. **Create migration in Admin Worker**:
+1. **Create migration in `src/migrations/`**:
 
 ```sql
--- services/admin-worker/migrations/0004_create_audit_logs_table.sql
+-- src/migrations/0005_create_audit_logs_table.sql
 CREATE TABLE IF NOT EXISTS audit_logs (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
@@ -222,7 +217,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 2. **Apply migration**:
 
 ```bash
-wrangler d1 execute edgeauth-users --local --file=migrations/0004_create_audit_logs_table.sql
+wrangler d1 execute edgeauth-users --local --file=src/migrations/0005_create_audit_logs_table.sql
 ```
 
 3. **Use in any worker**:
@@ -236,14 +231,15 @@ No need to modify other workers' migrations!
 
 ## Best Practices
 
-1. **All schema changes go through Admin Worker**
+1. **All schema changes go through `src/migrations/`**
    - Even if only one service uses a table
    - Maintains single source of truth
+   - Independent of service APIs
 
-2. **Workers bind to databases they need**
-   - SSO Worker: users (read) + sessions (read/write)
-   - OAuth Worker: oauth (read/write)
-   - Admin Worker: all databases (for management)
+2. **Service APIs bind to databases they need**
+   - SSO API: users (read) + sessions (read/write)
+   - OAuth API: oauth (read/write)
+   - Admin API: all databases (for management)
 
 3. **Use domain packages for shared logic**
    - `edge-auth-domain`: Business logic
@@ -262,9 +258,9 @@ No need to modify other workers' migrations!
 
 ### Schema Mismatch
 
-If a worker expects a table that doesn't exist:
+If a service expects a table that doesn't exist:
 
-1. Check Admin Worker migrations
+1. Check `src/migrations/` for the migration
 2. Ensure migration was applied to correct database
 3. Verify wrangler.toml database bindings
 
@@ -291,13 +287,13 @@ const sessionRepo = new D1SSOSessionRepository(c.env.SSO_DB);
 
 ## Summary
 
-| Aspect | Admin Worker | Other Workers |
+| Aspect | Migrations (`src/migrations/`) | Service APIs |
 |--------|-------------|---------------|
-| Migrations | ✅ Owns all | ❌ None |
-| Schema Management | ✅ Exclusive | ❌ No access |
-| Database Binding | ✅ All DBs | ✅ As needed |
-| Business Logic | ✅ Management | ✅ Core features |
-| Code Reuse | ✅ Via packages | ✅ Via packages |
+| Migrations | ✅ Centralized location | ❌ None |
+| Schema Management | ✅ Single source of truth | ❌ No migrations |
+| Database Binding | N/A | ✅ As needed |
+| Business Logic | N/A | ✅ All features |
+| Code Reuse | N/A | ✅ Via packages |
 
 This architecture ensures:
 - Clear separation of concerns

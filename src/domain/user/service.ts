@@ -51,6 +51,8 @@ export class UserService {
       email: data.email.toLowerCase(), // normalize email
       username: data.username,
       passwordHash,
+      emailVerified: false,
+      emailVerifiedAt: null,
       createdAt: now,
       updatedAt: now,
     });

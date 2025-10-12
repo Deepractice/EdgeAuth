@@ -10,42 +10,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./core": {
-      "types": "./dist/core/index.d.ts",
-      "import": "./dist/core/index.js"
-    },
-    "./core/crypto": {
-      "types": "./dist/core/crypto/index.d.ts",
-      "import": "./dist/core/crypto/index.js"
-    },
-    "./core/jwt": {
-      "types": "./dist/core/jwt/index.d.ts",
-      "import": "./dist/core/jwt/index.js"
-    },
-    "./core/persistence": {
-      "types": "./dist/core/persistence/index.d.ts",
-      "import": "./dist/core/persistence/index.js"
-    },
-    "./core/mail": {
-      "types": "./dist/core/mail/index.d.ts",
-      "import": "./dist/core/mail/index.js"
-    },
-    "./domain": {
-      "types": "./dist/domain/index.d.ts",
-      "import": "./dist/domain/index.js"
-    },
-    "./domain/user": {
-      "types": "./dist/domain/user/index.d.ts",
-      "import": "./dist/domain/user/index.js"
-    },
-    "./domain/oauth": {
-      "types": "./dist/domain/oauth/index.d.ts",
-      "import": "./dist/domain/oauth/index.js"
-    },
-    "./domain/sso": {
-      "types": "./dist/domain/sso/index.d.ts",
-      "import": "./dist/domain/sso/index.js"
     }
   },
   "scripts": {

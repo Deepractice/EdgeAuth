@@ -9,6 +9,8 @@ export interface User {
   id: string;
   email: string;
   username: string;
+  emailVerified: boolean;
+  emailVerifiedAt: number | null;
   createdAt: number;
   updatedAt: number;
 }

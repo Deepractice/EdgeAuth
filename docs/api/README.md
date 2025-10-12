@@ -4,12 +4,12 @@ EdgeAuth is a distributed authentication and authorization platform built on Clo
 
 ## Architecture Overview
 
-EdgeAuth consists of two public-facing worker services:
+EdgeAuth consists of multiple API services:
 
-- **SSO Worker** - Single Sign-On service for users (login, registration, authentication)
-- **OAuth Worker** - OAuth 2.0 authorization server for third-party applications
+- **SSO API** - Single Sign-On service for users (login, registration, authentication)
+- **OAuth API** - OAuth 2.0 authorization server for third-party applications
 
-**Admin Worker** is an internal management service (not publicly documented).
+**Admin API** is an internal management service (not publicly documented).
 
 Each service runs independently with its own D1 database following Domain-Driven Design principles.
 
@@ -18,15 +18,15 @@ Each service runs independently with its own D1 database following Domain-Driven
 ### Development
 
 ```text
-SSO Worker:   http://localhost:8790
-OAuth Worker: http://localhost:8788
+SSO API:   http://localhost:8790
+OAuth API: http://localhost:8788
 ```
 
 ### Production
 
 ```text
-SSO Worker:   https://sso.edgeauth.com
-OAuth Worker: https://oauth.edgeauth.com
+SSO API:   https://sso.edgeauth.com
+OAuth API: https://oauth.edgeauth.com
 ```
 
 ## Authentication
@@ -39,8 +39,8 @@ Authorization: Bearer <jwt_token>
 
 ## API Services
 
-- **[SSO Worker API](./sso-worker.md)** - User login, registration, and Single Sign-On
-- **[OAuth Worker API](./oauth-worker.md)** - OAuth 2.0 authorization flows for third-party apps
+- **[SSO API](./sso-api.md)** - User login, registration, and Single Sign-On
+- **[OAuth API](./oauth-api.md)** - OAuth 2.0 authorization flows for third-party apps
 
 ## Quick Start
 
@@ -105,8 +105,8 @@ Common HTTP status codes:
 EdgeAuth uses separate D1 databases for each service:
 
 - `edgeauth-users` - User accounts (shared by SSO and Admin)
-- `edgeauth-oauth` - OAuth clients and tokens (OAuth Worker)
-- `edgeauth-sso` - SSO sessions (SSO Worker)
+- `edgeauth-oauth` - OAuth clients and tokens (OAuth API)
+- `edgeauth-sso` - SSO sessions (SSO API)
 
 This separation provides:
 

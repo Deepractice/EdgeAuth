@@ -14,7 +14,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "clean": "turbo clean && rm -rf node_modules",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "deploy": "node scripts/deploy.js",
+    "setup:local": "node scripts/setup-local.js"
   },
   "keywords": [
     "authentication",
@@ -55,7 +57,7 @@
   "dependencies": {
     "@cloudflare/workers-types": "^4.20251011.0",
     "@deepracticex/error-handling": "^0.2.0",
-    "@deepracticex/logger": "^0.2.0",
+    "@deepracticex/logger": "^0.3.2",
     "hono": "^4.9.11",
     "tsup": "^8.5.0",
     "wrangler": "^4.42.2"

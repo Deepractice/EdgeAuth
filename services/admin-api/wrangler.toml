@@ -1,0 +1,30 @@
+name = "edgeauth-admin"
+main = "dist/index.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database bindings
+# Admin Worker manages all database schemas
+[[d1_databases]]
+binding = "DB"
+database_name = "edgeauth-users"
+database_id = "placeholder" # Replace with actual D1 database ID after creation
+
+[[d1_databases]]
+binding = "SSO_DB"
+database_name = "edgeauth-sso"
+database_id = "placeholder" # Replace with actual D1 database ID after creation
+
+[[d1_databases]]
+binding = "OAUTH_DB"
+database_name = "edgeauth-oauth"
+database_id = "placeholder" # Replace with actual D1 database ID after creation
+
+# Environment Variables
+[vars]
+JWT_SECRET = "dev-secret-key-change-in-production-use-wrangler-secret"
+
+# Production environment
+[env.production]
+name = "edgeauth-admin"
+# Use: wrangler secret put JWT_SECRET --env production

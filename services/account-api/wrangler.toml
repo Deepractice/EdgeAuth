@@ -1,0 +1,25 @@
+name = "edgeauth-account"
+main = "dist/index.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database bindings
+# Account Worker only needs access to users database
+[[d1_databases]]
+binding = "DB"
+database_name = "edgeauth-users"
+database_id = "placeholder" # Replace with actual D1 database ID after creation
+
+# Environment Variables
+[vars]
+JWT_SECRET = "dev-secret-key-change-in-production-use-wrangler-secret"
+PLUNK_API_KEY = "dev-plunk-api-key-change-in-production"
+EMAIL_FROM = "noreply@example.com"
+EMAIL_FROM_NAME = "EdgeAuth"
+BASE_URL = "http://localhost:8787"
+
+# Production environment
+[env.production]
+name = "edgeauth-account"
+# Use: wrangler secret put JWT_SECRET --env production
+# Use: wrangler secret put PLUNK_API_KEY --env production

@@ -67,37 +67,37 @@ cd EdgeAuth
 
 # Install dependencies
 pnpm install
-
-# Build all packages
-pnpm build
 ```
 
-### 🗄️ Database Setup
+### 🚀 Production Deployment
+
+**One-command deployment:**
 
 ```bash
-# Create D1 databases
-cd services/admin-worker
-
-# Create databases (get database IDs from output)
-wrangler d1 create edgeauth-users
-wrangler d1 create edgeauth-sso
-wrangler d1 create edgeauth-oauth
-
-# Update wrangler.toml with your database IDs
-
-# Apply migrations
-wrangler d1 execute edgeauth-users --file=migrations/0001_create_users_table.sql
-wrangler d1 execute edgeauth-sso --file=migrations/0002_create_sso_sessions_table.sql
+# Automated deployment (creates databases, runs migrations, deploys workers)
+pnpm deploy
 ```
 
-### 🚀 Deploy
+After deployment, configure production secrets:
 
 ```bash
-# Deploy services (any order)
-cd services/admin-worker && wrangler deploy
-cd services/oauth-worker && wrangler deploy
-cd services/sso-worker && wrangler deploy
+wrangler secret put JWT_SECRET --env production
+wrangler secret put PLUNK_API_KEY --env production
 ```
+
+### 💻 Local Development
+
+**One-command setup:**
+
+```bash
+# Set up local environment (creates local DBs, runs migrations)
+pnpm setup:local
+
+# Start a worker
+cd services/account-api && wrangler dev
+```
+
+📖 **[Full Deployment Guide →](docs/DEPLOYMENT.md)**
 
 ---
 

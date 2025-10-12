@@ -15,8 +15,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0(hono@4.9.11)
       '@deepracticex/logger':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.3.2
+        version: 0.3.2
       hono:
         specifier: ^4.9.11
         version: 4.9.11
@@ -64,7 +64,50 @@ importers:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@22.18.10)
 
-  services/admin-worker:
+  services/account-api:
+    dependencies:
+      '@deepracticex/error-handling':
+        specifier: ^0.2.0
+        version: 0.2.0(hono@4.9.11)
+      '@deepracticex/logger':
+        specifier: ^0.2.0
+        version: 0.2.0
+      edgeauth:
+        specifier: workspace:*
+        version: link:../../src
+      hono:
+        specifier: ^4.7.10
+        version: 4.9.11
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20241218.0
+        version: 4.20251011.0
+      '@deepracticex/config-preset':
+        specifier: ^0.1.0
+        version: 0.1.0(@deepracticex/vitest-cucumber-plugin@1.1.1(vitest@3.2.4))(@types/node@22.18.10)(@typescript-eslint/eslint-plugin@8.46.0(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint-plugin-prettier@5.5.4(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(tsup@8.5.0(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3))(typescript@5.9.3)(vitest@3.2.4)
+      '@deepracticex/vitest-cucumber':
+        specifier: ^1.1.1
+        version: 1.1.1(vitest@3.2.4)
+      '@deepracticex/vitest-cucumber-plugin':
+        specifier: ^1.1.1
+        version: 1.1.1(vitest@3.2.4)
+      '@vitest/ui':
+        specifier: ^3.2.4
+        version: 3.2.4(vitest@3.2.4)
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.0(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@22.18.10)(@vitest/ui@3.2.4)
+      wrangler:
+        specifier: ^3.94.0
+        version: 3.114.15(@cloudflare/workers-types@4.20251011.0)
+
+  services/admin-api:
     dependencies:
       edgeauth:
         specifier: workspace:*
@@ -101,7 +144,7 @@ importers:
         specifier: ^3.94.0
         version: 3.114.15(@cloudflare/workers-types@4.20251011.0)
 
-  services/oauth-worker:
+  services/oauth-api:
     dependencies:
       edgeauth:
         specifier: workspace:*
@@ -138,7 +181,7 @@ importers:
         specifier: ^3.94.0
         version: 3.114.15(@cloudflare/workers-types@4.20251011.0)
 
-  services/sso-worker:
+  services/sso-api:
     dependencies:
       edgeauth:
         specifier: workspace:*
@@ -413,6 +456,9 @@ packages:
 
   '@deepracticex/logger@0.2.0':
     resolution: {integrity: sha512-iLqFF2L1m3Ztzpo1P5s0036nWOzlSqh3sQzpIUFvric4WhlDdfOMvzsbBGghpiwY40vDVGFRA/C9TytDWGjY5w==}
+
+  '@deepracticex/logger@0.3.2':
+    resolution: {integrity: sha512-KgQpYgJFljTR7/yTxjpUPTq4572/AOSqXiCEMs+4ZzguOOgh6x/8WGypSPWTVDZCGPAvLyG7L8Ydl5W8DElkdA==}
 
   '@deepracticex/vitest-cucumber-plugin@1.1.1':
     resolution: {integrity: sha512-IaSVBtyFY2/T/yjZsXn/+aBWgJFkD8o/BqA+athXBa/hH0zY93PUmQjYWOnZi/qH48IDm/3wd0yJNc0zsiv52g==}
@@ -3014,6 +3060,11 @@ snapshots:
       hono: 4.9.11
 
   '@deepracticex/logger@0.2.0':
+    dependencies:
+      pino: 9.13.1
+      pino-pretty: 13.1.2
+
+  '@deepracticex/logger@0.3.2':
     dependencies:
       pino: 9.13.1
       pino-pretty: 13.1.2

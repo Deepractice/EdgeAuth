@@ -4,8 +4,12 @@
  * Main entry point for EdgeAuth library
  */
 
-// Core modules
-export * from './core/index.js';
+// Application Services - Public API
+export * from './application/index.js';
 
-// Domain modules
-export * from './domain/index.js';
+// Types that API layer needs
+export type { User } from './domain/user/types.js';
+
+// Infrastructure utilities (for middleware, etc.)
+export { verifyToken, generateToken } from './infrastructure/jwt/index.js';
+export { hashPassword, verifyPassword } from './infrastructure/crypto/index.js';

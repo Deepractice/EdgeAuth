@@ -295,6 +295,8 @@ export class OAuthService {
       id: authCode.userId,
       email: '', // Would need to fetch from UserRepository
       username: '', // Would need to fetch from UserRepository
+      emailVerified: false,
+      emailVerifiedAt: null,
       createdAt: 0,
       updatedAt: 0,
     };
@@ -381,6 +383,8 @@ export class OAuthService {
       id: refreshToken.userId,
       email: '',
       username: '',
+      emailVerified: false,
+      emailVerifiedAt: null,
       createdAt: 0,
       updatedAt: 0,
     };

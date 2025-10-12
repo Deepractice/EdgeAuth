@@ -19,9 +19,9 @@ EdgeAuth/
 │   ├── core/                 # Authentication logic (crypto, JWT, persistence)
 │   └── domain/               # Domain models (User, OAuth, SSO)
 ├── services/                 # Edge Services Layer (Cloudflare Workers)
-│   ├── admin-worker/         # Admin service + Schema management center
-│   ├── oauth-worker/         # OAuth 2.0 Provider
-│   └── sso-worker/           # SSO authentication service
+│   ├── admin-api/            # Admin service + Schema management center
+│   ├── oauth-api/            # OAuth 2.0 Provider
+│   └── sso-api/              # SSO authentication service
 ├── apps/                     # Application Layer (Future)
 └── packages/                 # Shared infrastructure (Future)
 ```
@@ -44,8 +44,8 @@ EdgeAuth uses an innovative **centralized schema management** approach to avoid 
 - `edgeauth-oauth` - OAuth clients and tokens
 
 **Core Principle - Single Source of Truth:**
-- ✅ Admin Worker owns ALL migrations
-- ❌ Other workers have NO migrations
+- ✅ Migrations are centralized in `src/migrations/`
+- ❌ Service APIs have NO migrations
 - **Benefits**:
   - No schema conflicts
   - No deployment order dependencies
@@ -56,9 +56,9 @@ EdgeAuth uses an innovative **centralized schema management** approach to avoid 
 
 | Service | DB Binding | SSO_DB Binding | OAUTH_DB Binding |
 |---------|------------|----------------|------------------|
-| Admin Worker | ✅ (R/W) | ✅ (R/W) | ✅ (R/W) |
-| SSO Worker | ✅ (R) | ✅ (R/W) | ❌ |
-| OAuth Worker | ❌ | ❌ | ✅ (R/W) |
+| Admin API | ✅ (R/W) | ✅ (R/W) | ✅ (R/W) |
+| SSO API | ✅ (R) | ✅ (R/W) | ❌ |
+| OAuth API | ❌ | ❌ | ✅ (R/W) |
 
 ## 📦 Core Packages
 
@@ -108,26 +108,21 @@ import { OAuthService } from 'edge-auth-core/oauth';
 
 ## 🚀 Services Layer
 
-### admin-worker (Management Center)
+### admin-api (Management Center)
 
 **Responsibilities**:
-- Schema management (owns ALL migrations)
 - User management APIs
-- Database initialization
+- Admin operations
+- System configuration
 
 **Database Bindings**:
 - `DB` → edgeauth-users
 - `SSO_DB` → edgeauth-sso
 - `OAUTH_DB` → edgeauth-oauth
 
-**Migrations**:
-- `0001_create_users_table.sql` - Users table
-- `0002_create_sso_sessions_table.sql` - SSO sessions table
-- `0003_create_oauth_tables.sql` - OAuth tables (planned)
-
 **Testing**: BDD with Vitest + Cucumber
 
-### oauth-worker (OAuth Provider)
+### oauth-api (OAuth Provider)
 
 **Responsibilities**:
 - OAuth 2.0 authorization flows
@@ -139,7 +134,7 @@ import { OAuthService } from 'edge-auth-core/oauth';
 
 **Status**: Complete BDD test coverage
 
-### sso-worker (SSO Service)
+### sso-api (SSO Service)
 
 **Responsibilities**:
 - User authentication
@@ -201,22 +196,22 @@ pnpm test:dev
 
 ### Deployment Workflow
 
-1. **Apply Migrations** (Admin Worker only):
+1. **Apply Migrations** (Centralized):
    ```bash
-   cd services/admin-worker
-   wrangler d1 execute edgeauth-users --file=migrations/000X_xxx.sql
+   # Run migrations from src/migrations/
+   wrangler d1 execute edgeauth-users --file=src/migrations/000X_xxx.sql
    ```
 
 2. **Deploy Services** (Any order):
    ```bash
-   # Admin Worker
-   cd services/admin-worker && wrangler deploy
+   # Admin API
+   cd services/admin-api && wrangler deploy
 
-   # OAuth Worker
-   cd services/oauth-worker && wrangler deploy
+   # OAuth API
+   cd services/oauth-api && wrangler deploy
 
-   # SSO Worker
-   cd services/sso-worker && wrangler deploy
+   # SSO API
+   cd services/sso-api && wrangler deploy
    ```
 
 ## 🎯 Architectural Highlights
@@ -229,14 +224,14 @@ pnpm test:dev
 - Version inconsistencies
 
 **Solution**: Centralized schema management
-- Admin Worker as single source of truth
-- Other workers focus on business logic
+- Migrations in `src/migrations/` as single source of truth
+- Service APIs focus on business logic
 - Clear separation of concerns
 
-**New Contradiction** (at higher level): Admin Worker becomes a central dependency
-- But this is manageable: deployment order is clear
-- Schema changes are infrequent
-- Benefits outweigh the coupling
+**Benefits**:
+- Deployment order is flexible (migrations run independently)
+- Schema changes are tracked in one place
+- No coupling between services and schema
 
 ### 2. Occam's Razor Principles
 
@@ -331,9 +326,9 @@ export default {
 ## 🎓 Best Practices
 
 1. **Schema Management**
-   - All migrations go through Admin Worker
+   - All migrations are centralized in `src/migrations/`
    - Document table ownership in migration files
-   - Apply migrations before deploying workers
+   - Apply migrations before deploying services
 
 2. **Code Organization**
    - One file per type (OOP style)
