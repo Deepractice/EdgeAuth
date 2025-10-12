@@ -1,5 +1,5 @@
 {
-  "name": "EdgeAuth-domain",
+  "name": "edge-auth-domain",
   "version": "0.0.1",
   "description": "EdgeAuth domain models and business rules",
   "private": true,

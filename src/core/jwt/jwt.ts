@@ -2,27 +2,9 @@
  * JWT implementation using Web Crypto API (HS256)
  */
 
-import type { User } from 'EdgeAuth-domain';
+import { errors } from '@deepracticex/error-handling';
+import type { User } from 'edge-auth-domain';
 import { DEFAULT_JWT_EXPIRATION, type JWTConfig, type JWTPayload } from './types.js';
-
-/**
- * JWT error types
- */
-export enum JWTErrorCode {
-  INVALID_TOKEN = 'INVALID_TOKEN',
-  EXPIRED_TOKEN = 'EXPIRED_TOKEN',
-  INVALID_SIGNATURE = 'INVALID_SIGNATURE',
-}
-
-export class JWTError extends Error {
-  constructor(
-    public code: JWTErrorCode,
-    message: string,
-  ) {
-    super(message);
-    this.name = 'JWTError';
-  }
-}
 
 /**
  * Base64URL encode
@@ -97,7 +79,7 @@ export async function generateToken(user: User, config: JWTConfig): Promise<stri
 export async function verifyToken(token: string, secret: string): Promise<JWTPayload> {
   const parts = token.split('.');
   if (parts.length !== 3) {
-    throw new JWTError(JWTErrorCode.INVALID_TOKEN, 'Invalid token format');
+    throw errors.unauthorized('Invalid token format');
   }
 
   const [headerEncoded, payloadEncoded, signatureEncoded] = parts;
@@ -111,7 +93,7 @@ export async function verifyToken(token: string, secret: string): Promise<JWTPay
   const isValid = await crypto.subtle.verify('HMAC', key, signature, encoder.encode(data));
 
   if (!isValid) {
-    throw new JWTError(JWTErrorCode.INVALID_SIGNATURE, 'Invalid token signature');
+    throw errors.unauthorized('Invalid token signature');
   }
 
   // Decode payload
@@ -121,7 +103,7 @@ export async function verifyToken(token: string, secret: string): Promise<JWTPay
   // Check expiration
   const now = Math.floor(Date.now() / 1000);
   if (payload.exp && payload.exp < now) {
-    throw new JWTError(JWTErrorCode.EXPIRED_TOKEN, 'Token has expired');
+    throw errors.unauthorized('Token has expired');
   }
 
   return payload;
@@ -133,7 +115,7 @@ export async function verifyToken(token: string, secret: string): Promise<JWTPay
 export function decodeToken(token: string): JWTPayload {
   const parts = token.split('.');
   if (parts.length !== 3) {
-    throw new JWTError(JWTErrorCode.INVALID_TOKEN, 'Invalid token format');
+    throw errors.unauthorized('Invalid token format');
   }
 
   const payloadJson = new TextDecoder().decode(base64UrlDecode(parts[1]));

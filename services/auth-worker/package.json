@@ -6,17 +6,27 @@
   "type": "module",
   "main": "./src/index.ts",
   "scripts": {
+    "build": "tsup",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
-    "EdgeAuth-domain": "workspace:*",
-    "EdgeAuth-core": "workspace:*",
+    "edge-auth-core": "workspace:*",
+    "edge-auth-domain": "workspace:*",
     "hono": "^4.7.10"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241218.0",
+    "@deepracticex/vitest-cucumber": "^1.1.1",
+    "@deepracticex/vitest-cucumber-plugin": "^1.1.1",
+    "@vitest/ui": "^3.2.4",
+    "tsup": "^8.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4",
     "wrangler": "^3.94.0"
   },
   "keywords": [

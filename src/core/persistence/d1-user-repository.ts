@@ -4,7 +4,7 @@
  * Cloudflare D1 (SQLite) implementation of UserRepository
  */
 
-import type { User, UserRepository, UserWithPassword } from 'EdgeAuth-domain';
+import type { User, UserRepository, UserWithPassword } from 'edge-auth-domain';
 
 /**
  * D1 Database interface (from Cloudflare Workers)

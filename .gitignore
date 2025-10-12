@@ -52,3 +52,11 @@ lefthook-local.yml
 # Test reports
 **/reports/
 ../../temp/
+
+# Cloudflare Workers
+.wrangler/
+.dev.vars
+wrangler.toml.local
+
+# Vitest
+.vitest/

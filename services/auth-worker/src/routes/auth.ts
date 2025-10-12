@@ -3,9 +3,18 @@
  */
 
 import { Hono } from 'hono';
-import { UserService, ValidationError, AuthError } from 'EdgeAuth-domain';
-import { D1UserRepository, hashPassword, verifyPassword, generateToken, verifyToken, JWTError, DEFAULT_JWT_EXPIRATION } from 'EdgeAuth-core';
+import { UserService } from 'edge-auth-domain';
+import { D1UserRepository, hashPassword, verifyPassword, generateToken, verifyToken, DEFAULT_JWT_EXPIRATION } from 'edge-auth-core';
+import { AppError, errors } from '@deepracticex/error-handling';
+import { createLogger } from '@deepracticex/logger';
 import type { Env, AuthResponse, UserResponse } from '../types.js';
+
+const logger = createLogger({
+  name: 'edge-auth-worker',
+  level: 'info',
+  console: true,
+  colors: true,
+});
 
 const auth = new Hono<{ Bindings: Env }>();
 
@@ -54,42 +63,16 @@ auth.post('/register', async (c) => {
       },
     };
 
+    logger.info('User registered successfully', { userId: user.id, email: user.email });
     return c.json(response, 201);
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return c.json(
-        {
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: error.message,
-          },
-        },
-        400,
-      );
+    if (AppError.isAppError(error)) {
+      logger.warn('Registration failed', { code: error.code, message: error.message });
+      return c.json(error.toJSON(), error.statusCode);
     }
 
-    if (error instanceof AuthError) {
-      return c.json(
-        {
-          error: {
-            code: error.code,
-            message: error.message,
-          },
-        },
-        400,
-      );
-    }
-
-    console.error('Registration error:', error);
-    return c.json(
-      {
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Internal server error',
-        },
-      },
-      500,
-    );
+    logger.error('Registration error', { error });
+    return c.json(errors.internal('Internal server error').toJSON(), 500);
   }
 });
 
@@ -118,15 +101,7 @@ auth.post('/login', async (c) => {
     const isValid = await verifyPassword(body.password, userWithPassword.passwordHash);
 
     if (!isValid) {
-      return c.json(
-        {
-          error: {
-            code: 'INVALID_CREDENTIALS',
-            message: 'Invalid credentials',
-          },
-        },
-        401,
-      );
+      throw errors.unauthorized('Invalid credentials');
     }
 
     // Generate JWT token
@@ -153,42 +128,16 @@ auth.post('/login', async (c) => {
       },
     };
 
+    logger.info('User logged in successfully', { userId: user.id });
     return c.json(response);
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return c.json(
-        {
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: error.message,
-          },
-        },
-        400,
-      );
+    if (AppError.isAppError(error)) {
+      logger.warn('Login failed', { code: error.code, message: error.message });
+      return c.json(error.toJSON(), error.statusCode);
     }
 
-    if (error instanceof AuthError) {
-      return c.json(
-        {
-          error: {
-            code: error.code,
-            message: 'Invalid credentials',
-          },
-        },
-        401,
-      );
-    }
-
-    console.error('Login error:', error);
-    return c.json(
-      {
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Internal server error',
-        },
-      },
-      500,
-    );
+    logger.error('Login error', { error });
+    return c.json(errors.internal('Internal server error').toJSON(), 500);
   }
 });
 
@@ -201,15 +150,7 @@ auth.get('/me', async (c) => {
     // Extract token from Authorization header
     const authHeader = c.req.header('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return c.json(
-        {
-          error: {
-            code: 'INVALID_TOKEN',
-            message: 'Missing or invalid authorization header',
-          },
-        },
-        401,
-      );
+      throw errors.unauthorized('Missing or invalid authorization header');
     }
 
     const token = authHeader.substring(7);
@@ -223,15 +164,7 @@ auth.get('/me', async (c) => {
     const user = await userService.getUserById(payload.sub);
 
     if (!user) {
-      return c.json(
-        {
-          error: {
-            code: 'USER_NOT_FOUND',
-            message: 'User not found',
-          },
-        },
-        404,
-      );
+      throw errors.notFound('User', payload.sub);
     }
 
     const response: UserResponse = {
@@ -243,30 +176,16 @@ auth.get('/me', async (c) => {
       },
     };
 
+    logger.debug('User info retrieved', { userId: user.id });
     return c.json(response);
   } catch (error) {
-    if (error instanceof JWTError) {
-      return c.json(
-        {
-          error: {
-            code: error.code,
-            message: error.message,
-          },
-        },
-        401,
-      );
+    if (AppError.isAppError(error)) {
+      logger.warn('Get user failed', { code: error.code, message: error.message });
+      return c.json(error.toJSON(), error.statusCode);
     }
 
-    console.error('Get user error:', error);
-    return c.json(
-      {
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Internal server error',
-        },
-      },
-      500,
-    );
+    logger.error('Get user error', { error });
+    return c.json(errors.internal('Internal server error').toJSON(), 500);
   }
 });
 

@@ -23,39 +23,22 @@ const USERNAME_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9_-]{2,19}$/;
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 128;
 
-/**
- * Validation error types
- */
-export enum ValidationErrorCode {
-  INVALID_EMAIL = 'INVALID_EMAIL',
-  INVALID_USERNAME = 'INVALID_USERNAME',
-  INVALID_PASSWORD = 'INVALID_PASSWORD',
-}
-
-export class ValidationError extends Error {
-  constructor(
-    public code: ValidationErrorCode,
-    message: string,
-  ) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
+import { errors } from '@deepracticex/error-handling';
 
 /**
  * Validate email format
  */
 export function validateEmail(email: string): void {
   if (!email || typeof email !== 'string') {
-    throw new ValidationError(ValidationErrorCode.INVALID_EMAIL, 'Email is required');
+    throw errors.validation('Email is required');
   }
 
   if (!EMAIL_REGEX.test(email)) {
-    throw new ValidationError(ValidationErrorCode.INVALID_EMAIL, 'Invalid email format');
+    throw errors.validation('Invalid email format');
   }
 
   if (email.length > 255) {
-    throw new ValidationError(ValidationErrorCode.INVALID_EMAIL, 'Email is too long');
+    throw errors.validation('Email is too long');
   }
 }
 
@@ -64,12 +47,11 @@ export function validateEmail(email: string): void {
  */
 export function validateUsername(username: string): void {
   if (!username || typeof username !== 'string') {
-    throw new ValidationError(ValidationErrorCode.INVALID_USERNAME, 'Username is required');
+    throw errors.validation('Username is required');
   }
 
   if (!USERNAME_REGEX.test(username)) {
-    throw new ValidationError(
-      ValidationErrorCode.INVALID_USERNAME,
+    throw errors.validation(
       'Username must be 3-20 characters, start with alphanumeric, and contain only letters, numbers, hyphens, or underscores',
     );
   }
@@ -80,21 +62,15 @@ export function validateUsername(username: string): void {
  */
 export function validatePassword(password: string): void {
   if (!password || typeof password !== 'string') {
-    throw new ValidationError(ValidationErrorCode.INVALID_PASSWORD, 'Password is required');
+    throw errors.validation('Password is required');
   }
 
   if (password.length < PASSWORD_MIN_LENGTH) {
-    throw new ValidationError(
-      ValidationErrorCode.INVALID_PASSWORD,
-      `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
-    );
+    throw errors.validation(`Password must be at least ${PASSWORD_MIN_LENGTH} characters`);
   }
 
   if (password.length > PASSWORD_MAX_LENGTH) {
-    throw new ValidationError(
-      ValidationErrorCode.INVALID_PASSWORD,
-      `Password must not exceed ${PASSWORD_MAX_LENGTH} characters`,
-    );
+    throw errors.validation(`Password must not exceed ${PASSWORD_MAX_LENGTH} characters`);
   }
 }
 

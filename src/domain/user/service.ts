@@ -4,29 +4,10 @@
  * Encapsulates user authentication business logic
  */
 
+import { errors } from '@deepracticex/error-handling';
 import type { UserRepository } from './repository.js';
 import type { CreateUserData, LoginData, User } from './types.js';
 import { isEmail, validateEmail, validatePassword, validateUsername } from './validation.js';
-
-/**
- * Authentication error codes
- */
-export enum AuthErrorCode {
-  EMAIL_EXISTS = 'EMAIL_EXISTS',
-  USERNAME_EXISTS = 'USERNAME_EXISTS',
-  INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
-  USER_NOT_FOUND = 'USER_NOT_FOUND',
-}
-
-export class AuthError extends Error {
-  constructor(
-    public code: AuthErrorCode,
-    message: string,
-  ) {
-    super(message);
-    this.name = 'AuthError';
-  }
-}
 
 /**
  * User Domain Service
@@ -56,11 +37,11 @@ export class UserService {
     ]);
 
     if (emailExists) {
-      throw new AuthError(AuthErrorCode.EMAIL_EXISTS, 'Email already registered');
+      throw errors.conflict('Email already registered');
     }
 
     if (usernameExists) {
-      throw new AuthError(AuthErrorCode.USERNAME_EXISTS, 'Username already taken');
+      throw errors.conflict('Username already taken');
     }
 
     // Create user
@@ -105,7 +86,7 @@ export class UserService {
       : await this.userRepository.findByUsernameWithPassword(account);
 
     if (!user) {
-      throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, 'Invalid credentials');
+      throw errors.unauthorized('Invalid credentials');
     }
 
     return user;

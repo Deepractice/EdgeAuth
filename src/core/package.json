@@ -1,5 +1,5 @@
 {
-  "name": "EdgeAuth-core",
+  "name": "edge-auth-core",
   "version": "0.0.1",
   "description": "EdgeAuth core - Authentication logic (password hashing, JWT)",
   "private": true,
@@ -21,6 +21,6 @@
   "author": "Deepractice",
   "license": "Apache-2.0",
   "dependencies": {
-    "EdgeAuth-domain": "workspace:*"
+    "edge-auth-domain": "workspace:*"
   }
 }
