@@ -1,7 +1,6 @@
 packages:
-  # Domain and core logic
-  - "src/core"
-  - "src/domain"
+  # EdgeAuth library
+  - "src"
   # Cloudflare Workers services
   - "services/*"
   # Exclusions

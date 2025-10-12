@@ -58,7 +58,7 @@ export class D1SSOSessionRepository implements SSOSessionRepository {
       .bind(userId, Date.now())
       .all<SSOSession>();
 
-    return result.results.map((row) => this.mapRow(row));
+    return result.results.map((row: SSOSession) => this.mapRow(row));
   }
 
   async updateLastAccessed(sessionId: string, timestamp: number): Promise<void> {

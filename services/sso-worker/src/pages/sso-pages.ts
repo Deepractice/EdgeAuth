@@ -10,10 +10,10 @@
 import { Hono } from 'hono';
 import type { Env } from '../types.js';
 import { render, loginTemplate, registerTemplate, errorTemplate } from '../views/index.js';
-import { validateSSORedirectUri } from 'edge-auth-domain';
-import { verifyToken as verifyJWT } from 'edge-auth-core';
-import { D1SSOSessionRepository } from 'edge-auth-core';
-import { SSOService, type SSOTokenPayload } from 'edge-auth-domain';
+import { validateSSORedirectUri } from 'edgeauth/domain';
+import { verifyToken as verifyJWT } from 'edgeauth/core';
+import { D1SSOSessionRepository } from 'edgeauth/core';
+import { SSOService, type SSOTokenPayload } from 'edgeauth/domain';
 
 const app = new Hono<{ Bindings: Env }>();
 

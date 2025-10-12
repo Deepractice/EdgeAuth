@@ -15,8 +15,7 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
-    "edge-auth-core": "workspace:*",
-    "edge-auth-domain": "workspace:*",
+    "edgeauth": "workspace:*",
     "hono": "^4.7.10"
   },
   "devDependencies": {

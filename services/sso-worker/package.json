@@ -10,8 +10,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "edge-auth-core": "workspace:*",
-    "edge-auth-domain": "workspace:*",
+    "edgeauth": "workspace:*",
     "hono": "^4.6.14"
   },
   "devDependencies": {

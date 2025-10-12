@@ -5,8 +5,8 @@
  */
 
 import { Hono } from 'hono';
-import { UserService } from 'edge-auth-domain';
-import { D1UserRepository, hashPassword, verifyToken } from 'edge-auth-core';
+import { UserService } from 'edgeauth/domain';
+import { D1UserRepository, hashPassword, verifyToken } from 'edgeauth/core';
 import { AppError, errors } from '@deepracticex/error-handling';
 import { createLogger } from '@deepracticex/logger';
 import type { Env } from '../types.js';

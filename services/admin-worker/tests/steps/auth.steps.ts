@@ -1,7 +1,7 @@
 import { Given, When, Then, Before, setWorldConstructor } from '@deepracticex/vitest-cucumber';
 import { expect } from 'vitest';
-import { UserService } from 'edge-auth-domain';
-import { hashPassword, generateToken, verifyToken } from 'edge-auth-core';
+import { UserService } from 'edgeauth/domain';
+import { hashPassword, generateToken, verifyToken } from 'edgeauth/core';
 import { AppError } from '@deepracticex/error-handling';
 
 // Mock repository for testing
@@ -209,7 +209,7 @@ When(
       const userWithPassword = await this.userService.authenticate({ account, password });
 
       // Verify password
-      const { verifyPassword } = await import('edge-auth-core');
+      const { verifyPassword } = await import('edgeauth/core');
       const isValid = await verifyPassword(password, userWithPassword.passwordHash);
 
       if (!isValid) {

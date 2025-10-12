@@ -1,0 +1,78 @@
+{
+  "name": "edgeauth",
+  "version": "0.0.1",
+  "description": "EdgeAuth - Open-source authentication service built on Cloudflare's edge infrastructure",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
+    "./core/crypto": {
+      "types": "./dist/core/crypto/index.d.ts",
+      "import": "./dist/core/crypto/index.js"
+    },
+    "./core/jwt": {
+      "types": "./dist/core/jwt/index.d.ts",
+      "import": "./dist/core/jwt/index.js"
+    },
+    "./core/persistence": {
+      "types": "./dist/core/persistence/index.d.ts",
+      "import": "./dist/core/persistence/index.js"
+    },
+    "./core/mail": {
+      "types": "./dist/core/mail/index.d.ts",
+      "import": "./dist/core/mail/index.js"
+    },
+    "./domain": {
+      "types": "./dist/domain/index.d.ts",
+      "import": "./dist/domain/index.js"
+    },
+    "./domain/user": {
+      "types": "./dist/domain/user/index.d.ts",
+      "import": "./dist/domain/user/index.js"
+    },
+    "./domain/oauth": {
+      "types": "./dist/domain/oauth/index.d.ts",
+      "import": "./dist/domain/oauth/index.js"
+    },
+    "./domain/sso": {
+      "types": "./dist/domain/sso/index.d.ts",
+      "import": "./dist/domain/sso/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rimraf dist",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:dev": "vitest",
+    "test:ci": "vitest run --coverage --passWithNoTests"
+  },
+  "keywords": [
+    "edgeauth",
+    "authentication",
+    "cloudflare-workers",
+    "jwt",
+    "oauth",
+    "sso"
+  ],
+  "author": "Deepractice",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251011.0",
+    "@deepracticex/config-preset": "^0.1.0",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.0.0"
+  }
+}

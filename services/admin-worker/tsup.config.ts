@@ -10,12 +10,12 @@ export default defineConfig({
   minify: false,
   sourcemap: true,
   external: [],
-  noExternal: ['edge-auth-domain', 'edge-auth-core', 'hono'],
+  noExternal: ['edgeauth/domain', 'edgeauth/core', 'hono'],
   clean: true,
   esbuildOptions(options) {
     options.alias = {
-      'edge-auth-domain': resolve(__dirname, '../../src/domain/index.ts'),
-      'edge-auth-core': resolve(__dirname, '../../src/core/index.ts'),
+      'edgeauth/domain': resolve(__dirname, '../../src/domain/index.ts'),
+      'edgeauth/core': resolve(__dirname, '../../src/core/index.ts'),
     };
   },
 });

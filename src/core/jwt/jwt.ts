@@ -90,7 +90,7 @@ export async function verifyToken(token: string, secret: string): Promise<JWTPay
   const key = await createKey(secret);
   const signature = base64UrlDecode(signatureEncoded!);
 
-  const isValid = await crypto.subtle.verify('HMAC', key, signature, encoder.encode(data));
+  const isValid = await crypto.subtle.verify('HMAC', key, signature.buffer as ArrayBuffer, encoder.encode(data));
 
   if (!isValid) {
     throw errors.unauthorized('Invalid token signature');

@@ -12,8 +12,8 @@ import {
   type SSOTokenPayload,
   validateSSORedirectUri,
   validateSSOToken,
-} from 'edge-auth-domain';
-import { D1UserRepository, D1SSOSessionRepository, hashPassword, verifyPassword, generateToken, verifyToken as verifyJWT } from 'edge-auth-core';
+} from 'edgeauth/domain';
+import { D1UserRepository, D1SSOSessionRepository, hashPassword, verifyPassword, generateToken, verifyToken as verifyJWT } from 'edgeauth/core';
 
 const app = new Hono<{ Bindings: Env }>();
 

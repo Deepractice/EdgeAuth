@@ -9,8 +9,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "edge-auth-domain": resolve(__dirname, "../../src/domain/index.ts"),
-      "edge-auth-core": resolve(__dirname, "../../src/core/index.ts"),
+      "edgeauth/domain": resolve(__dirname, "../../src/domain/index.ts"),
+      "edgeauth/core": resolve(__dirname, "../../src/core/index.ts"),
     },
   },
 });

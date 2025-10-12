@@ -4,13 +4,13 @@
 
 import { Hono } from 'hono';
 import type { Env } from '../types';
-import { OAuthService } from 'edge-auth-domain';
+import { OAuthService } from 'edgeauth/domain';
 import {
   D1OAuthClientRepository,
   D1AuthorizationCodeRepository,
   D1TokenRepository,
-} from 'edge-auth-core';
-import { generateToken } from 'edge-auth-core';
+} from 'edgeauth/core';
+import { generateToken } from 'edgeauth/core';
 
 const clientRoutes = new Hono<{ Bindings: Env }>();
 
