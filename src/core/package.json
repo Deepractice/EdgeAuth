@@ -1,0 +1,17 @@
+{
+  "name": "EdgeAuth-core",
+  "version": "0.0.1",
+  "description": "EdgeAuth core - Technical implementations",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "keywords": [
+    "EdgeAuth",
+    "core"
+  ],
+  "author": "Deepractice",
+  "license": "MIT"
+}

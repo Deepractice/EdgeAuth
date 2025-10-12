@@ -1,0 +1,83 @@
+{
+  "name": "EdgeAuth",
+  "version": "0.0.0",
+  "description": "Open-source authentication service built on Cloudflare's edge infrastructure - simple, serverless, and globally distributed",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "turbo build",
+    "test": "turbo test",
+    "test:e2e": "turbo test",
+    "test:dev": "turbo test:dev",
+    "test:ci": "turbo test:ci",
+    "lint": "turbo lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "clean": "turbo clean && rm -rf node_modules",
+    "typecheck": "turbo typecheck",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm build && changeset publish",
+    "prepare": "lefthook install"
+  },
+  "keywords": [
+    "authentication",
+    "edge-computing",
+    "cloudflare-workers",
+    "jwt",
+    "serverless",
+    "auth",
+    "typescript",
+    "monorepo",
+    "deepractice"
+  ],
+  "author": "Deepractice",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Deepractice/EdgeAuth"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@10.15.1",
+  "devDependencies": {
+    "@changesets/cli": "^2.29.7",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@cucumber/cucumber": "^11.1.0",
+    "@cucumber/pretty-formatter": "^1.0.1",
+    "@deepracticex/config-preset": "^0.1.0",
+    "@faker-js/faker": "^9.4.0",
+    "@types/chai": "^5.0.1",
+    "@types/express": "^5.0.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^22.10.6",
+    "@types/prompts": "^2.4.9",
+    "chai": "^5.1.2",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
+    "execa": "^9.5.2",
+    "fs-extra": "^11.2.0",
+    "hono": "^4.7.10",
+    "lefthook": "^1.13.6",
+    "lodash-es": "^4.17.21",
+    "nanoid": "^5.0.9",
+    "prettier": "^3.6.2",
+    "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.0",
+    "tsx": "^4.20.6",
+    "turbo": "^2.5.8",
+    "type-fest": "^4.30.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.0.0",
+    "zod": "^3.24.1"
+  },
+  "dependencies": {
+    "yaml": "^2.8.1"
+  }
+}

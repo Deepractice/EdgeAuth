@@ -1,0 +1,21 @@
+packages:
+  # Product core - NodeSpec business logic
+  - "src/core"
+  - "src/domain"
+  - "src/mirror"
+  # Infrastructure layer - Technical capabilities
+  - "packages/*"
+  # Infrastructure layer - Configuration standards
+  - "configs/*"
+  # Presentation layer - User interfaces
+  - "apps/*"
+  # Development tools
+  - "tools/*"
+  # Exclusions
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/dist/**"
+  - "!**/node_modules/**"
+# All tooling dependencies are managed in root package.json
+# Sub-packages automatically access these via dependency hoisting
+# Sub-packages only declare workspace config packages (e.g., @deepracticex/tsup-config)

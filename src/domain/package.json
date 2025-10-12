@@ -1,0 +1,17 @@
+{
+  "name": "EdgeAuth-domain",
+  "version": "0.0.1",
+  "description": "EdgeAuth domain - Business logic (reserved for future use)",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "keywords": [
+    "EdgeAuth",
+    "domain"
+  ],
+  "author": "Deepractice",
+  "license": "MIT"
+}
