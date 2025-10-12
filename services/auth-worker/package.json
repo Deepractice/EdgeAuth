@@ -1,0 +1,29 @@
+{
+  "name": "auth-worker",
+  "version": "0.0.1",
+  "description": "EdgeAuth Cloudflare Worker service",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "EdgeAuth-domain": "workspace:*",
+    "EdgeAuth-core": "workspace:*",
+    "hono": "^4.7.10"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241218.0",
+    "wrangler": "^3.94.0"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "authentication",
+    "edgeauth"
+  ],
+  "author": "Deepractice",
+  "license": "Apache-2.0"
+}
