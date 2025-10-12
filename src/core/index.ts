@@ -1,8 +1,9 @@
 /**
  * EdgeAuth Core
  *
- * Authentication core logic (password hashing, JWT)
+ * Technical implementations (crypto, JWT, persistence)
  */
 
 export * from './crypto/index.js';
 export * from './jwt/index.js';
+export * from './persistence/index.js';
