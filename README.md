@@ -21,7 +21,9 @@
   <p>
     <a href="README.md"><strong>English</strong></a> |
     <a href="https://github.com/Deepractice/EdgeAuth/issues">Issues</a> |
-    <a href="docs/ARCHITECTURE.md">Architecture</a>
+    <a href="docs/ARCHITECTURE.md">Architecture</a> |
+    <a href="docs/DATABASE_MANAGEMENT.md">Schema</a> |
+    <a href="docs/api/README.md">API</a>
   </p>
 </div>
 
