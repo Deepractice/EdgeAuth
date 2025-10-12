@@ -1,0 +1,27 @@
+name = "edgeauth-sso"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# D1 Database bindings
+# SSO Worker accesses users (read) and sessions (read/write)
+[[d1_databases]]
+binding = "DB"
+database_name = "edgeauth-users"
+database_id = "placeholder" # Same as admin-worker users DB
+
+[[d1_databases]]
+binding = "SSO_DB"
+database_name = "edgeauth-sso"
+database_id = "placeholder" # SSO sessions DB
+
+# Environment Variables
+[vars]
+JWT_SECRET = "dev-secret-key-change-in-production-use-wrangler-secret"
+
+[env.production]
+name = "edgeauth-sso"
+# Use: wrangler secret put JWT_SECRET --env production
+
+[env.staging]
+name = "edgeauth-sso-staging"
+# Use: wrangler secret put JWT_SECRET --env staging

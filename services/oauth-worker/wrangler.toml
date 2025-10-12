@@ -9,7 +9,7 @@ OAUTH_ISSUER = "https://oauth.edgeauth.dev"
 # D1 Database binding
 [[d1_databases]]
 binding = "DB"
-database_name = "edgeauth"
+database_name = "edgeauth-oauth"
 database_id = "TO_BE_CONFIGURED"
 
 # Development

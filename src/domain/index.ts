@@ -6,3 +6,4 @@
 
 export * from './user/index.js';
 export * from './oauth/index.js';
+export * from './sso/index.js';
