@@ -3,6 +3,8 @@ packages:
   - "src"
   # Cloudflare Workers services
   - "services/*"
+  # Frontend applications
+  - "apps/*"
   # Exclusions
   - "!**/test/**"
   - "!**/tests/**"
