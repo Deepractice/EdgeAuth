@@ -1,0 +1,21 @@
+name = "edgeauth-oauth"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# OAuth 2.0 Provider specific config
+[vars]
+OAUTH_ISSUER = "https://oauth.edgeauth.dev"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "edgeauth"
+database_id = "TO_BE_CONFIGURED"
+
+# Development
+[env.development]
+vars = { OAUTH_ISSUER = "http://localhost:8788" }
+
+# Production
+[env.production]
+vars = { OAUTH_ISSUER = "https://oauth.edgeauth.com" }

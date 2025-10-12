@@ -1,16 +1,9 @@
 packages:
-  # Product core - NodeSpec business logic
+  # Domain and core logic
   - "src/core"
   - "src/domain"
-  - "src/mirror"
-  # Infrastructure layer - Technical capabilities
-  - "packages/*"
-  # Infrastructure layer - Configuration standards
-  - "configs/*"
-  # Presentation layer - User interfaces
-  - "apps/*"
-  # Development tools
-  - "tools/*"
+  # Cloudflare Workers services
+  - "services/*"
   # Exclusions
   - "!**/test/**"
   - "!**/tests/**"

@@ -1,7 +1,7 @@
 {
-  "name": "auth-worker",
+  "name": "oauth-worker",
   "version": "0.0.1",
-  "description": "EdgeAuth Cloudflare Worker service",
+  "description": "EdgeAuth OAuth 2.0 Provider - Cloudflare Worker service",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
@@ -31,6 +31,7 @@
     "wrangler": "^3.94.0"
   },
   "keywords": [
+    "oauth2",
     "cloudflare-workers",
     "authentication",
     "edgeauth"

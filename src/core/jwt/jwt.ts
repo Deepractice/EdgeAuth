@@ -88,7 +88,7 @@ export async function verifyToken(token: string, secret: string): Promise<JWTPay
   const data = `${headerEncoded}.${payloadEncoded}`;
   const encoder = new TextEncoder();
   const key = await createKey(secret);
-  const signature = base64UrlDecode(signatureEncoded);
+  const signature = base64UrlDecode(signatureEncoded!);
 
   const isValid = await crypto.subtle.verify('HMAC', key, signature, encoder.encode(data));
 
@@ -97,7 +97,7 @@ export async function verifyToken(token: string, secret: string): Promise<JWTPay
   }
 
   // Decode payload
-  const payloadJson = new TextDecoder().decode(base64UrlDecode(payloadEncoded));
+  const payloadJson = new TextDecoder().decode(base64UrlDecode(payloadEncoded!));
   const payload = JSON.parse(payloadJson) as JWTPayload;
 
   // Check expiration
@@ -118,6 +118,6 @@ export function decodeToken(token: string): JWTPayload {
     throw errors.unauthorized('Invalid token format');
   }
 
-  const payloadJson = new TextDecoder().decode(base64UrlDecode(parts[1]));
+  const payloadJson = new TextDecoder().decode(base64UrlDecode(parts[1]!));
   return JSON.parse(payloadJson) as JWTPayload;
 }

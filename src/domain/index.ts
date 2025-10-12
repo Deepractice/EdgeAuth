@@ -5,3 +5,4 @@
  */
 
 export * from './user/index.js';
+export * from './oauth/index.js';

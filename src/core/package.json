@@ -4,12 +4,34 @@
   "description": "EdgeAuth core - Authentication logic (password hashing, JWT)",
   "private": true,
   "type": "module",
-  "main": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./index.ts",
-    "./crypto": "./crypto/index.ts",
-    "./jwt": "./jwt/index.ts",
-    "./persistence": "./persistence/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./crypto": {
+      "types": "./dist/crypto/index.d.ts",
+      "import": "./dist/crypto/index.js"
+    },
+    "./jwt": {
+      "types": "./dist/jwt/index.d.ts",
+      "import": "./dist/jwt/index.js"
+    },
+    "./persistence": {
+      "types": "./dist/persistence/index.d.ts",
+      "import": "./dist/persistence/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rimraf dist",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "test:ci": "vitest run --coverage"
   },
   "keywords": [
     "EdgeAuth",
@@ -22,5 +44,12 @@
   "license": "Apache-2.0",
   "dependencies": {
     "edge-auth-domain": "workspace:*"
+  },
+  "devDependencies": {
+    "@deepracticex/config-preset": "^0.1.0",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.0.0"
   }
 }
