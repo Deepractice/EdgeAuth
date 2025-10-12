@@ -5,7 +5,7 @@
  */
 
 import { errors, AppError } from '@deepracticex/error-handling';
-import { createLogger } from '@deepracticex/logger';
+import { createLogger } from '../infrastructure/logger/index.js';
 import { UserService } from '../domain/user/service.js';
 import { D1UserRepository } from '../infrastructure/persistence/index.js';
 import { hashPassword } from '../infrastructure/crypto/index.js';
@@ -16,6 +16,7 @@ const logger = createLogger({
   level: 'info',
   console: true,
   colors: true,
+  environment: 'cloudflare-workers',
 });
 
 /**

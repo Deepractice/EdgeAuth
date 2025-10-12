@@ -6,7 +6,7 @@
  */
 
 import { errors, AppError } from '@deepracticex/error-handling';
-import { createLogger } from '@deepracticex/logger';
+import { createLogger } from '../infrastructure/logger/index.js';
 import { SSOService as DomainSSOService } from '../domain/sso/service.js';
 import { D1SSOSessionRepository } from '../infrastructure/persistence/index.js';
 import type { SSOSession, SSOTokenPayload, SSOLoginRequest, SSOLoginResult, SSOTokenVerification } from '../domain/sso/types.js';
@@ -17,6 +17,7 @@ const logger = createLogger({
   level: 'info',
   console: true,
   colors: true,
+  environment: 'cloudflare-workers',
 });
 
 /**

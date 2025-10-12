@@ -57,7 +57,7 @@
   "dependencies": {
     "@cloudflare/workers-types": "^4.20251011.0",
     "@deepracticex/error-handling": "^0.2.0",
-    "@deepracticex/logger": "^0.3.2",
+    "@deepracticex/logger": "^1.0.0",
     "hono": "^4.9.11",
     "tsup": "^8.5.0",
     "wrangler": "^4.42.2"

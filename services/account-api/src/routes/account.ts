@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { AccountService } from 'edgeauth';
 import { AppError, errors } from '@deepracticex/error-handling';
-import { createLogger } from '@deepracticex/logger';
+import { createLogger } from 'edgeauth';
 import type { Env } from '../types.js';
 
 const logger = createLogger({

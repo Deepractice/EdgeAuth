@@ -15,8 +15,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0(hono@4.9.11)
       '@deepracticex/logger':
-        specifier: ^0.3.2
-        version: 0.3.2
+        specifier: ^1.0.0
+        version: 1.0.0
       hono:
         specifier: ^4.9.11
         version: 4.9.11
@@ -457,8 +457,8 @@ packages:
   '@deepracticex/logger@0.2.0':
     resolution: {integrity: sha512-iLqFF2L1m3Ztzpo1P5s0036nWOzlSqh3sQzpIUFvric4WhlDdfOMvzsbBGghpiwY40vDVGFRA/C9TytDWGjY5w==}
 
-  '@deepracticex/logger@0.3.2':
-    resolution: {integrity: sha512-KgQpYgJFljTR7/yTxjpUPTq4572/AOSqXiCEMs+4ZzguOOgh6x/8WGypSPWTVDZCGPAvLyG7L8Ydl5W8DElkdA==}
+  '@deepracticex/logger@1.0.0':
+    resolution: {integrity: sha512-VIh6p7qLV5+BRJsBdGqMRgcu6EiMRkn+fz8V7/nY6fHM98pgUn5fjCATCPHDfCBxLZsmbikVuZHYWewfVzEN2w==}
 
   '@deepracticex/vitest-cucumber-plugin@1.1.1':
     resolution: {integrity: sha512-IaSVBtyFY2/T/yjZsXn/+aBWgJFkD8o/BqA+athXBa/hH0zY93PUmQjYWOnZi/qH48IDm/3wd0yJNc0zsiv52g==}
@@ -3064,7 +3064,7 @@ snapshots:
       pino: 9.13.1
       pino-pretty: 13.1.2
 
-  '@deepracticex/logger@0.3.2':
+  '@deepracticex/logger@1.0.0':
     dependencies:
       pino: 9.13.1
       pino-pretty: 13.1.2

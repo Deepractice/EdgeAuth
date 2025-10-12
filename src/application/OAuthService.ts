@@ -5,7 +5,7 @@
  */
 
 import { errors, AppError } from '@deepracticex/error-handling';
-import { createLogger } from '@deepracticex/logger';
+import { createLogger } from '../infrastructure/logger/index.js';
 import { OAuthService as DomainOAuthService } from '../domain/oauth/service.js';
 import {
   D1OAuthClientRepository,
@@ -27,6 +27,7 @@ const logger = createLogger({
   level: 'info',
   console: true,
   colors: true,
+  environment: 'cloudflare-workers',
 });
 
 /**
