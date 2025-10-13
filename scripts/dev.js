@@ -13,10 +13,11 @@
  *   node scripts/dev.js --no-frontend      # Start all backend, skip frontend
  */
 
-import { spawn, execSync } from "child_process";
+import { spawn } from "child_process";
 import { existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { execa } from "execa";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -147,25 +148,29 @@ ${colors.yellow}Service Ports:${colors.reset}
 }
 
 // Check if local DB needs setup
-function checkDatabase() {
+async function checkDatabase() {
   const dbPath = join(ROOT_DIR, ".wrangler/state/v3/d1");
   if (!existsSync(dbPath)) {
     log("\n⚠️  Local database not found.", colors.yellow);
     log("Creating and initializing database...\n", colors.blue);
-    return initializeDatabase();
+    return await initializeDatabase();
   }
   return true;
 }
 
 // Initialize database with migrations
-function initializeDatabase() {
+async function initializeDatabase() {
   try {
     log("Running database migrations...", colors.blue);
     // Run from project root, same as production deployment
-    execSync("wrangler d1 migrations apply edgeauth-db --local", {
-      cwd: ROOT_DIR,
-      stdio: "inherit",
-    });
+    await execa(
+      "wrangler",
+      ["d1", "migrations", "apply", "edgeauth-db", "--local"],
+      {
+        cwd: ROOT_DIR,
+        stdio: "inherit",
+      },
+    );
 
     log("\n✓ Database initialized successfully!\n", colors.green);
     return true;
@@ -284,10 +289,8 @@ async function main() {
   const options = parseArgs();
 
   // Check database
-  if (
-    !checkDatabase() &&
-    (options.services === null || options.services.length > 0)
-  ) {
+  const dbReady = await checkDatabase();
+  if (!dbReady && (options.services === null || options.services.length > 0)) {
     process.exit(1);
   }
 
