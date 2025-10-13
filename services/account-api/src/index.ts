@@ -35,7 +35,9 @@ app.get("/health", (c) => {
 
 // Mount account routes
 app.route("/account", account);
-app.route("/account/auth", auth);
+// Mount auth routes directly under /account (not /account/auth)
+// This makes URLs cleaner: /account/login instead of /account/auth/login
+app.route("/account", auth);
 
 // 404 handler
 app.notFound((c) => {
