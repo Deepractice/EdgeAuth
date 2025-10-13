@@ -18,7 +18,8 @@ zone_name = "deepractice.ai"
 # Environment variables
 [vars]
 BASE_URL = "https://account.deepractice.ai"
-EMAIL_FROM = "noreply@deepractice.ai"
+# Temporarily commented out - using Plunk's default verified email
+# EMAIL_FROM = "noreply@deepractice.ai"
 EMAIL_FROM_NAME = "EdgeAuth"
 
 # Secrets (use: wrangler secret put JWT_SECRET)

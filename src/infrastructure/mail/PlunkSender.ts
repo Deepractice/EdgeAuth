@@ -1,4 +1,4 @@
-import type { EmailMessage, MailSender } from './MailSender.js';
+import type { EmailMessage, MailSender } from "./MailSender.js";
 
 /**
  * Plunk email sender implementation
@@ -10,18 +10,18 @@ import type { EmailMessage, MailSender } from './MailSender.js';
  */
 export class PlunkSender implements MailSender {
   private readonly apiKey: string;
-  private readonly apiUrl = 'https://api.useplunk.com/v1/send';
-  private readonly fromEmail: string;
+  private readonly apiUrl = "https://api.useplunk.com/v1/send";
+  private readonly fromEmail?: string;
   private readonly fromName?: string;
 
   /**
    * Create a new Plunk sender
    *
    * @param apiKey - Plunk API key (get from https://useplunk.com)
-   * @param fromEmail - Default sender email address
+   * @param fromEmail - Optional sender email address. If not provided, uses Plunk's default verified email
    * @param fromName - Optional sender name
    */
-  constructor(apiKey: string, fromEmail: string, fromName?: string) {
+  constructor(apiKey: string, fromEmail?: string, fromName?: string) {
     this.apiKey = apiKey;
     this.fromEmail = fromEmail;
     this.fromName = fromName;
@@ -32,15 +32,15 @@ export class PlunkSender implements MailSender {
       to: message.to,
       subject: message.subject,
       body: message.html,
-      from: this.fromEmail,
+      ...(this.fromEmail && { from: this.fromEmail }),
       ...(this.fromName && { name: this.fromName }),
     };
 
     const response = await fetch(this.apiUrl, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
       },
       body: JSON.stringify(payload),
     });
@@ -48,14 +48,14 @@ export class PlunkSender implements MailSender {
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(
-        `Failed to send email via Plunk: ${response.status} - ${errorText}`
+        `Failed to send email via Plunk: ${response.status} - ${errorText}`,
       );
     }
 
     const result = (await response.json()) as { success: boolean };
 
     if (!result.success) {
-      throw new Error('Plunk API returned success: false');
+      throw new Error("Plunk API returned success: false");
     }
   }
 }

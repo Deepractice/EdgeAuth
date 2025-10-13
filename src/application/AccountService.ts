@@ -46,8 +46,8 @@ export interface AccountServiceConfig {
   db: D1Database;
   jwtSecret: string;
   plunkApiKey: string;
-  emailFrom: string;
-  emailFromName: string;
+  emailFrom?: string; // Optional: uses Plunk's default verified email if not provided
+  emailFromName?: string; // Optional: sender name
   baseUrl: string;
   mailSender?: MailSender; // Optional: for testing
   verificationTokenExpiresIn?: number; // Optional: token expiration in seconds (default: 24 hours)
