@@ -1,10 +1,10 @@
 // Types
-export type { MailSender, EmailMessage } from './MailSender';
+export type { MailSender, EmailMessage } from "./MailSender";
 
 // Implementations
-export { MailChannelSender } from './MailChannelSender';
-export { CloudflareMailSender } from './CloudflareMailSender';
-export { PlunkSender } from './PlunkSender';
+export { MailChannelSender } from "./MailChannelSender";
+export { CloudflareMailSender } from "./CloudflareMailSender";
+export { PlunkSender } from "./PlunkSender";
 
 // Templates
-export * from './templates.js';
+export * from "./templates.js";

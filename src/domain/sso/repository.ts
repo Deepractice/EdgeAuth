@@ -2,7 +2,7 @@
  * SSO Session Repository Interface
  */
 
-import type { SSOSession } from './types.js';
+import type { SSOSession } from "./types.js";
 
 export interface SSOSessionRepository {
   /**

@@ -1,33 +1,33 @@
-import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import { useSearchParams } from 'react-router-dom'
-import { login } from '~/lib/api'
-import { useAuthStore } from '~/lib/store'
-import LoginForm from './LoginForm'
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
+import { login } from "~/lib/api";
+import { useAuthStore } from "~/lib/store";
+import LoginForm from "./LoginForm";
 
 export default function LoginPage() {
-  const [searchParams] = useSearchParams()
-  const setAuth = useAuthStore((state) => state.setAuth)
-  const [error, setError] = useState<string | null>(null)
+  const [searchParams] = useSearchParams();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const [error, setError] = useState<string | null>(null);
 
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      setAuth(data.token, data.user)
+      setAuth(data.token, data.user);
 
       // Redirect to callback URL or default
-      const redirectUrl = searchParams.get('redirect_uri') || '/success'
-      window.location.href = redirectUrl
+      const redirectUrl = searchParams.get("redirect_uri") || "/success";
+      window.location.href = redirectUrl;
     },
     onError: (error: Error) => {
-      setError(error.message)
+      setError(error.message);
     },
-  })
+  });
 
   const handleSubmit = (account: string, password: string) => {
-    setError(null)
-    loginMutation.mutate({ account, password })
-  }
+    setError(null);
+    loginMutation.mutate({ account, password });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100">
@@ -83,8 +83,11 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>
-              Don't have an account?{' '}
-              <a href="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+              Don't have an account?{" "}
+              <a
+                href="/register"
+                className="text-primary-600 hover:text-primary-700 font-medium"
+              >
                 Sign up
               </a>
             </p>
@@ -94,7 +97,7 @@ export default function LoginPage() {
         {/* Deepractice Footer */}
         <div className="mt-8 text-center text-sm text-gray-600">
           <p>
-            Powered by{' '}
+            Powered by{" "}
             <a
               href="https://deepractice.ai"
               target="_blank"
@@ -107,5 +110,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

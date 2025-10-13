@@ -4,7 +4,10 @@
  * Cloudflare D1 (SQLite) implementation of AuthorizationCodeRepository
  */
 
-import type { AuthorizationCode, AuthorizationCodeRepository } from 'edge-auth-domain';
+import type {
+  AuthorizationCode,
+  AuthorizationCodeRepository,
+} from "~/domain/index.js";
 
 /**
  * D1 Database interface (from Cloudflare Workers)
@@ -48,7 +51,9 @@ interface AuthorizationCodeRow {
 /**
  * D1 Authorization Code Repository
  */
-export class D1AuthorizationCodeRepository implements AuthorizationCodeRepository {
+export class D1AuthorizationCodeRepository
+  implements AuthorizationCodeRepository
+{
   constructor(private readonly db: D1Database) {}
 
   /**
@@ -62,7 +67,8 @@ export class D1AuthorizationCodeRepository implements AuthorizationCodeRepositor
       redirectUri: row.redirect_uri,
       scopes: JSON.parse(row.scopes) as string[],
       codeChallenge: row.code_challenge || undefined,
-      codeChallengeMethod: (row.code_challenge_method as 'S256' | 'plain') || undefined,
+      codeChallengeMethod:
+        (row.code_challenge_method as "S256" | "plain") || undefined,
       expiresAt: row.expires_at,
       createdAt: row.created_at,
       used: row.used === 1,

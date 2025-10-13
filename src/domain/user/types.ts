@@ -42,4 +42,4 @@ export interface LoginData {
 /**
  * Public user data (safe to expose via API)
  */
-export type PublicUser = Omit<User, 'updatedAt'>;
+export type PublicUser = Omit<User, "updatedAt">;

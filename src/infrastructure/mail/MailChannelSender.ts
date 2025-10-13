@@ -1,4 +1,4 @@
-import type { MailSender, EmailMessage } from './MailSender';
+import type { MailSender, EmailMessage } from "./MailSender";
 
 /**
  * MailChannels adapter for sending emails through MailChannels API
@@ -6,7 +6,7 @@ import type { MailSender, EmailMessage } from './MailSender';
  * @see https://support.mailchannels.com/hc/en-us/articles/4565898358413
  */
 export class MailChannelSender implements MailSender {
-  private readonly apiUrl = 'https://api.mailchannels.net/tx/v1/send';
+  private readonly apiUrl = "https://api.mailchannels.net/tx/v1/send";
   private readonly fromEmail: string;
   private readonly fromName?: string;
 
@@ -34,16 +34,16 @@ export class MailChannelSender implements MailSender {
       subject: message.subject,
       content: [
         {
-          type: 'text/html',
+          type: "text/html",
           value: message.html,
         },
       ],
     };
 
     const response = await fetch(this.apiUrl, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'content-type': 'application/json',
+        "content-type": "application/json",
       },
       body: JSON.stringify(payload),
     });
@@ -51,7 +51,7 @@ export class MailChannelSender implements MailSender {
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(
-        `Failed to send email via MailChannels: ${response.status} - ${errorText}`
+        `Failed to send email via MailChannels: ${response.status} - ${errorText}`,
       );
     }
   }

@@ -5,7 +5,7 @@
  * Implementation details are in the infrastructure layer.
  */
 
-import type { User, UserWithPassword } from './types.js';
+import type { User, UserWithPassword } from "./types.js";
 
 /**
  * User repository interface
@@ -39,7 +39,9 @@ export interface UserRepository {
   /**
    * Find user with password hash by username
    */
-  findByUsernameWithPassword(username: string): Promise<UserWithPassword | null>;
+  findByUsernameWithPassword(
+    username: string,
+  ): Promise<UserWithPassword | null>;
 
   /**
    * Check if email exists

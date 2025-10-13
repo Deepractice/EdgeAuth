@@ -57,7 +57,9 @@ export default function VerifyEmailPage() {
             <h1 className="text-2xl font-bold text-gray-800 mb-2">
               Verifying...
             </h1>
-            <p className="text-gray-600">Please wait while we verify your email address.</p>
+            <p className="text-gray-600">
+              Please wait while we verify your email address.
+            </p>
           </>
         )}
 

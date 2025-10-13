@@ -25,7 +25,7 @@ export interface RefreshToken {
 
 export interface TokenResponse {
   access_token: string;
-  token_type: 'Bearer';
+  token_type: "Bearer";
   expires_in: number; // Seconds until expiration
   refresh_token?: string;
   scope?: string; // Space-separated scopes
@@ -83,9 +83,9 @@ export function formatTokenResponse(
 
   return {
     access_token: accessToken.token,
-    token_type: 'Bearer',
+    token_type: "Bearer",
     expires_in: Math.max(0, expiresIn),
     refresh_token: refreshToken?.token,
-    scope: accessToken.scopes.join(' '),
+    scope: accessToken.scopes.join(" "),
   };
 }

@@ -30,9 +30,11 @@
 ## 🚀 Why EdgeAuth?
 
 ### ⚡ **Edge-First Architecture**
+
 Built on Cloudflare Workers, your authentication runs in 300+ cities worldwide. Users get sub-10ms response times, no matter where they are.
 
 ### 🎯 **Simple by Design**
+
 No complex setup. No infrastructure management. Just deploy and use.
 
 ```typescript
@@ -43,12 +45,15 @@ const session = await sso.createSession(user);
 ```
 
 ### 🏗️ **Clean Architecture**
+
 Built with Domain-Driven Design and clean architecture principles:
+
 - **Domain Layer**: Pure business logic
 - **Core Layer**: Technical implementation (crypto, JWT, persistence)
 - **Services Layer**: Edge-native workers
 
 ### 🔐 **Security First**
+
 - PBKDF2 password hashing with Web Crypto API
 - HS256 JWT tokens
 - Secure session management
@@ -78,6 +83,7 @@ pnpm install
 3. Deployment happens automatically!
 
 **Required GitHub Secrets:**
+
 ```bash
 CLOUDFLARE_API_TOKEN  # Cloudflare API token with D1 and Workers permissions
 GH_PAT                # GitHub Personal Access Token with repo and workflow permissions
@@ -106,6 +112,7 @@ cd services/account-api && wrangler dev
 ## 🎨 Features
 
 ### ✅ **Current (v0.1)**
+
 - ✨ Email/Username + Password Authentication
 - 🔑 JWT Token Generation & Validation
 - 🔐 Secure Password Hashing (PBKDF2)
@@ -115,11 +122,13 @@ cd services/account-api && wrangler dev
 - 📚 Full TypeScript Support
 
 ### 🚧 **In Progress**
+
 - 🔄 SSO Session Management
 - 👨‍💼 Admin Management API
 - 🔌 OAuth 2.0 Provider (complete)
 
 ### 📋 **Planned**
+
 - 📧 Email Verification
 - 🔄 Password Reset Flow
 - 🎨 Admin Dashboard (UI)
@@ -152,12 +161,14 @@ EdgeAuth uses a **single database architecture** with Cloudflare's native migrat
 ```
 
 ### 🗄️ **Single Database**
+
 - `edgeauth-db` - All tables in one database
   - `users` - User accounts
   - `sso_sessions` - SSO sessions
   - `oauth_clients`, `authorization_codes`, `access_tokens`, `refresh_tokens` - OAuth
 
 ### ✨ **Key Benefits**
+
 - ✅ Cloudflare native migrations (automatic tracking)
 - ✅ Idempotent deployments
 - ✅ Simplified management
@@ -195,6 +206,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -250,16 +262,16 @@ pnpm format:check
 
 ## 📚 Technology Stack
 
-| Category | Technology |
-|----------|-----------|
-| **Runtime** | Cloudflare Workers |
-| **Database** | Cloudflare D1 (SQLite) |
-| **Framework** | Hono |
-| **Language** | TypeScript 5.9+ |
-| **Build** | tsup, Turbo |
-| **Test** | Vitest + BDD (Cucumber) |
-| **Security** | Web Crypto API (PBKDF2), JWT (HS256) |
-| **Monorepo** | pnpm workspaces |
+| Category      | Technology                           |
+| ------------- | ------------------------------------ |
+| **Runtime**   | Cloudflare Workers                   |
+| **Database**  | Cloudflare D1 (SQLite)               |
+| **Framework** | Hono                                 |
+| **Language**  | TypeScript 5.9+                      |
+| **Build**     | tsup, Turbo                          |
+| **Test**      | Vitest + BDD (Cucumber)              |
+| **Security**  | Web Crypto API (PBKDF2), JWT (HS256) |
+| **Monorepo**  | pnpm workspaces                      |
 
 ---
 
@@ -303,7 +315,7 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 
 **Proudly brought to you by [Deepractice](https://github.com/Deepractice)**
 
-*Making AI your professional partner*
+_Making AI your professional partner_
 
 🌐 [Official Site](https://deepractice.ai) | 🔧 [GitHub](https://github.com/Deepractice) | 📚 [Documentation](https://docs.deepractice.ai) | 💬 [Forum](https://x.deepractice.ai) | 🎮 [Discord](https://discord.gg/rdmPr54K)
 
@@ -311,7 +323,7 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 
 <img src="https://brands.deepractice.ai/images/sean-wechat-qrcode.jpg" alt="Sean's WeChat" width="200"/>
 
-*Scan to connect with Sean (Founder & CEO) on WeChat*
+_Scan to connect with Sean (Founder & CEO) on WeChat_
 
 </div>
 

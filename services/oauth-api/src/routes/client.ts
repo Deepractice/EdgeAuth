@@ -2,9 +2,9 @@
  * OAuth Client Management Routes
  */
 
-import { Hono } from 'hono';
-import type { Env } from '../types';
-import { OAuthService } from '@edge-auth/core';
+import { Hono } from "hono";
+import type { Env } from "../types";
+import { OAuthService } from "@edge-auth/core";
 
 const clientRoutes = new Hono<{ Bindings: Env }>();
 
@@ -22,7 +22,7 @@ function createOAuthService(env: Env): OAuthService {
  * Register a new OAuth client
  * POST /clients
  */
-clientRoutes.post('/', async (c) => {
+clientRoutes.post("/", async (c) => {
   try {
     const body = await c.req.json();
     const { name, description, redirectUris, scopes, grantTypes } = body;
@@ -33,7 +33,7 @@ clientRoutes.post('/', async (c) => {
       description,
       redirectUris,
       scopes,
-      grantTypes: grantTypes || ['authorization_code', 'refresh_token'],
+      grantTypes: grantTypes || ["authorization_code", "refresh_token"],
     });
 
     return c.json({
@@ -49,7 +49,7 @@ clientRoutes.post('/', async (c) => {
   } catch (err: any) {
     return c.json(
       {
-        error: 'invalid_request',
+        error: "invalid_request",
         error_description: err.message,
       },
       400,
@@ -61,7 +61,7 @@ clientRoutes.post('/', async (c) => {
  * List all OAuth clients
  * GET /clients
  */
-clientRoutes.get('/', async (c) => {
+clientRoutes.get("/", async (c) => {
   try {
     const oauthService = createOAuthService(c.env);
     const clients = await oauthService.listClients();
@@ -81,7 +81,7 @@ clientRoutes.get('/', async (c) => {
   } catch (err: any) {
     return c.json(
       {
-        error: 'server_error',
+        error: "server_error",
         error_description: err.message,
       },
       500,
@@ -93,17 +93,17 @@ clientRoutes.get('/', async (c) => {
  * Get OAuth client by ID
  * GET /clients/:id
  */
-clientRoutes.get('/:id', async (c) => {
+clientRoutes.get("/:id", async (c) => {
   try {
-    const id = c.req.param('id');
+    const id = c.req.param("id");
     const oauthService = createOAuthService(c.env);
     const client = await oauthService.getClient(id);
 
     if (!client) {
       return c.json(
         {
-          error: 'not_found',
-          error_description: 'Client not found',
+          error: "not_found",
+          error_description: "Client not found",
         },
         404,
       );
@@ -122,7 +122,7 @@ clientRoutes.get('/:id', async (c) => {
   } catch (err: any) {
     return c.json(
       {
-        error: 'server_error',
+        error: "server_error",
         error_description: err.message,
       },
       500,
@@ -134,9 +134,9 @@ clientRoutes.get('/:id', async (c) => {
  * Update OAuth client
  * PUT /clients/:id
  */
-clientRoutes.put('/:id', async (c) => {
+clientRoutes.put("/:id", async (c) => {
   try {
-    const id = c.req.param('id');
+    const id = c.req.param("id");
     const body = await c.req.json();
     const { name, description, redirectUris, scopes } = body;
 
@@ -160,7 +160,7 @@ clientRoutes.put('/:id', async (c) => {
   } catch (err: any) {
     return c.json(
       {
-        error: 'invalid_request',
+        error: "invalid_request",
         error_description: err.message,
       },
       400,
@@ -172,9 +172,9 @@ clientRoutes.put('/:id', async (c) => {
  * Delete OAuth client
  * DELETE /clients/:id
  */
-clientRoutes.delete('/:id', async (c) => {
+clientRoutes.delete("/:id", async (c) => {
   try {
-    const id = c.req.param('id');
+    const id = c.req.param("id");
     const oauthService = createOAuthService(c.env);
     await oauthService.deleteClient(id);
 
@@ -182,7 +182,7 @@ clientRoutes.delete('/:id', async (c) => {
   } catch (err: any) {
     return c.json(
       {
-        error: 'invalid_request',
+        error: "invalid_request",
         error_description: err.message,
       },
       400,

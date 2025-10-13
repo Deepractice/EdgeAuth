@@ -4,30 +4,30 @@
  * Orchestrates OAuth 2.0 flows including client management, authorization, and token operations.
  */
 
-import { errors, AppError } from '@deepracticex/error-handling';
-import { createLogger } from '../infrastructure/logger/index.js';
-import { OAuthService as DomainOAuthService } from '../domain/oauth/service.js';
+import { errors, AppError } from "@deepracticex/error-handling";
+import { createLogger } from "../infrastructure/logger/index.js";
+import { OAuthService as DomainOAuthService } from "../domain/oauth/service.js";
 import {
   D1OAuthClientRepository,
   D1AuthorizationCodeRepository,
-  D1TokenRepository
-} from '../infrastructure/persistence/index.js';
-import { generateToken } from '../infrastructure/jwt/index.js';
+  D1TokenRepository,
+} from "../infrastructure/persistence/index.js";
+import { generateToken } from "../infrastructure/jwt/index.js";
 import type {
   OAuthClient,
   AuthorizationCode,
   AccessToken,
   RefreshToken,
-  CreateAuthorizationCodeRequest
-} from '../domain/oauth/index.js';
-import type { User } from '../domain/user/types.js';
+  CreateAuthorizationCodeRequest,
+} from "../domain/oauth/index.js";
+import type { User } from "../domain/user/types.js";
 
 const logger = createLogger({
-  name: 'oauth-service',
-  level: 'info',
+  name: "oauth-service",
+  level: "info",
   console: true,
   colors: true,
-  environment: 'cloudflare-workers',
+  environment: "cloudflare-workers",
 });
 
 /**
@@ -59,7 +59,10 @@ export class OAuthService {
       {
         jwtSecret: config.jwtSecret,
         tokenGenerator: {
-          generateToken: async (user: User, options: { secret: string; expiresIn: number }) => {
+          generateToken: async (
+            user: User,
+            options: { secret: string; expiresIn: number },
+          ) => {
             return generateToken(user, {
               secret: options.secret,
               expiresIn: options.expiresIn,
@@ -78,19 +81,27 @@ export class OAuthService {
     description?: string;
     redirectUris: string[];
     scopes: string[];
-    grantTypes: Array<'authorization_code' | 'client_credentials' | 'refresh_token'>;
+    grantTypes: Array<
+      "authorization_code" | "client_credentials" | "refresh_token"
+    >;
   }): Promise<OAuthClient> {
     try {
       const client = await this.domainService.registerClient(data);
-      logger.info('OAuth client registered', { clientId: client.id, name: client.name });
+      logger.info("OAuth client registered", {
+        clientId: client.id,
+        name: client.name,
+      });
       return client;
     } catch (error) {
       if (AppError.isAppError(error)) {
-        logger.warn('Client registration failed', { code: error.code, message: error.message });
+        logger.warn("Client registration failed", {
+          code: error.code,
+          message: error.message,
+        });
         throw error;
       }
-      logger.error('Client registration error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Client registration error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -108,14 +119,14 @@ export class OAuthService {
   ): Promise<OAuthClient> {
     try {
       const client = await this.domainService.updateClient(clientId, data);
-      logger.info('OAuth client updated', { clientId });
+      logger.info("OAuth client updated", { clientId });
       return client;
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Client update error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Client update error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -125,13 +136,13 @@ export class OAuthService {
   async deleteClient(clientId: string): Promise<void> {
     try {
       await this.domainService.deleteClient(clientId);
-      logger.info('OAuth client deleted', { clientId });
+      logger.info("OAuth client deleted", { clientId });
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Client deletion error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Client deletion error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -157,15 +168,21 @@ export class OAuthService {
     client: OAuthClient,
   ): Promise<AuthorizationCode> {
     try {
-      const authCode = await this.domainService.createAuthorizationCode(request, client);
-      logger.info('Authorization code created', { clientId: client.id, userId: request.userId });
+      const authCode = await this.domainService.createAuthorizationCode(
+        request,
+        client,
+      );
+      logger.info("Authorization code created", {
+        clientId: client.id,
+        userId: request.userId,
+      });
       return authCode;
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Authorization code creation error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Authorization code creation error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -181,14 +198,16 @@ export class OAuthService {
   }): Promise<{ accessToken: AccessToken; refreshToken: RefreshToken }> {
     try {
       const tokens = await this.domainService.exchangeAuthorizationCode(params);
-      logger.info('Authorization code exchanged', { clientId: params.clientId });
+      logger.info("Authorization code exchanged", {
+        clientId: params.clientId,
+      });
       return tokens;
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Token exchange error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Token exchange error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -202,14 +221,14 @@ export class OAuthService {
   }): Promise<{ accessToken: AccessToken }> {
     try {
       const result = await this.domainService.refreshAccessToken(params);
-      logger.info('Access token refreshed', { clientId: params.clientId });
+      logger.info("Access token refreshed", { clientId: params.clientId });
       return result;
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Token refresh error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Token refresh error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -219,10 +238,10 @@ export class OAuthService {
   async revokeRefreshToken(token: string): Promise<void> {
     try {
       await this.domainService.revokeRefreshToken(token);
-      logger.info('Refresh token revoked');
+      logger.info("Refresh token revoked");
     } catch (error) {
-      logger.error('Token revocation error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Token revocation error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -232,10 +251,10 @@ export class OAuthService {
   async revokeAllUserTokens(userId: string): Promise<void> {
     try {
       await this.domainService.revokeAllUserTokens(userId);
-      logger.info('All user tokens revoked', { userId });
+      logger.info("All user tokens revoked", { userId });
     } catch (error) {
-      logger.error('User tokens revocation error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("User tokens revocation error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 }

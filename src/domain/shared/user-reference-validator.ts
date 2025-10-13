@@ -9,7 +9,7 @@
  * at the domain layer.
  */
 
-import { errors } from '@deepracticex/error-handling';
+import { errors } from "@deepracticex/error-handling";
 
 /**
  * User existence checker interface
@@ -58,7 +58,7 @@ export class UserReferenceValidator {
 
     const missing = results.filter((r) => !r.exists).map((r) => r.userId);
     if (missing.length > 0) {
-      throw errors.notFound(`Users not found: ${missing.join(', ')}`);
+      throw errors.notFound(`Users not found: ${missing.join(", ")}`);
     }
   }
 }

@@ -1,15 +1,15 @@
-import { Hono } from 'hono';
-import { AccountService } from '@edge-auth/core';
-import { AppError, errors } from '@deepracticex/error-handling';
-import { createLogger } from '@edge-auth/core';
-import type { Env } from '../types.js';
+import { Hono } from "hono";
+import { AccountService } from "@edge-auth/core";
+import { AppError, errors } from "@deepracticex/error-handling";
+import { createLogger } from "@edge-auth/core";
+import type { Env } from "../types.js";
 
 const logger = createLogger({
-  name: 'edge-auth-account-api',
-  level: 'info',
+  name: "edge-auth-account-api",
+  level: "info",
   console: true,
   colors: true,
-  environment: 'cloudflare-workers', // Force edge runtime logger
+  environment: "cloudflare-workers", // Force edge runtime logger
 });
 
 const account = new Hono<{ Bindings: Env }>();
@@ -18,7 +18,7 @@ const account = new Hono<{ Bindings: Env }>();
  * POST /register
  * User self-registration with email verification
  */
-account.post('/register', async (c) => {
+account.post("/register", async (c) => {
   try {
     const body = await c.req.json<{
       email: string;
@@ -44,15 +44,18 @@ account.post('/register', async (c) => {
     return c.json(result, 201);
   } catch (error) {
     if (AppError.isAppError(error)) {
-      logger.warn('Registration failed', {
+      logger.warn("Registration failed", {
         code: error.code,
         message: error.message,
       });
       return c.json(error.toJSON(), error.statusCode as any);
     }
 
-    logger.error('Registration error', { error });
-    return c.json(errors.internal('Internal server error').toJSON(), 500 as any);
+    logger.error("Registration error", { error });
+    return c.json(
+      errors.internal("Internal server error").toJSON(),
+      500 as any,
+    );
   }
 });
 
@@ -60,12 +63,12 @@ account.post('/register', async (c) => {
  * GET /verify-email?token=xxx
  * Verify user's email address
  */
-account.get('/verify-email', async (c) => {
+account.get("/verify-email", async (c) => {
   try {
-    const token = c.req.query('token');
+    const token = c.req.query("token");
 
     if (!token) {
-      throw errors.validation('Verification token is required');
+      throw errors.validation("Verification token is required");
     }
 
     const accountService = new AccountService({
@@ -82,15 +85,18 @@ account.get('/verify-email', async (c) => {
     return c.json(result);
   } catch (error) {
     if (AppError.isAppError(error)) {
-      logger.warn('Email verification failed', {
+      logger.warn("Email verification failed", {
         code: error.code,
         message: error.message,
       });
       return c.json(error.toJSON(), error.statusCode as any);
     }
 
-    logger.error('Email verification error', { error });
-    return c.json(errors.internal('Internal server error').toJSON(), 500 as any);
+    logger.error("Email verification error", { error });
+    return c.json(
+      errors.internal("Internal server error").toJSON(),
+      500 as any,
+    );
   }
 });
 

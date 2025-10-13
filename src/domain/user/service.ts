@@ -4,10 +4,15 @@
  * Encapsulates user authentication business logic
  */
 
-import { errors } from '@deepracticex/error-handling';
-import type { UserRepository } from './repository.js';
-import type { CreateUserData, LoginData, User } from './types.js';
-import { isEmail, validateEmail, validatePassword, validateUsername } from './validation.js';
+import { errors } from "@deepracticex/error-handling";
+import type { UserRepository } from "./repository.js";
+import type { CreateUserData, LoginData, User } from "./types.js";
+import {
+  isEmail,
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from "./validation.js";
 
 /**
  * User Domain Service
@@ -37,11 +42,11 @@ export class UserService {
     ]);
 
     if (emailExists) {
-      throw errors.conflict('Email already registered');
+      throw errors.conflict("Email already registered");
     }
 
     if (usernameExists) {
-      throw errors.conflict('Username already taken');
+      throw errors.conflict("Username already taken");
     }
 
     // Create user
@@ -88,7 +93,7 @@ export class UserService {
       : await this.userRepository.findByUsernameWithPassword(account);
 
     if (!user) {
-      throw errors.unauthorized('Invalid credentials');
+      throw errors.unauthorized("Invalid credentials");
     }
 
     return user;

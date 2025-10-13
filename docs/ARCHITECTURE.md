@@ -39,12 +39,14 @@ EdgeAuth/
 EdgeAuth uses a **single database architecture** with Cloudflare's native migration system:
 
 **One D1 Database:**
+
 - `edgeauth-db` - All tables in a single database
   - `users` - User accounts
   - `sso_sessions` - SSO sessions
   - `oauth_clients`, `authorization_codes`, `access_tokens`, `refresh_tokens` - OAuth
 
 **Core Principle - Cloudflare Native:**
+
 - ✅ Migrations in `/migrations/` (root directory, Cloudflare standard)
 - ✅ Automatic tracking via `d1_migrations` table
 - ✅ Idempotent deployments (safe to run multiple times)
@@ -58,12 +60,12 @@ EdgeAuth uses a **single database architecture** with Cloudflare's native migrat
 
 All services bind to the same database:
 
-| Service | DB Binding | Purpose |
-|---------|------------|---------|
-| Admin API | ✅ (R/W) | User management, full access |
-| Account API | ✅ (R/W) | User registration & login |
-| SSO API | ✅ (R/W) | SSO sessions |
-| OAuth API | ✅ (R/W) | OAuth flows |
+| Service     | DB Binding | Purpose                      |
+| ----------- | ---------- | ---------------------------- |
+| Admin API   | ✅ (R/W)   | User management, full access |
+| Account API | ✅ (R/W)   | User registration & login    |
+| SSO API     | ✅ (R/W)   | SSO sessions                 |
+| OAuth API   | ✅ (R/W)   | OAuth flows                  |
 
 ## 📦 Core Packages
 
@@ -73,16 +75,17 @@ Pure business logic, no technical dependencies:
 
 ```typescript
 // User domain models
-import { UserService } from 'edge-auth-domain/user';
+import { UserService } from "edge-auth-domain/user";
 
 // OAuth domain models
-import { OAuthClient } from 'edge-auth-domain/oauth';
+import { OAuthClient } from "edge-auth-domain/oauth";
 
 // SSO domain models
-import { SSOSession } from 'edge-auth-domain/sso';
+import { SSOSession } from "edge-auth-domain/sso";
 ```
 
 **Responsibilities**:
+
 - Domain models and entities
 - Business rules and validations
 - Domain services
@@ -93,19 +96,20 @@ Technical implementation layer:
 
 ```typescript
 // Password hashing (PBKDF2)
-import { hashPassword, verifyPassword } from 'edge-auth-core/crypto';
+import { hashPassword, verifyPassword } from "edge-auth-core/crypto";
 
 // JWT generation and validation (HS256)
-import { generateToken, verifyToken } from 'edge-auth-core/jwt';
+import { generateToken, verifyToken } from "edge-auth-core/jwt";
 
 // D1 Repository implementations
-import { D1UserRepository } from 'edge-auth-core/persistence';
+import { D1UserRepository } from "edge-auth-core/persistence";
 
 // OAuth logic
-import { OAuthService } from 'edge-auth-core/oauth';
+import { OAuthService } from "edge-auth-core/oauth";
 ```
 
 **Module Structure**:
+
 - `/crypto` - Password hashing (Web Crypto API - PBKDF2)
 - `/jwt` - JWT token operations (HS256 algorithm)
 - `/oauth` - OAuth 2.0 logic
@@ -116,11 +120,13 @@ import { OAuthService } from 'edge-auth-core/oauth';
 ### admin-api (Management Center)
 
 **Responsibilities**:
+
 - User management APIs
 - Admin operations
 - System configuration
 
 **Database Bindings**:
+
 - `DB` → edgeauth-users
 - `SSO_DB` → edgeauth-sso
 - `OAUTH_DB` → edgeauth-oauth
@@ -130,11 +136,13 @@ import { OAuthService } from 'edge-auth-core/oauth';
 ### oauth-api (OAuth Provider)
 
 **Responsibilities**:
+
 - OAuth 2.0 authorization flows
 - Client management
 - Token management
 
 **Database Bindings**:
+
 - `OAUTH_DB` → edgeauth-oauth
 
 **Status**: Complete BDD test coverage
@@ -142,11 +150,13 @@ import { OAuthService } from 'edge-auth-core/oauth';
 ### sso-api (SSO Service)
 
 **Responsibilities**:
+
 - User authentication
 - SSO session management
 - Token generation and verification
 
 **Database Bindings**:
+
 - `DB` → edgeauth-users (read)
 - `SSO_DB` → edgeauth-sso (read/write)
 
@@ -155,16 +165,19 @@ import { OAuthService } from 'edge-auth-core/oauth';
 ## 🎨 Technology Stack
 
 ### Runtime & Framework
+
 - **Runtime**: Cloudflare Workers
 - **Database**: Cloudflare D1 (SQLite)
 - **Web Framework**: Hono
 - **Language**: TypeScript
 
 ### Security
+
 - **Password Hashing**: Web Crypto API (PBKDF2)
 - **JWT Algorithm**: HS256
 
 ### Development Tools
+
 - **Build**: tsup
 - **Test**: Vitest
 - **Monorepo**: Turbo
@@ -172,11 +185,13 @@ import { OAuthService } from 'edge-auth-core/oauth';
 - **Git Hooks**: Lefthook
 
 ### Testing Strategy
+
 - **BDD**: `@deepracticex/vitest-cucumber`
 - **Features**: `.feature` files in each service
 - **Step Definitions**: Aligned with business specs
 
 ### Deepractice Ecosystem
+
 - `@deepracticex/config-preset` - Configuration presets
 - `@deepracticex/error-handling` - Error handling utilities
 - `@deepracticex/logger` - Logging system
@@ -208,6 +223,7 @@ pnpm test:dev
    - Automatically creates Git tag and GitHub Release
 
 2. **Deploy** (via `deploy.yml`, triggered by Release):
+
    ```bash
    # Create/get database
    wrangler d1 create edgeauth-db
@@ -223,6 +239,7 @@ pnpm test:dev
    ```
 
 **Key Features:**
+
 - Fully automated deployment
 - Idempotent (safe to rerun)
 - Automatic migration tracking
@@ -233,18 +250,21 @@ pnpm test:dev
 ### 1. Architecture Evolution
 
 **Previous Approach**: Multiple databases with manual migration execution
+
 - 3 separate databases (users, sso, oauth)
 - Manual SQL file execution via `wrangler d1 execute`
 - No automatic migration tracking
 - Risk of duplicate execution
 
 **Current Solution**: Single database with Cloudflare native migrations
+
 - 1 unified database (`edgeauth-db`)
 - Cloudflare's migration system with automatic tracking
 - Idempotent deployments
 - Simplified management
 
 **Benefits**:
+
 - Automatic migration history in `d1_migrations` table
 - Safe to rerun deployments
 - Standard Cloudflare tooling
@@ -253,6 +273,7 @@ pnpm test:dev
 ### 2. Occam's Razor Principles
 
 **Simplicity Through**:
+
 - Single database (no cross-database complexity)
 - Native migration system (no custom tracking)
 - Automated CI/CD (no manual deployment)
@@ -261,6 +282,7 @@ pnpm test:dev
 ### 3. Clean Architecture
 
 **Dependency Flow**:
+
 ```
 Services → Core → Domain
          ↓
@@ -274,6 +296,7 @@ Services → Core → Domain
 ## 📈 Current Status
 
 ### ✅ Completed
+
 - Clean layered architecture
 - Domain + Core layer implementation
 - OAuth Worker with full BDD coverage
@@ -282,11 +305,13 @@ Services → Core → Domain
 - Complete development toolchain
 
 ### 🚧 In Progress
+
 - SSO Worker implementation
 - Admin API routes
 - OAuth migrations (0003)
 
 ### 📋 Planned (Roadmap)
+
 - Email verification
 - Password reset flow
 - Admin dashboard (UI)
@@ -297,6 +322,7 @@ Services → Core → Domain
 ## 🔍 Design Patterns
 
 ### Repository Pattern
+
 ```typescript
 // Domain-agnostic interface
 interface UserRepository {
@@ -312,6 +338,7 @@ class D1UserRepository implements UserRepository {
 ```
 
 ### Service Layer Pattern
+
 ```typescript
 // Business logic in domain
 class UserService {
@@ -326,6 +353,7 @@ class UserService {
 ```
 
 ### Worker Pattern
+
 ```typescript
 // Cloudflare Worker entry point
 export default {
@@ -336,8 +364,8 @@ export default {
 
     // Route handling with Hono
     return app.fetch(request, env);
-  }
-}
+  },
+};
 ```
 
 ## 🎓 Best Practices
@@ -374,16 +402,19 @@ export default {
 ## 🔮 Future Considerations
 
 ### Scalability
+
 - Multiple database replicas (Cloudflare D1 feature)
 - Caching layer (Cloudflare KV/R2)
 - Rate limiting per user/IP
 
 ### Security
+
 - MFA support
 - Session management improvements
 - Audit logging
 
 ### Developer Experience
+
 - SDK libraries (JS/TS, Python, Go)
 - CLI tools for management
 - Local development improvements

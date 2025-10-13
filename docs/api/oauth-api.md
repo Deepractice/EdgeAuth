@@ -25,6 +25,7 @@ EdgeAuth supports the Authorization Code Grant flow with PKCE (Proof Key for Cod
 **Endpoint:** `GET /health`
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -41,11 +42,13 @@ Register a new OAuth client application.
 **Endpoint:** `POST /oauth/clients`
 
 **Headers:**
+
 ```http
 Authorization: Bearer <admin_jwt_token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "My Application",
@@ -60,6 +63,7 @@ Authorization: Bearer <admin_jwt_token>
 ```
 
 **Success Response:** `201 Created`
+
 ```json
 {
   "id": "client-uuid",
@@ -85,11 +89,13 @@ Retrieve OAuth client information.
 **Endpoint:** `GET /oauth/clients/:clientId`
 
 **Headers:**
+
 ```http
 Authorization: Bearer <admin_jwt_token>
 ```
 
 **Success Response:** `200 OK`
+
 ```json
 {
   "id": "client-uuid",
@@ -114,11 +120,13 @@ List all registered OAuth clients.
 **Endpoint:** `GET /oauth/clients`
 
 **Headers:**
+
 ```http
 Authorization: Bearer <admin_jwt_token>
 ```
 
 **Success Response:** `200 OK`
+
 ```json
 {
   "clients": [
@@ -147,11 +155,13 @@ Update OAuth client configuration.
 **Endpoint:** `PATCH /oauth/clients/:clientId`
 
 **Headers:**
+
 ```http
 Authorization: Bearer <admin_jwt_token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Updated App Name",
@@ -171,6 +181,7 @@ Delete an OAuth client and revoke all its tokens.
 **Endpoint:** `DELETE /oauth/clients/:clientId`
 
 **Headers:**
+
 ```http
 Authorization: Bearer <admin_jwt_token>
 ```
@@ -186,6 +197,7 @@ Initiate OAuth authorization flow.
 **Endpoint:** `GET /oauth/authorize`
 
 **Query Parameters:**
+
 ```
 response_type=code          (required)
 client_id=<client_id>       (required)
@@ -197,22 +209,26 @@ code_challenge_method=S256  (required for PKCE)
 ```
 
 **Example:**
+
 ```
 GET /oauth/authorize?response_type=code&client_id=abc123&redirect_uri=https://app.com/callback&scope=read&state=xyz&code_challenge=E9Melhoa...&code_challenge_method=S256
 ```
 
 **Flow:**
+
 1. User is redirected to login (if not authenticated)
 2. User sees authorization consent screen
 3. User approves/denies access
 4. Server redirects to `redirect_uri` with authorization code
 
 **Success Redirect:**
+
 ```
 https://app.com/callback?code=auth_code_xyz&state=xyz
 ```
 
 **Error Redirect:**
+
 ```
 https://app.com/callback?error=access_denied&error_description=User denied access
 ```
@@ -226,6 +242,7 @@ Exchange authorization code for access token.
 **Endpoint:** `POST /oauth/token`
 
 **Request Body (Authorization Code Grant):**
+
 ```http
 Content-Type: application/x-www-form-urlencoded
 
@@ -238,6 +255,7 @@ code_verifier=<verifier>
 ```
 
 **Success Response:** `200 OK`
+
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIs...",
@@ -249,6 +267,7 @@ code_verifier=<verifier>
 ```
 
 **Request Body (Refresh Token Grant):**
+
 ```http
 grant_type=refresh_token&
 refresh_token=<refresh_token>&
@@ -257,6 +276,7 @@ client_secret=<client_secret>
 ```
 
 **Error Response:** `400 Bad Request`
+
 ```json
 {
   "error": "invalid_grant",
@@ -273,6 +293,7 @@ Revoke an access or refresh token.
 **Endpoint:** `POST /oauth/revoke`
 
 **Request Body:**
+
 ```http
 Content-Type: application/x-www-form-urlencoded
 
@@ -282,6 +303,7 @@ client_secret=<client_secret>
 ```
 
 **Success Response:** `200 OK`
+
 ```json
 {
   "revoked": true
@@ -341,7 +363,7 @@ interface OAuthClient {
   description?: string;
   redirectUris: string[];
   scopes: string[];
-  grantTypes: ('authorization_code' | 'client_credentials' | 'refresh_token')[];
+  grantTypes: ("authorization_code" | "client_credentials" | "refresh_token")[];
   createdAt: number;
   updatedAt: number;
 }
@@ -357,7 +379,7 @@ interface AuthorizationCode {
   redirectUri: string;
   scopes: string[];
   codeChallenge?: string;
-  codeChallengeMethod?: 'S256' | 'plain';
+  codeChallengeMethod?: "S256" | "plain";
   expiresAt: number;
   createdAt: number;
   used: boolean;
@@ -368,7 +390,7 @@ interface AuthorizationCode {
 
 ```typescript
 interface AccessToken {
-  token: string;              // JWT
+  token: string; // JWT
   clientId: string;
   userId: string;
   scopes: string[];
@@ -410,16 +432,16 @@ interface RefreshToken {
 
 OAuth 2.0 standard error codes:
 
-| Error | Description |
-|-------|-------------|
-| `invalid_request` | Missing or invalid parameter |
-| `unauthorized_client` | Client not authorized for this grant type |
-| `access_denied` | User denied authorization |
-| `unsupported_response_type` | Server doesn't support response type |
-| `invalid_scope` | Requested scope invalid or unknown |
-| `server_error` | Internal server error |
-| `invalid_grant` | Authorization code invalid/expired |
-| `invalid_client` | Client authentication failed |
+| Error                       | Description                               |
+| --------------------------- | ----------------------------------------- |
+| `invalid_request`           | Missing or invalid parameter              |
+| `unauthorized_client`       | Client not authorized for this grant type |
+| `access_denied`             | User denied authorization                 |
+| `unsupported_response_type` | Server doesn't support response type      |
+| `invalid_scope`             | Requested scope invalid or unknown        |
+| `server_error`              | Internal server error                     |
+| `invalid_grant`             | Authorization code invalid/expired        |
+| `invalid_client`            | Client authentication failed              |
 
 ---
 

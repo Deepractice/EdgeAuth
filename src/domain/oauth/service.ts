@@ -4,22 +4,22 @@
  * Encapsulates OAuth 2.0 business logic
  */
 
-import { errors } from '@deepracticex/error-handling';
-import type { User } from '../user/types.js';
+import { errors } from "@deepracticex/error-handling";
+import type { User } from "../user/types.js";
 import type {
   OAuthClient,
   AuthorizationCode,
   CreateAuthorizationCodeRequest,
   AccessToken,
   RefreshToken,
-} from './index.js';
+} from "./index.js";
 import type {
   OAuthClientRepository,
   AuthorizationCodeRepository,
   TokenRepository,
-} from './repository.js';
-import { isAllowedRedirectUri } from './client.js';
-import { isAuthCodeValid, verifyPKCE } from './authorization-code.js';
+} from "./repository.js";
+import { isAllowedRedirectUri } from "./client.js";
+import { isAuthCodeValid, verifyPKCE } from "./authorization-code.js";
 import {
   verifyClientSecret,
   validateClientName,
@@ -27,12 +27,12 @@ import {
   validateClientScopes,
   areScopesAllowed,
   isGrantTypeAllowed,
-} from './validation.js';
+} from "./validation.js";
 import {
   DEFAULT_ACCESS_TOKEN_EXPIRATION,
   DEFAULT_REFRESH_TOKEN_EXPIRATION,
   isRefreshTokenValid,
-} from './token.js';
+} from "./token.js";
 
 /**
  * Generate authorization code
@@ -41,9 +41,9 @@ function generateAuthorizationCode(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
   return btoa(String.fromCharCode(...array))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
 }
 
 /**
@@ -53,9 +53,9 @@ function generateRefreshToken(): string {
   const array = new Uint8Array(64);
   crypto.getRandomValues(array);
   return btoa(String.fromCharCode(...array))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
 }
 
 /**
@@ -65,9 +65,9 @@ function generateClientSecret(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
   return btoa(String.fromCharCode(...array))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
 }
 
 /**
@@ -108,7 +108,9 @@ export class OAuthService {
     description?: string;
     redirectUris: string[];
     scopes: string[];
-    grantTypes: Array<'authorization_code' | 'client_credentials' | 'refresh_token'>;
+    grantTypes: Array<
+      "authorization_code" | "client_credentials" | "refresh_token"
+    >;
   }): Promise<OAuthClient> {
     // Validate
     validateClientName(data.name);
@@ -145,7 +147,7 @@ export class OAuthService {
   ): Promise<OAuthClient> {
     const client = await this.clientRepository.findById(clientId);
     if (!client) {
-      throw errors.notFound('Client not found');
+      throw errors.notFound("Client not found");
     }
 
     // Validate if provided
@@ -165,7 +167,7 @@ export class OAuthService {
   async deleteClient(clientId: string): Promise<void> {
     const exists = await this.clientRepository.exists(clientId);
     if (!exists) {
-      throw errors.notFound('Client not found');
+      throw errors.notFound("Client not found");
     }
 
     // Revoke all tokens for this client
@@ -197,17 +199,19 @@ export class OAuthService {
   ): Promise<AuthorizationCode> {
     // Validate redirect URI
     if (!isAllowedRedirectUri(client, request.redirectUri)) {
-      throw errors.validation('Invalid redirect_uri');
+      throw errors.validation("Invalid redirect_uri");
     }
 
     // Validate scopes
     if (!areScopesAllowed(client, request.scopes)) {
-      throw errors.validation('Invalid scopes');
+      throw errors.validation("Invalid scopes");
     }
 
     // Check grant type
-    if (!isGrantTypeAllowed(client, 'authorization_code')) {
-      throw errors.validation('authorization_code grant not allowed for this client');
+    if (!isGrantTypeAllowed(client, "authorization_code")) {
+      throw errors.validation(
+        "authorization_code grant not allowed for this client",
+      );
     }
 
     const code = generateAuthorizationCode();
@@ -244,43 +248,43 @@ export class OAuthService {
     // Get client
     const client = await this.clientRepository.findByIdWithSecret(clientId);
     if (!client) {
-      throw errors.unauthorized('Invalid client');
+      throw errors.unauthorized("Invalid client");
     }
 
     // Verify client secret
     if (!verifyClientSecret(client, clientSecret)) {
-      throw errors.unauthorized('Invalid client credentials');
+      throw errors.unauthorized("Invalid client credentials");
     }
 
     // Get authorization code
     const authCode = await this.authCodeRepository.findByCode(code);
     if (!authCode) {
-      throw errors.unauthorized('Invalid authorization code');
+      throw errors.unauthorized("Invalid authorization code");
     }
 
     // Verify client matches
     if (authCode.clientId !== clientId) {
-      throw errors.unauthorized('Invalid client');
+      throw errors.unauthorized("Invalid client");
     }
 
     // Verify authorization code is valid
     if (!isAuthCodeValid(authCode)) {
-      throw errors.unauthorized('Invalid or expired authorization code');
+      throw errors.unauthorized("Invalid or expired authorization code");
     }
 
     // Verify redirect URI matches
     if (authCode.redirectUri !== redirectUri) {
-      throw errors.validation('redirect_uri mismatch');
+      throw errors.validation("redirect_uri mismatch");
     }
 
     // Verify PKCE if used
     if (authCode.codeChallenge) {
       if (!codeVerifier) {
-        throw errors.validation('code_verifier required');
+        throw errors.validation("code_verifier required");
       }
       const valid = await verifyPKCE(authCode, codeVerifier);
       if (!valid) {
-        throw errors.unauthorized('Invalid code_verifier');
+        throw errors.unauthorized("Invalid code_verifier");
       }
     }
 
@@ -293,8 +297,8 @@ export class OAuthService {
     // For now, create minimal user object from stored userId
     const user: User = {
       id: authCode.userId,
-      email: '', // Would need to fetch from UserRepository
-      username: '', // Would need to fetch from UserRepository
+      email: "", // Would need to fetch from UserRepository
+      username: "", // Would need to fetch from UserRepository
       emailVerified: false,
       emailVerifiedAt: null,
       createdAt: 0,
@@ -302,10 +306,13 @@ export class OAuthService {
     };
 
     // Generate access token (JWT)
-    const accessTokenJwt = await this.config.tokenGenerator.generateToken(user, {
-      secret: this.config.jwtSecret,
-      expiresIn: DEFAULT_ACCESS_TOKEN_EXPIRATION,
-    });
+    const accessTokenJwt = await this.config.tokenGenerator.generateToken(
+      user,
+      {
+        secret: this.config.jwtSecret,
+        expiresIn: DEFAULT_ACCESS_TOKEN_EXPIRATION,
+      },
+    );
 
     const now = Date.now();
     const accessToken: AccessToken = {
@@ -349,40 +356,43 @@ export class OAuthService {
     // Get client
     const client = await this.clientRepository.findByIdWithSecret(clientId);
     if (!client) {
-      throw errors.unauthorized('Invalid client');
+      throw errors.unauthorized("Invalid client");
     }
 
     // Verify client secret
     if (!verifyClientSecret(client, clientSecret)) {
-      throw errors.unauthorized('Invalid client credentials');
+      throw errors.unauthorized("Invalid client credentials");
     }
 
     // Check grant type
-    if (!isGrantTypeAllowed(client, 'refresh_token')) {
-      throw errors.validation('refresh_token grant not allowed for this client');
+    if (!isGrantTypeAllowed(client, "refresh_token")) {
+      throw errors.validation(
+        "refresh_token grant not allowed for this client",
+      );
     }
 
     // Get refresh token
-    const refreshToken = await this.tokenRepository.findRefreshToken(refreshTokenValue);
+    const refreshToken =
+      await this.tokenRepository.findRefreshToken(refreshTokenValue);
     if (!refreshToken) {
-      throw errors.unauthorized('Invalid refresh token');
+      throw errors.unauthorized("Invalid refresh token");
     }
 
     // Verify client matches
     if (refreshToken.clientId !== clientId) {
-      throw errors.unauthorized('Invalid client');
+      throw errors.unauthorized("Invalid client");
     }
 
     // Verify refresh token is valid
     if (!isRefreshTokenValid(refreshToken)) {
-      throw errors.unauthorized('Refresh token expired or revoked');
+      throw errors.unauthorized("Refresh token expired or revoked");
     }
 
     // Create minimal user object (same limitation as above)
     const user: User = {
       id: refreshToken.userId,
-      email: '',
-      username: '',
+      email: "",
+      username: "",
       emailVerified: false,
       emailVerifiedAt: null,
       createdAt: 0,
@@ -390,10 +400,13 @@ export class OAuthService {
     };
 
     // Generate new access token
-    const accessTokenJwt = await this.config.tokenGenerator.generateToken(user, {
-      secret: this.config.jwtSecret,
-      expiresIn: DEFAULT_ACCESS_TOKEN_EXPIRATION,
-    });
+    const accessTokenJwt = await this.config.tokenGenerator.generateToken(
+      user,
+      {
+        secret: this.config.jwtSecret,
+        expiresIn: DEFAULT_ACCESS_TOKEN_EXPIRATION,
+      },
+    );
 
     const now = Date.now();
     const accessToken: AccessToken = {

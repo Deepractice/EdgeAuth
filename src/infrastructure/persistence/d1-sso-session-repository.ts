@@ -2,7 +2,7 @@
  * D1 SSO Session Repository Implementation
  */
 
-import type { SSOSession, SSOSessionRepository } from 'edge-auth-domain';
+import type { SSOSession, SSOSessionRepository } from "~/domain/index.js";
 
 export class D1SSOSessionRepository implements SSOSessionRepository {
   constructor(private readonly db: D1Database) {}
@@ -30,7 +30,7 @@ export class D1SSOSessionRepository implements SSOSessionRepository {
 
   async findBySessionId(sessionId: string): Promise<SSOSession | null> {
     const row = await this.db
-      .prepare('SELECT * FROM sso_sessions WHERE session_id = ?')
+      .prepare("SELECT * FROM sso_sessions WHERE session_id = ?")
       .bind(sessionId)
       .first<SSOSession>();
 
@@ -39,7 +39,7 @@ export class D1SSOSessionRepository implements SSOSessionRepository {
 
   async findByToken(token: string): Promise<SSOSession | null> {
     const row = await this.db
-      .prepare('SELECT * FROM sso_sessions WHERE token = ?')
+      .prepare("SELECT * FROM sso_sessions WHERE token = ?")
       .bind(token)
       .first<SSOSession>();
 
@@ -61,30 +61,37 @@ export class D1SSOSessionRepository implements SSOSessionRepository {
     return result.results.map((row: SSOSession) => this.mapRow(row));
   }
 
-  async updateLastAccessed(sessionId: string, timestamp: number): Promise<void> {
+  async updateLastAccessed(
+    sessionId: string,
+    timestamp: number,
+  ): Promise<void> {
     await this.db
-      .prepare('UPDATE sso_sessions SET last_accessed_at = ? WHERE session_id = ?')
+      .prepare(
+        "UPDATE sso_sessions SET last_accessed_at = ? WHERE session_id = ?",
+      )
       .bind(timestamp, sessionId)
       .run();
   }
 
   async revokeBySessionId(sessionId: string): Promise<void> {
     await this.db
-      .prepare('UPDATE sso_sessions SET revoked_at = ? WHERE session_id = ?')
+      .prepare("UPDATE sso_sessions SET revoked_at = ? WHERE session_id = ?")
       .bind(Date.now(), sessionId)
       .run();
   }
 
   async revokeAllByUserId(userId: string): Promise<void> {
     await this.db
-      .prepare('UPDATE sso_sessions SET revoked_at = ? WHERE user_id = ? AND revoked_at IS NULL')
+      .prepare(
+        "UPDATE sso_sessions SET revoked_at = ? WHERE user_id = ? AND revoked_at IS NULL",
+      )
       .bind(Date.now(), userId)
       .run();
   }
 
   async deleteExpired(): Promise<number> {
     const result = await this.db
-      .prepare('DELETE FROM sso_sessions WHERE expires_at < ?')
+      .prepare("DELETE FROM sso_sessions WHERE expires_at < ?")
       .bind(Date.now())
       .run();
 

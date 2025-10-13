@@ -61,9 +61,9 @@ export function baseTemplate(data: BaseTemplateData): string {
       margin-top: 5px;
     }
 
-    ${data.styles || ''}
+    ${data.styles || ""}
   </style>
-  ${data.scripts || ''}
+  ${data.scripts || ""}
 </head>
 <body>
   <div class="container">

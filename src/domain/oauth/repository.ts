@@ -5,9 +5,9 @@
  * Implementation details are in the infrastructure layer (core/persistence).
  */
 
-import type { OAuthClient } from './client.js';
-import type { AuthorizationCode } from './authorization-code.js';
-import type { AccessToken, RefreshToken } from './token.js';
+import type { OAuthClient } from "./client.js";
+import type { AuthorizationCode } from "./authorization-code.js";
+import type { AccessToken, RefreshToken } from "./token.js";
 
 /**
  * OAuth Client Repository

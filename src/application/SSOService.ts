@@ -5,19 +5,25 @@
  * Handles user SSO sessions, token verification, and logout flows.
  */
 
-import { errors, AppError } from '@deepracticex/error-handling';
-import { createLogger } from '../infrastructure/logger/index.js';
-import { SSOService as DomainSSOService } from '../domain/sso/service.js';
-import { D1SSOSessionRepository } from '../infrastructure/persistence/index.js';
-import type { SSOSession, SSOTokenPayload, SSOLoginRequest, SSOLoginResult, SSOTokenVerification } from '../domain/sso/types.js';
-import type { User } from '../domain/user/types.js';
+import { errors, AppError } from "@deepracticex/error-handling";
+import { createLogger } from "../infrastructure/logger/index.js";
+import { SSOService as DomainSSOService } from "../domain/sso/service.js";
+import { D1SSOSessionRepository } from "../infrastructure/persistence/index.js";
+import type {
+  SSOSession,
+  SSOTokenPayload,
+  SSOLoginRequest,
+  SSOLoginResult,
+  SSOTokenVerification,
+} from "../domain/sso/types.js";
+import type { User } from "../domain/user/types.js";
 
 const logger = createLogger({
-  name: 'sso-service',
-  level: 'info',
+  name: "sso-service",
+  level: "info",
   console: true,
   colors: true,
-  environment: 'cloudflare-workers',
+  environment: "cloudflare-workers",
 });
 
 /**
@@ -50,48 +56,64 @@ export class SSOService {
   }): Promise<SSOSession> {
     try {
       const session = await this.domainService.createSession(data);
-      logger.info('SSO session created', { sessionId: session.sessionId, userId: data.userId });
+      logger.info("SSO session created", {
+        sessionId: session.sessionId,
+        userId: data.userId,
+      });
       return session;
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Session creation error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Session creation error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
   /**
    * Handle SSO login
    */
-  async handleLogin(request: SSOLoginRequest, user: User, token: string): Promise<SSOLoginResult> {
+  async handleLogin(
+    request: SSOLoginRequest,
+    user: User,
+    token: string,
+  ): Promise<SSOLoginResult> {
     try {
       const result = await this.domainService.handleLogin(request, user, token);
-      logger.info('SSO login successful', { userId: user.id, redirectUri: request.redirectUri });
+      logger.info("SSO login successful", {
+        userId: user.id,
+        redirectUri: request.redirectUri,
+      });
       return result;
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('SSO login error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("SSO login error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
   /**
    * Verify SSO token
    */
-  async verifyToken(token: string, payload: SSOTokenPayload): Promise<SSOTokenVerification> {
+  async verifyToken(
+    token: string,
+    payload: SSOTokenPayload,
+  ): Promise<SSOTokenVerification> {
     try {
       const verification = await this.domainService.verifyToken(token, payload);
-      logger.info('SSO token verified', { sessionId: verification.sessionId, userId: verification.userId });
+      logger.info("SSO token verified", {
+        sessionId: verification.sessionId,
+        userId: verification.userId,
+      });
       return verification;
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Token verification error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Token verification error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -101,13 +123,13 @@ export class SSOService {
   async logout(sessionId: string): Promise<void> {
     try {
       await this.domainService.logout(sessionId);
-      logger.info('SSO logout successful', { sessionId });
+      logger.info("SSO logout successful", { sessionId });
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Logout error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Logout error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -117,13 +139,13 @@ export class SSOService {
   async logoutAll(userId: string): Promise<void> {
     try {
       await this.domainService.logoutAll(userId);
-      logger.info('SSO logout all successful', { userId });
+      logger.info("SSO logout all successful", { userId });
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Logout all error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Logout all error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -147,11 +169,11 @@ export class SSOService {
   async cleanupExpired(): Promise<number> {
     try {
       const count = await this.domainService.cleanupExpired();
-      logger.info('Expired SSO sessions cleaned up', { count });
+      logger.info("Expired SSO sessions cleaned up", { count });
       return count;
     } catch (error) {
-      logger.error('Cleanup error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Cleanup error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 }

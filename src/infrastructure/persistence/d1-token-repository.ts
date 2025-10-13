@@ -4,7 +4,11 @@
  * Cloudflare D1 (SQLite) implementation of TokenRepository
  */
 
-import type { AccessToken, RefreshToken, TokenRepository } from 'edge-auth-domain';
+import type {
+  AccessToken,
+  RefreshToken,
+  TokenRepository,
+} from "~/domain/index.js";
 
 /**
  * D1 Database interface (from Cloudflare Workers)
@@ -166,9 +170,15 @@ export class D1TokenRepository implements TokenRepository {
     const now = Date.now();
 
     // Delete expired access tokens
-    await this.db.prepare(`DELETE FROM access_tokens WHERE expires_at < ?`).bind(now).run();
+    await this.db
+      .prepare(`DELETE FROM access_tokens WHERE expires_at < ?`)
+      .bind(now)
+      .run();
 
     // Delete expired refresh tokens
-    await this.db.prepare(`DELETE FROM refresh_tokens WHERE expires_at < ?`).bind(now).run();
+    await this.db
+      .prepare(`DELETE FROM refresh_tokens WHERE expires_at < ?`)
+      .bind(now)
+      .run();
   }
 }

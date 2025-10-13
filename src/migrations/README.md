@@ -7,22 +7,26 @@ EdgeAuth uses a centralized migration management approach. **All database schema
 ## Migration History
 
 ### 0001_create_users_table.sql
+
 - **Database**: `edgeauth-users`
 - Created users table with basic fields
 - Added indexes for email and username lookups
 
 ### 0002_create_sso_sessions_table.sql
+
 - **Database**: `edgeauth-sso`
 - Created SSO sessions table
 - Added session management fields
 
 ### 0003_add_email_verification.sql
+
 - **Database**: `edgeauth-users`
 - Added `email_verified` field to users table (default: 0)
 - Added `email_verified_at` field to users table (nullable)
 - Added indexes for verification status and time
 
 ### 0004_create_oauth_tables.sql
+
 - **Database**: `edgeauth-oauth`
 - Created oauth_clients table
 - Created authorization_codes table

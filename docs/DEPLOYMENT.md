@@ -66,6 +66,7 @@ EdgeAuth uses GitHub Actions for automated deployments. No manual deployment scr
 3. **JWT_SECRET** - Secret key for JWT token signing
 
    Generate:
+
    ```bash
    openssl rand -base64 32
    ```
@@ -75,6 +76,7 @@ EdgeAuth uses GitHub Actions for automated deployments. No manual deployment scr
    Get from: https://www.useplunk.com/dashboard
 
 **Add all secrets to GitHub:**
+
 ```
 Repository Settings → Secrets and variables → Actions → New repository secret
 ```
@@ -112,9 +114,11 @@ The `deploy.yml` workflow automatically:
    - Checks if already exists before creating
 
 2. **Applies Migrations**
+
    ```bash
    wrangler d1 migrations apply edgeauth-db --remote
    ```
+
    - Uses Cloudflare's native migration system
    - Automatically tracks applied migrations
    - Idempotent (safe to run multiple times)
@@ -164,6 +168,7 @@ pnpm setup:local
 ```
 
 This script will:
+
 1. Install dependencies
 2. Build packages
 3. Create local D1 database
@@ -208,11 +213,13 @@ pnpm test:ci
 ### Local Database Location
 
 Local D1 databases are stored in:
+
 ```
 .wrangler/state/v3/d1/
 ```
 
 To reset local database:
+
 ```bash
 rm -rf .wrangler/state
 pnpm setup:local
@@ -243,6 +250,7 @@ migrations/
 ```
 
 **Key Features:**
+
 - Automatic tracking in `d1_migrations` table
 - Idempotent (safe to run multiple times)
 - Sequential execution by filename
@@ -305,6 +313,7 @@ wrangler d1 migrations apply edgeauth-db --local
 **Solution:** Cloudflare tracks migrations automatically. If you see this error, the migration was already applied. Use `IF NOT EXISTS` in your SQL to make migrations idempotent.
 
 **Check migration status:**
+
 ```bash
 wrangler d1 migrations list edgeauth-db
 ```
@@ -312,11 +321,13 @@ wrangler d1 migrations list edgeauth-db
 ### Worker Deployment Failed
 
 **Check logs:**
+
 ```bash
 wrangler tail edgeauth-account
 ```
 
 **View deployment errors:**
+
 ```bash
 wrangler deployments list edgeauth-account
 ```
@@ -324,6 +335,7 @@ wrangler deployments list edgeauth-account
 ### Local Database Issues
 
 **Reset local database:**
+
 ```bash
 # Delete local state
 rm -rf .wrangler/state
@@ -359,6 +371,7 @@ wrangler secret put JWT_SECRET
    - Ensure `IF NOT EXISTS` for idempotency
 
 **View workflow logs:**
+
 - Go to Actions tab in GitHub
 - Click on failed workflow
 - Check individual step logs
@@ -368,6 +381,7 @@ wrangler secret put JWT_SECRET
 ### CI Workflow (`ci.yml`)
 
 Runs on every PR and push to main:
+
 - Lint
 - Type check
 - Tests
@@ -376,6 +390,7 @@ Runs on every PR and push to main:
 ### Release Workflow (`release.yml`)
 
 Runs when `release/*` branch PR is merged:
+
 - Extracts version from package.json
 - Creates Git tag
 - Creates GitHub Release
@@ -384,6 +399,7 @@ Runs when `release/*` branch PR is merged:
 ### Deploy Workflow (`deploy.yml`)
 
 Runs when GitHub Release is published:
+
 - Creates/gets D1 database
 - Updates wrangler configs with database ID
 - Applies migrations

@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import LoginPage from './components/LoginPage'
-import RegisterPage from './components/RegisterPage'
-import VerifyEmailPage from './components/VerifyEmailPage'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import LoginPage from "./components/LoginPage";
+import RegisterPage from "./components/RegisterPage";
+import VerifyEmailPage from "./components/VerifyEmailPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -11,7 +11,7 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
-})
+});
 
 function App() {
   return (
@@ -25,7 +25,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
-  )
+  );
 }
 
-export default App
+export default App;

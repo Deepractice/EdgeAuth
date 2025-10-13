@@ -336,7 +336,7 @@ interface SSOTokenPayload {
 #### Step 1: Redirect to SSO Login
 
 ```javascript
-const redirectUri = 'https://your-app.com/callback';
+const redirectUri = "https://your-app.com/callback";
 const ssoUrl = `https://sso.edgeauth.com/sso/login?redirect_uri=${encodeURIComponent(redirectUri)}`;
 
 window.location.href = ssoUrl;
@@ -347,13 +347,13 @@ window.location.href = ssoUrl;
 ```javascript
 // Extract token from URL
 const params = new URLSearchParams(window.location.search);
-const token = params.get('token');
+const token = params.get("token");
 
 if (token) {
   // Verify token with SSO server
-  const response = await fetch('https://sso.edgeauth.com/sso/verify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const response = await fetch("https://sso.edgeauth.com/sso/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token }),
   });
 
@@ -361,11 +361,11 @@ if (token) {
 
   if (data.valid) {
     // Store token and user info
-    localStorage.setItem('sso_token', token);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem("sso_token", token);
+    localStorage.setItem("user", JSON.stringify(data.user));
 
     // Redirect to app home
-    window.location.href = '/dashboard';
+    window.location.href = "/dashboard";
   }
 }
 ```
@@ -373,9 +373,9 @@ if (token) {
 #### Step 3: Use Token for API Calls
 
 ```javascript
-const token = localStorage.getItem('sso_token');
+const token = localStorage.getItem("sso_token");
 
-const response = await fetch('https://api.your-app.com/data', {
+const response = await fetch("https://api.your-app.com/data", {
   headers: {
     Authorization: `Bearer ${token}`,
   },
@@ -386,27 +386,27 @@ const response = await fetch('https://api.your-app.com/data', {
 
 ```javascript
 // Your application backend
-app.get('/api/data', async (req, res) => {
-  const token = req.headers.authorization?.replace('Bearer ', '');
+app.get("/api/data", async (req, res) => {
+  const token = req.headers.authorization?.replace("Bearer ", "");
 
   // Verify with SSO
-  const ssoResponse = await fetch('https://sso.edgeauth.com/sso/verify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const ssoResponse = await fetch("https://sso.edgeauth.com/sso/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token }),
   });
 
   const ssoData = await ssoResponse.json();
 
   if (!ssoData.valid) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   // Token is valid, user is authenticated
   const user = ssoData.user;
 
   // Return protected data
-  res.json({ data: 'protected data', user });
+  res.json({ data: "protected data", user });
 });
 ```
 

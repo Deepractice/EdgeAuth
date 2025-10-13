@@ -33,3 +33,4 @@ wrangler secret put JWT_SECRET
 
 # For local development, create .dev.vars file
 echo "JWT_SECRET=your-local-dev-secret" > .dev.vars
+```

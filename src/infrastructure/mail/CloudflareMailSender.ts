@@ -1,4 +1,4 @@
-import type { MailSender, EmailMessage } from './MailSender';
+import type { MailSender, EmailMessage } from "./MailSender";
 
 /**
  * Cloudflare Email Sending adapter (Future implementation)
@@ -21,7 +21,7 @@ export class CloudflareMailSender implements MailSender {
     //   html: message.html,
     // });
     throw new Error(
-      'CloudflareMailSender is not yet implemented. Cloudflare Email Sending is currently in private beta.'
+      "CloudflareMailSender is not yet implemented. Cloudflare Email Sending is currently in private beta.",
     );
   }
 }

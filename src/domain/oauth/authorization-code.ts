@@ -12,7 +12,7 @@ export interface AuthorizationCode {
   redirectUri: string; // Must match when exchanging for token
   scopes: string[]; // Granted scopes
   codeChallenge?: string; // PKCE code challenge
-  codeChallengeMethod?: 'S256' | 'plain'; // PKCE method
+  codeChallengeMethod?: "S256" | "plain"; // PKCE method
   expiresAt: number; // Unix timestamp (typically 10 minutes)
   createdAt: number;
   used: boolean; // Authorization codes can only be used once
@@ -24,7 +24,7 @@ export interface CreateAuthorizationCodeRequest {
   redirectUri: string;
   scopes: string[];
   codeChallenge?: string;
-  codeChallengeMethod?: 'S256' | 'plain';
+  codeChallengeMethod?: "S256" | "plain";
 }
 
 /**
@@ -52,18 +52,18 @@ export async function verifyPKCE(
     return true; // PKCE not used
   }
 
-  if (authCode.codeChallengeMethod === 'plain') {
+  if (authCode.codeChallengeMethod === "plain") {
     return codeVerifier === authCode.codeChallenge;
   }
 
   // S256 method
   const encoder = new TextEncoder();
   const data = encoder.encode(codeVerifier);
-  const hash = await crypto.subtle.digest('SHA-256', data);
+  const hash = await crypto.subtle.digest("SHA-256", data);
   const base64 = btoa(String.fromCharCode(...new Uint8Array(hash)))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
 
   return base64 === authCode.codeChallenge;
 }

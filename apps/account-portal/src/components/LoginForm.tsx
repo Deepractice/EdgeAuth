@@ -1,24 +1,27 @@
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent } from "react";
 
 interface LoginFormProps {
-  onSubmit: (account: string, password: string) => void
-  isLoading: boolean
+  onSubmit: (account: string, password: string) => void;
+  isLoading: boolean;
 }
 
 export default function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
-  const [account, setAccount] = useState('')
-  const [password, setPassword] = useState('')
+  const [account, setAccount] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    onSubmit(account, password)
-  }
+    e.preventDefault();
+    onSubmit(account, password);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Account Input */}
       <div>
-        <label htmlFor="account" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="account"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Email or Username
         </label>
         <input
@@ -37,7 +40,10 @@ export default function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
       {/* Password Input */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
             Password
           </label>
           <a
@@ -102,9 +108,9 @@ export default function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
             Signing in...
           </>
         ) : (
-          'Sign In'
+          "Sign In"
         )}
       </button>
     </form>
-  )
+  );
 }

@@ -7,10 +7,15 @@
  * - Page routes (this file) return HTML
  */
 
-import { Hono } from 'hono';
-import type { Env } from '../types.js';
-import { render, loginTemplate, registerTemplate, errorTemplate } from '../views/index.js';
-import { SSOService } from '@edge-auth/core';
+import { Hono } from "hono";
+import type { Env } from "../types.js";
+import {
+  render,
+  loginTemplate,
+  registerTemplate,
+  errorTemplate,
+} from "../views/index.js";
+import { SSOService } from "@edge-auth/core";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -21,15 +26,15 @@ const app = new Hono<{ Bindings: Env }>();
  * Renders HTML login form
  * If user already has valid session, redirects immediately
  */
-app.get('/sso/login', async (c) => {
-  const redirectUri = c.req.query('redirect_uri');
+app.get("/sso/login", async (c) => {
+  const redirectUri = c.req.query("redirect_uri");
 
   // Validate redirect_uri
   if (!redirectUri) {
     return c.html(
       render(errorTemplate, {
-        error: 'Invalid Request',
-        message: 'redirect_uri parameter is required',
+        error: "Invalid Request",
+        message: "redirect_uri parameter is required",
       }),
       400,
     );
@@ -48,7 +53,7 @@ app.get('/sso/login', async (c) => {
   } catch (error: any) {
     return c.html(
       render(errorTemplate, {
-        error: 'Invalid Redirect URI',
+        error: "Invalid Redirect URI",
         message: error.message,
       }),
       400,
@@ -56,8 +61,8 @@ app.get('/sso/login', async (c) => {
   }
 
   // Check if user already has valid session
-  const authHeader = c.req.header('Authorization');
-  if (authHeader?.startsWith('Bearer ')) {
+  const authHeader = c.req.header("Authorization");
+  if (authHeader?.startsWith("Bearer ")) {
     const token = authHeader.slice(7);
 
     try {
@@ -66,7 +71,7 @@ app.get('/sso/login', async (c) => {
 
       // Redirect with existing token
       const redirectUrl = new URL(redirectUri);
-      redirectUrl.searchParams.set('token', token);
+      redirectUrl.searchParams.set("token", token);
 
       return c.redirect(redirectUrl.toString(), 302);
     } catch {
@@ -89,8 +94,8 @@ app.get('/sso/login', async (c) => {
  * Renders HTML registration form
  * Optional redirect_uri parameter for auto-login after registration
  */
-app.get('/sso/register', async (c) => {
-  const redirectUri = c.req.query('redirect_uri');
+app.get("/sso/register", async (c) => {
+  const redirectUri = c.req.query("redirect_uri");
 
   // Validate redirect_uri if provided
   if (redirectUri) {
@@ -106,7 +111,7 @@ app.get('/sso/register', async (c) => {
     } catch (error: any) {
       return c.html(
         render(errorTemplate, {
-          error: 'Invalid Redirect URI',
+          error: "Invalid Redirect URI",
           message: error.message,
         }),
         400,

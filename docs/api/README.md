@@ -95,6 +95,7 @@ All APIs return errors in consistent JSON format:
 ```
 
 Common HTTP status codes:
+
 - `400` - Bad Request (validation error)
 - `401` - Unauthorized (invalid or expired token)
 - `404` - Not Found
@@ -132,5 +133,6 @@ Production endpoints are rate-limited:
 ## Support
 
 For issues and questions:
+
 - GitHub Issues: https://github.com/your-org/EdgeAuth/issues
 - Documentation: https://docs.edgeauth.com

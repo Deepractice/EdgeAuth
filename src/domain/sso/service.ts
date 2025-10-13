@@ -4,9 +4,9 @@
  * Encapsulates Single Sign-On business logic
  */
 
-import { errors } from '@deepracticex/error-handling';
-import type { User } from '../user/types.js';
-import type { SSOSessionRepository } from './repository.js';
+import { errors } from "@deepracticex/error-handling";
+import type { User } from "../user/types.js";
+import type { SSOSessionRepository } from "./repository.js";
 import type {
   CreateSSOSessionData,
   SSOLoginRequest,
@@ -14,8 +14,8 @@ import type {
   SSOSession,
   SSOTokenPayload,
   SSOTokenVerification,
-} from './types.js';
-import { validateRedirectUri, validateSSOToken } from './validation.js';
+} from "./types.js";
+import { validateRedirectUri, validateSSOToken } from "./validation.js";
 
 export class SSOService {
   constructor(private readonly sessionRepository: SSOSessionRepository) {}
@@ -43,7 +43,11 @@ export class SSOService {
   /**
    * Handle SSO login
    */
-  async handleLogin(request: SSOLoginRequest, user: User, token: string): Promise<SSOLoginResult> {
+  async handleLogin(
+    request: SSOLoginRequest,
+    user: User,
+    token: string,
+  ): Promise<SSOLoginResult> {
     // Validate redirect URI
     validateRedirectUri(request.redirectUri);
 
@@ -68,25 +72,28 @@ export class SSOService {
   /**
    * Verify SSO token
    */
-  async verifyToken(token: string, payload: SSOTokenPayload): Promise<SSOTokenVerification> {
+  async verifyToken(
+    token: string,
+    payload: SSOTokenPayload,
+  ): Promise<SSOTokenVerification> {
     validateSSOToken(token);
 
     // Find session
     const session = await this.sessionRepository.findByToken(token);
 
     if (!session) {
-      throw errors.unauthorized('Invalid token');
+      throw errors.unauthorized("Invalid token");
     }
 
     // Check if revoked
     if (session.revokedAt !== null) {
-      throw errors.unauthorized('Token has been revoked');
+      throw errors.unauthorized("Token has been revoked");
     }
 
     // Check expiration
     const now = Date.now();
     if (session.expiresAt < now) {
-      throw errors.unauthorized('Token expired');
+      throw errors.unauthorized("Token expired");
     }
 
     // Update last accessed
@@ -108,11 +115,11 @@ export class SSOService {
     const session = await this.sessionRepository.findBySessionId(sessionId);
 
     if (!session) {
-      throw errors.notFound('Session not found');
+      throw errors.notFound("Session not found");
     }
 
     if (session.revokedAt !== null) {
-      throw errors.validation('Already logged out');
+      throw errors.validation("Already logged out");
     }
 
     await this.sessionRepository.revokeBySessionId(sessionId);
@@ -144,7 +151,9 @@ export class SSOService {
 
     // Return the most recent non-revoked, non-expired session
     const now = Date.now();
-    const validSession = sessions.find((s) => s.revokedAt === null && s.expiresAt > now);
+    const validSession = sessions.find(
+      (s) => s.revokedAt === null && s.expiresAt > now,
+    );
 
     return validSession || null;
   }

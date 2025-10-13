@@ -2,18 +2,18 @@
  * OAuth validation logic
  */
 
-import { errors } from '@deepracticex/error-handling';
-import type { OAuthClient } from './client.js';
+import { errors } from "@deepracticex/error-handling";
+import type { OAuthClient } from "./client.js";
 
 /**
  * Allowed redirect URI schemes
  */
-const ALLOWED_SCHEMES = ['https:', 'http:'];
+const ALLOWED_SCHEMES = ["https:", "http:"];
 
 /**
  * Localhost hostnames (allowed with http)
  */
-const LOCALHOST_HOSTNAMES = ['localhost', '127.0.0.1', '[::1]'];
+const LOCALHOST_HOSTNAMES = ["localhost", "127.0.0.1", "[::1]"];
 
 /**
  * Validate redirect URI
@@ -24,30 +24,30 @@ const LOCALHOST_HOSTNAMES = ['localhost', '127.0.0.1', '[::1]'];
  * - Must be absolute URI
  */
 export function validateRedirectUri(uri: string): void {
-  if (!uri || typeof uri !== 'string') {
-    throw errors.validation('redirect_uri is required');
+  if (!uri || typeof uri !== "string") {
+    throw errors.validation("redirect_uri is required");
   }
 
   let url: URL;
   try {
     url = new URL(uri);
   } catch {
-    throw errors.validation('Invalid redirect_uri format');
+    throw errors.validation("Invalid redirect_uri format");
   }
 
   // Check scheme
   if (!ALLOWED_SCHEMES.includes(url.protocol)) {
-    throw errors.validation('Invalid redirect_uri scheme');
+    throw errors.validation("Invalid redirect_uri scheme");
   }
 
   // HTTP only allowed for localhost
-  if (url.protocol === 'http:' && !LOCALHOST_HOSTNAMES.includes(url.hostname)) {
-    throw errors.validation('redirect_uri must use https for non-localhost');
+  if (url.protocol === "http:" && !LOCALHOST_HOSTNAMES.includes(url.hostname)) {
+    throw errors.validation("redirect_uri must use https for non-localhost");
   }
 
   // Reject fragment
   if (url.hash) {
-    throw errors.validation('redirect_uri must not contain fragment');
+    throw errors.validation("redirect_uri must not contain fragment");
   }
 }
 
@@ -57,15 +57,15 @@ export function validateRedirectUri(uri: string): void {
  * Validate OAuth scope format
  */
 export function validateScope(scope: string): void {
-  if (!scope || typeof scope !== 'string') {
-    throw errors.validation('scope is required');
+  if (!scope || typeof scope !== "string") {
+    throw errors.validation("scope is required");
   }
 
   // Scopes are space-separated
-  const scopes = scope.split(' ');
+  const scopes = scope.split(" ");
 
   if (scopes.length === 0) {
-    throw errors.validation('At least one scope is required');
+    throw errors.validation("At least one scope is required");
   }
 
   // Each scope should be alphanumeric with optional colons and underscores
@@ -80,7 +80,10 @@ export function validateScope(scope: string): void {
 /**
  * Check if requested scopes are allowed for client
  */
-export function areScopesAllowed(client: OAuthClient, requestedScopes: string[]): boolean {
+export function areScopesAllowed(
+  client: OAuthClient,
+  requestedScopes: string[],
+): boolean {
   return requestedScopes.every((scope) => client.scopes.includes(scope));
 }
 
@@ -88,10 +91,14 @@ export function areScopesAllowed(client: OAuthClient, requestedScopes: string[])
  * Validate grant type
  */
 export function validateGrantType(grantType: string): void {
-  const validGrantTypes = ['authorization_code', 'client_credentials', 'refresh_token'];
+  const validGrantTypes = [
+    "authorization_code",
+    "client_credentials",
+    "refresh_token",
+  ];
 
   if (!grantType || !validGrantTypes.includes(grantType)) {
-    throw errors.validation('Invalid grant_type');
+    throw errors.validation("Invalid grant_type");
   }
 }
 
@@ -100,7 +107,7 @@ export function validateGrantType(grantType: string): void {
  */
 export function isGrantTypeAllowed(
   client: OAuthClient,
-  grantType: 'authorization_code' | 'client_credentials' | 'refresh_token',
+  grantType: "authorization_code" | "client_credentials" | "refresh_token",
 ): boolean {
   return client.grantTypes.includes(grantType);
 }
@@ -112,25 +119,25 @@ export function isGrantTypeAllowed(
  */
 export function validateCodeChallenge(
   codeChallenge: string,
-  codeChallengeMethod: 'S256' | 'plain',
+  codeChallengeMethod: "S256" | "plain",
 ): void {
   if (!codeChallenge) {
-    throw errors.validation('code_challenge is required');
+    throw errors.validation("code_challenge is required");
   }
 
-  if (!['S256', 'plain'].includes(codeChallengeMethod)) {
-    throw errors.validation('Invalid code_challenge_method');
+  if (!["S256", "plain"].includes(codeChallengeMethod)) {
+    throw errors.validation("Invalid code_challenge_method");
   }
 
   // Base64 URL-encoded string
   const base64UrlRegex = /^[A-Za-z0-9_-]+$/;
   if (!base64UrlRegex.test(codeChallenge)) {
-    throw errors.validation('Invalid code_challenge format');
+    throw errors.validation("Invalid code_challenge format");
   }
 
   // Length requirements
   if (codeChallenge.length < 43 || codeChallenge.length > 128) {
-    throw errors.validation('code_challenge must be 43-128 characters');
+    throw errors.validation("code_challenge must be 43-128 characters");
   }
 }
 
@@ -139,20 +146,26 @@ export function validateCodeChallenge(
 /**
  * Validate client credentials
  */
-export function validateClientCredentials(clientId: string, clientSecret: string): void {
-  if (!clientId || typeof clientId !== 'string') {
-    throw errors.validation('client_id is required');
+export function validateClientCredentials(
+  clientId: string,
+  clientSecret: string,
+): void {
+  if (!clientId || typeof clientId !== "string") {
+    throw errors.validation("client_id is required");
   }
 
-  if (!clientSecret || typeof clientSecret !== 'string') {
-    throw errors.validation('client_secret is required');
+  if (!clientSecret || typeof clientSecret !== "string") {
+    throw errors.validation("client_secret is required");
   }
 }
 
 /**
  * Verify client secret
  */
-export function verifyClientSecret(client: OAuthClient, providedSecret: string): boolean {
+export function verifyClientSecret(
+  client: OAuthClient,
+  providedSecret: string,
+): boolean {
   return client.secret === providedSecret;
 }
 
@@ -160,12 +173,12 @@ export function verifyClientSecret(client: OAuthClient, providedSecret: string):
  * Validate client name
  */
 export function validateClientName(name: string): void {
-  if (!name || typeof name !== 'string') {
-    throw errors.validation('Client name is required');
+  if (!name || typeof name !== "string") {
+    throw errors.validation("Client name is required");
   }
 
   if (name.length < 3 || name.length > 100) {
-    throw errors.validation('Client name must be 3-100 characters');
+    throw errors.validation("Client name must be 3-100 characters");
   }
 }
 
@@ -174,7 +187,7 @@ export function validateClientName(name: string): void {
  */
 export function validateClientRedirectUris(redirectUris: string[]): void {
   if (!Array.isArray(redirectUris) || redirectUris.length === 0) {
-    throw errors.validation('At least one redirect_uri is required');
+    throw errors.validation("At least one redirect_uri is required");
   }
 
   for (const uri of redirectUris) {
@@ -187,7 +200,7 @@ export function validateClientRedirectUris(redirectUris: string[]): void {
  */
 export function validateClientScopes(scopes: string[]): void {
   if (!Array.isArray(scopes) || scopes.length === 0) {
-    throw errors.validation('At least one scope is required');
+    throw errors.validation("At least one scope is required");
   }
 
   for (const scope of scopes) {

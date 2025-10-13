@@ -17,9 +17,9 @@ export interface OAuthClient {
 }
 
 export type GrantType =
-  | 'authorization_code'
-  | 'client_credentials'
-  | 'refresh_token';
+  | "authorization_code"
+  | "client_credentials"
+  | "refresh_token";
 
 export interface CreateOAuthClientRequest {
   name: string;
@@ -36,7 +36,7 @@ export function isValidRedirectUri(uri: string): boolean {
   try {
     const url = new URL(uri);
     // Must be https in production (allow http for localhost in dev)
-    if (url.protocol !== 'https:' && url.hostname !== 'localhost') {
+    if (url.protocol !== "https:" && url.hostname !== "localhost") {
       return false;
     }
     // Cannot have fragments

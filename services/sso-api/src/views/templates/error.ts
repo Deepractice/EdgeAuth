@@ -4,8 +4,8 @@
  * Renders error pages with user-friendly messages
  */
 
-import { escapeHtml } from '../renderer.js';
-import { baseTemplate } from './base.js';
+import { escapeHtml } from "../renderer.js";
+import { baseTemplate } from "./base.js";
 
 export interface ErrorTemplateData {
   error: string;
@@ -28,13 +28,13 @@ export function errorTemplate(data: ErrorTemplateData): string {
       ${
         data.message
           ? `<p class="error-description">${escapeHtml(data.message)}</p>`
-          : ''
+          : ""
       }
 
       ${
         data.backUrl
           ? `<a href="${escapeHtml(data.backUrl)}" class="btn-secondary">Go Back</a>`
-          : ''
+          : ""
       }
     </div>
   `;
@@ -81,7 +81,7 @@ export function errorTemplate(data: ErrorTemplateData): string {
   `;
 
   return baseTemplate({
-    title: 'Error',
+    title: "Error",
     content: errorContent,
     styles,
   });

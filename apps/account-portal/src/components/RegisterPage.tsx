@@ -1,27 +1,27 @@
-import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import { register } from '~/lib/api'
-import RegisterForm from './RegisterForm'
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { register } from "~/lib/api";
+import RegisterForm from "./RegisterForm";
 
 export default function RegisterPage() {
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const registerMutation = useMutation({
     mutationFn: register,
     onSuccess: () => {
-      setSuccess(true)
-      setError(null)
+      setSuccess(true);
+      setError(null);
     },
     onError: (error: Error) => {
-      setError(error.message)
+      setError(error.message);
     },
-  })
+  });
 
   const handleSubmit = (email: string, username: string, password: string) => {
-    setError(null)
-    registerMutation.mutate({ email, username, password })
-  }
+    setError(null);
+    registerMutation.mutate({ email, username, password });
+  };
 
   if (success) {
     return (
@@ -45,7 +45,9 @@ export default function RegisterPage() {
                   />
                 </svg>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900">Check Your Email</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Check Your Email
+              </h1>
               <p className="text-gray-600 mt-2">
                 We've sent a verification link to your email address
               </p>
@@ -75,7 +77,7 @@ export default function RegisterPage() {
           {/* Deepractice Footer */}
           <div className="mt-8 text-center text-sm text-gray-600">
             <p>
-              Powered by{' '}
+              Powered by{" "}
               <a
                 href="https://deepractice.ai"
                 target="_blank"
@@ -88,7 +90,7 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -145,8 +147,11 @@ export default function RegisterPage() {
           {/* Footer */}
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>
-              Already have an account?{' '}
-              <a href="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+              Already have an account?{" "}
+              <a
+                href="/login"
+                className="text-primary-600 hover:text-primary-700 font-medium"
+              >
                 Sign in
               </a>
             </p>
@@ -156,7 +161,7 @@ export default function RegisterPage() {
         {/* Deepractice Footer */}
         <div className="mt-8 text-center text-sm text-gray-600">
           <p>
-            Powered by{' '}
+            Powered by{" "}
             <a
               href="https://deepractice.ai"
               target="_blank"
@@ -169,5 +174,5 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

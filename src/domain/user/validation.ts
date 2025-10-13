@@ -23,22 +23,22 @@ const USERNAME_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9_-]{2,19}$/;
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 128;
 
-import { errors } from '@deepracticex/error-handling';
+import { errors } from "@deepracticex/error-handling";
 
 /**
  * Validate email format
  */
 export function validateEmail(email: string): void {
-  if (!email || typeof email !== 'string') {
-    throw errors.validation('Email is required');
+  if (!email || typeof email !== "string") {
+    throw errors.validation("Email is required");
   }
 
   if (!EMAIL_REGEX.test(email)) {
-    throw errors.validation('Invalid email format');
+    throw errors.validation("Invalid email format");
   }
 
   if (email.length > 255) {
-    throw errors.validation('Email is too long');
+    throw errors.validation("Email is too long");
   }
 }
 
@@ -46,13 +46,13 @@ export function validateEmail(email: string): void {
  * Validate username format
  */
 export function validateUsername(username: string): void {
-  if (!username || typeof username !== 'string') {
-    throw errors.validation('Username is required');
+  if (!username || typeof username !== "string") {
+    throw errors.validation("Username is required");
   }
 
   if (!USERNAME_REGEX.test(username)) {
     throw errors.validation(
-      'Username must be 3-20 characters, start with alphanumeric, and contain only letters, numbers, hyphens, or underscores',
+      "Username must be 3-20 characters, start with alphanumeric, and contain only letters, numbers, hyphens, or underscores",
     );
   }
 }
@@ -61,16 +61,20 @@ export function validateUsername(username: string): void {
  * Validate password strength
  */
 export function validatePassword(password: string): void {
-  if (!password || typeof password !== 'string') {
-    throw errors.validation('Password is required');
+  if (!password || typeof password !== "string") {
+    throw errors.validation("Password is required");
   }
 
   if (password.length < PASSWORD_MIN_LENGTH) {
-    throw errors.validation(`Password must be at least ${PASSWORD_MIN_LENGTH} characters`);
+    throw errors.validation(
+      `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
+    );
   }
 
   if (password.length > PASSWORD_MAX_LENGTH) {
-    throw errors.validation(`Password must not exceed ${PASSWORD_MAX_LENGTH} characters`);
+    throw errors.validation(
+      `Password must not exceed ${PASSWORD_MAX_LENGTH} characters`,
+    );
   }
 }
 
@@ -78,5 +82,5 @@ export function validatePassword(password: string): void {
  * Check if account identifier is email or username
  */
 export function isEmail(account: string): boolean {
-  return account.includes('@');
+  return account.includes("@");
 }

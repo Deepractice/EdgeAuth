@@ -1,41 +1,47 @@
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent } from "react";
 
 interface RegisterFormProps {
-  onSubmit: (email: string, username: string, password: string) => void
-  isLoading: boolean
+  onSubmit: (email: string, username: string, password: string) => void;
+  isLoading: boolean;
 }
 
-export default function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
-  const [email, setEmail] = useState('')
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [passwordError, setPasswordError] = useState<string | null>(null)
+export default function RegisterForm({
+  onSubmit,
+  isLoading,
+}: RegisterFormProps) {
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    setPasswordError(null)
+    e.preventDefault();
+    setPasswordError(null);
 
     // Validate passwords match
     if (password !== confirmPassword) {
-      setPasswordError('Passwords do not match')
-      return
+      setPasswordError("Passwords do not match");
+      return;
     }
 
     // Validate password strength
     if (password.length < 8) {
-      setPasswordError('Password must be at least 8 characters long')
-      return
+      setPasswordError("Password must be at least 8 characters long");
+      return;
     }
 
-    onSubmit(email, username, password)
-  }
+    onSubmit(email, username, password);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Email Input */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Email
         </label>
         <input
@@ -53,7 +59,10 @@ export default function RegisterForm({ onSubmit, isLoading }: RegisterFormProps)
 
       {/* Username Input */}
       <div>
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="username"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Username
         </label>
         <input
@@ -71,7 +80,10 @@ export default function RegisterForm({ onSubmit, isLoading }: RegisterFormProps)
 
       {/* Password Input */}
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Password
         </label>
         <input
@@ -90,7 +102,10 @@ export default function RegisterForm({ onSubmit, isLoading }: RegisterFormProps)
 
       {/* Confirm Password Input */}
       <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="confirmPassword"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Confirm Password
         </label>
         <input
@@ -119,7 +134,7 @@ export default function RegisterForm({ onSubmit, isLoading }: RegisterFormProps)
           disabled={isLoading}
         />
         <label htmlFor="terms" className="ml-2 text-sm text-gray-700">
-          I agree to the{' '}
+          I agree to the{" "}
           <a
             href="https://deepractice.ai/terms"
             target="_blank"
@@ -127,8 +142,8 @@ export default function RegisterForm({ onSubmit, isLoading }: RegisterFormProps)
             className="text-primary-600 hover:text-primary-700"
           >
             Terms of Service
-          </a>{' '}
-          and{' '}
+          </a>{" "}
+          and{" "}
           <a
             href="https://deepractice.ai/privacy"
             target="_blank"
@@ -170,9 +185,9 @@ export default function RegisterForm({ onSubmit, isLoading }: RegisterFormProps)
             Creating account...
           </>
         ) : (
-          'Create Account'
+          "Create Account"
         )}
       </button>
     </form>
-  )
+  );
 }

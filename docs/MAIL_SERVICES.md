@@ -26,18 +26,18 @@ EMAIL_FROM_NAME="EdgeAuth"
 #### Usage
 
 ```typescript
-import { PlunkSender } from 'edgeauth/core/mail';
+import { PlunkSender } from "edgeauth/core/mail";
 
 const mailSender = new PlunkSender(
   env.PLUNK_API_KEY,
   env.EMAIL_FROM,
-  env.EMAIL_FROM_NAME
+  env.EMAIL_FROM_NAME,
 );
 
 await mailSender.send({
-  to: 'user@example.com',
-  subject: 'Email Verification',
-  html: '<h1>Verify your email</h1><p>Click the link below...</p>',
+  to: "user@example.com",
+  subject: "Email Verification",
+  html: "<h1>Verify your email</h1><p>Click the link below...</p>",
 });
 ```
 
@@ -64,17 +64,14 @@ EMAIL_FROM_NAME="EdgeAuth"
 #### Usage
 
 ```typescript
-import { MailChannelSender } from 'edgeauth/core/mail';
+import { MailChannelSender } from "edgeauth/core/mail";
 
-const mailSender = new MailChannelSender(
-  env.EMAIL_FROM,
-  env.EMAIL_FROM_NAME
-);
+const mailSender = new MailChannelSender(env.EMAIL_FROM, env.EMAIL_FROM_NAME);
 
 await mailSender.send({
-  to: 'user@example.com',
-  subject: 'Email Verification',
-  html: '<h1>Verify your email</h1>',
+  to: "user@example.com",
+  subject: "Email Verification",
+  html: "<h1>Verify your email</h1>",
 });
 ```
 
@@ -86,7 +83,7 @@ await mailSender.send({
 **Free Tier:** TBD
 
 ```typescript
-import { CloudflareMailSender } from 'edgeauth/core/mail';
+import { CloudflareMailSender } from "edgeauth/core/mail";
 
 // Not yet implemented - stub for future use
 const mailSender = new CloudflareMailSender(env.EMAIL_BINDING);
@@ -96,11 +93,11 @@ const mailSender = new CloudflareMailSender(env.EMAIL_BINDING);
 
 ## Service Comparison
 
-| Service | Free Tier | Setup Difficulty | Recommended For |
-|---------|-----------|------------------|-----------------|
-| **Plunk** | 3,000/month | ⭐ Easy | Most users |
-| **MailChannels** | 100/day | ⭐⭐ Medium | Cloudflare-specific |
-| **Cloudflare** | TBD | ⭐ Easy | Future (not available yet) |
+| Service          | Free Tier   | Setup Difficulty | Recommended For            |
+| ---------------- | ----------- | ---------------- | -------------------------- |
+| **Plunk**        | 3,000/month | ⭐ Easy          | Most users                 |
+| **MailChannels** | 100/day     | ⭐⭐ Medium      | Cloudflare-specific        |
+| **Cloudflare**   | TBD         | ⭐ Easy          | Future (not available yet) |
 
 ---
 
@@ -109,11 +106,13 @@ const mailSender = new CloudflareMailSender(env.EMAIL_BINDING);
 ### For China-based Users
 
 **Alibaba Cloud DirectMail**
+
 - Free: 2,000 emails/day
 - Requires: Domain verification, ICP filing
 - Best for: China domestic delivery
 
 **Tencent Cloud SES**
+
 - Free: 1,000 emails (total)
 - Price: ¥0.0019/email after free tier
 - Best for: Small scale testing
@@ -121,11 +120,13 @@ const mailSender = new CloudflareMailSender(env.EMAIL_BINDING);
 ### For Global Users
 
 **Brevo (formerly Sendinblue)**
+
 - Free: 9,000 emails/month (300/day)
 - No credit card required
 - Best for: Highest free tier
 
 **Resend**
+
 - Free: 3,000 emails/month
 - Developer-friendly API
 - Best for: Modern development experience
@@ -136,29 +137,26 @@ const mailSender = new CloudflareMailSender(env.EMAIL_BINDING);
 
 ```typescript
 // src/core/mail/MailSenderFactory.ts
-import { PlunkSender, MailChannelSender } from 'edgeauth/core/mail';
-import type { MailSender } from 'edgeauth/core/mail';
+import { PlunkSender, MailChannelSender } from "edgeauth/core/mail";
+import type { MailSender } from "edgeauth/core/mail";
 
-export type MailProvider = 'plunk' | 'mailchannels' | 'cloudflare';
+export type MailProvider = "plunk" | "mailchannels" | "cloudflare";
 
 export class MailSenderFactory {
   static create(
     provider: MailProvider,
-    config: Record<string, string>
+    config: Record<string, string>,
   ): MailSender {
     switch (provider) {
-      case 'plunk':
+      case "plunk":
         return new PlunkSender(
           config.PLUNK_API_KEY,
           config.EMAIL_FROM,
-          config.EMAIL_FROM_NAME
+          config.EMAIL_FROM_NAME,
         );
 
-      case 'mailchannels':
-        return new MailChannelSender(
-          config.EMAIL_FROM,
-          config.EMAIL_FROM_NAME
-        );
+      case "mailchannels":
+        return new MailChannelSender(config.EMAIL_FROM, config.EMAIL_FROM_NAME);
 
       default:
         throw new Error(`Unknown mail provider: ${provider}`);
@@ -167,14 +165,11 @@ export class MailSenderFactory {
 }
 
 // Usage in your worker
-const mailSender = MailSenderFactory.create(
-  env.MAIL_PROVIDER as MailProvider,
-  {
-    PLUNK_API_KEY: env.PLUNK_API_KEY,
-    EMAIL_FROM: env.EMAIL_FROM,
-    EMAIL_FROM_NAME: env.EMAIL_FROM_NAME,
-  }
-);
+const mailSender = MailSenderFactory.create(env.MAIL_PROVIDER as MailProvider, {
+  PLUNK_API_KEY: env.PLUNK_API_KEY,
+  EMAIL_FROM: env.EMAIL_FROM,
+  EMAIL_FROM_NAME: env.EMAIL_FROM_NAME,
+});
 ```
 
 ---
@@ -186,7 +181,7 @@ For development, you can use a mock sender:
 ```typescript
 class MockMailSender implements MailSender {
   async send(message: EmailMessage): Promise<void> {
-    console.log('Mock email sent:', message);
+    console.log("Mock email sent:", message);
   }
 }
 ```
@@ -209,16 +204,19 @@ class MockMailSender implements MailSender {
 ### Common Issues
 
 **Email not received:**
+
 - Check spam folder
 - Verify sender domain (SPF, DKIM, DMARC)
 - Check service quota limits
 
 **API errors:**
+
 - Verify API key is correct
 - Check service status page
 - Review error message details
 
 **Slow sending:**
+
 - Consider async/queue for bulk emails
 - Check network latency
 - Use service with closer data center

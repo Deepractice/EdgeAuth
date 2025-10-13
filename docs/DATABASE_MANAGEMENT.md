@@ -29,11 +29,13 @@ edgeauth-oauth
 ### Migrations (`src/migrations/`)
 
 **Schema Management** (Centralized):
+
 - Single source of truth for all database schemas
 - All migration files stored here
 - Independent of service APIs
 
 **Migrations**:
+
 - `0001_create_users_table.sql` - Users table
 - `0002_create_sso_sessions_table.sql` - SSO sessions table
 - `0003_add_email_verification.sql` - Email verification
@@ -42,11 +44,13 @@ edgeauth-oauth
 ### SSO API
 
 **Business Logic Only**:
+
 - User authentication
 - SSO session management
 - Token generation and verification
 
 **Database Bindings** (Read/Write):
+
 - `DB` → edgeauth-users (read users)
 - `SSO_DB` → edgeauth-sso (read/write sessions)
 
@@ -55,11 +59,13 @@ edgeauth-oauth
 ### OAuth API
 
 **Business Logic Only**:
+
 - OAuth 2.0 authorization flows
 - Client management
 - Token management
 
 **Database Bindings** (Read/Write):
+
 - `OAUTH_DB` → edgeauth-oauth (read/write clients and tokens)
 
 **No Migrations**: OAuth API does not manage schemas
@@ -69,6 +75,7 @@ edgeauth-oauth
 ### Problem with Distributed Migrations
 
 **Before** (Each service has migrations):
+
 ```
 services/sso-api/migrations/
   0001_create_users_table.sql
@@ -80,6 +87,7 @@ services/admin-api/migrations/
 ```
 
 **Issues**:
+
 - Schema conflicts (who creates `users`?)
 - Deployment order dependencies
 - Inconsistent schema versions
@@ -88,6 +96,7 @@ services/admin-api/migrations/
 ### Solution: Centralized Schema Management
 
 **Now** (Migrations in `src/migrations/`):
+
 ```
 src/migrations/
   0001_create_users_table.sql
@@ -103,6 +112,7 @@ services/oauth-api/
 ```
 
 **Benefits**:
+
 - ✅ Single source of truth for schemas
 - ✅ No deployment order issues
 - ✅ Clear responsibility boundaries
@@ -114,8 +124,8 @@ Workers still share domain logic through packages:
 
 ```typescript
 // All workers can use:
-import { UserService } from 'edge-auth-domain';
-import { D1UserRepository } from 'edge-auth-core';
+import { UserService } from "edge-auth-domain";
+import { D1UserRepository } from "edge-auth-core";
 
 // SSO API example
 const userRepo = new D1UserRepository(c.env.DB);
@@ -123,6 +133,7 @@ const userService = new UserService(userRepo);
 ```
 
 **Key Point**: Workers access databases directly via D1 bindings, not through HTTP APIs. This ensures:
+
 - High performance (no HTTP overhead)
 - Code reuse (shared domain/core packages)
 - Type safety (TypeScript across all layers)
@@ -287,15 +298,16 @@ const sessionRepo = new D1SSOSessionRepository(c.env.SSO_DB);
 
 ## Summary
 
-| Aspect | Migrations (`src/migrations/`) | Service APIs |
-|--------|-------------|---------------|
-| Migrations | ✅ Centralized location | ❌ None |
-| Schema Management | ✅ Single source of truth | ❌ No migrations |
-| Database Binding | N/A | ✅ As needed |
-| Business Logic | N/A | ✅ All features |
-| Code Reuse | N/A | ✅ Via packages |
+| Aspect            | Migrations (`src/migrations/`) | Service APIs     |
+| ----------------- | ------------------------------ | ---------------- |
+| Migrations        | ✅ Centralized location        | ❌ None          |
+| Schema Management | ✅ Single source of truth      | ❌ No migrations |
+| Database Binding  | N/A                            | ✅ As needed     |
+| Business Logic    | N/A                            | ✅ All features  |
+| Code Reuse        | N/A                            | ✅ Via packages  |
 
 This architecture ensures:
+
 - Clear separation of concerns
 - No schema conflicts
 - Flexible deployment

@@ -4,19 +4,19 @@
  * Orchestrates administrative operations including user management, system monitoring, and configuration.
  */
 
-import { errors, AppError } from '@deepracticex/error-handling';
-import { createLogger } from '../infrastructure/logger/index.js';
-import { UserService } from '../domain/user/service.js';
-import { D1UserRepository } from '../infrastructure/persistence/index.js';
-import { hashPassword } from '../infrastructure/crypto/index.js';
-import type { User } from '../domain/user/types.js';
+import { errors, AppError } from "@deepracticex/error-handling";
+import { createLogger } from "../infrastructure/logger/index.js";
+import { UserService } from "../domain/user/service.js";
+import { D1UserRepository } from "../infrastructure/persistence/index.js";
+import { hashPassword } from "../infrastructure/crypto/index.js";
+import type { User } from "../domain/user/types.js";
 
 const logger = createLogger({
-  name: 'admin-service',
-  level: 'info',
+  name: "admin-service",
+  level: "info",
   console: true,
   colors: true,
-  environment: 'cloudflare-workers',
+  environment: "cloudflare-workers",
 });
 
 /**
@@ -63,22 +63,25 @@ export class AdminService {
       const pageSize = params.pageSize || 20;
       const offset = (page - 1) * pageSize;
 
-      let query = 'SELECT * FROM users';
+      let query = "SELECT * FROM users";
       const bindings: any[] = [];
 
       if (params.search) {
-        query += ' WHERE email LIKE ? OR username LIKE ?';
+        query += " WHERE email LIKE ? OR username LIKE ?";
         bindings.push(`%${params.search}%`, `%${params.search}%`);
       }
 
-      query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+      query += " ORDER BY created_at DESC LIMIT ? OFFSET ?";
       bindings.push(pageSize, offset);
 
-      const result = await this.config.db.prepare(query).bind(...bindings).all<User>();
+      const result = await this.config.db
+        .prepare(query)
+        .bind(...bindings)
+        .all<User>();
 
       const countQuery = params.search
-        ? 'SELECT COUNT(*) as count FROM users WHERE email LIKE ? OR username LIKE ?'
-        : 'SELECT COUNT(*) as count FROM users';
+        ? "SELECT COUNT(*) as count FROM users WHERE email LIKE ? OR username LIKE ?"
+        : "SELECT COUNT(*) as count FROM users";
       const countBindings = params.search
         ? [`%${params.search}%`, `%${params.search}%`]
         : [];
@@ -94,8 +97,8 @@ export class AdminService {
         pageSize,
       };
     } catch (error) {
-      logger.error('List users error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("List users error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -109,8 +112,8 @@ export class AdminService {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Get user error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Get user error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -139,23 +142,23 @@ export class AdminService {
         const now = Date.now();
         await this.config.db
           .prepare(
-            'UPDATE users SET email_verified = 1, email_verified_at = ?, updated_at = ? WHERE id = ?',
+            "UPDATE users SET email_verified = 1, email_verified_at = ?, updated_at = ? WHERE id = ?",
           )
           .bind(now, now, user.id)
           .run();
 
-        logger.info('User created and verified by admin', { userId: user.id });
+        logger.info("User created and verified by admin", { userId: user.id });
         return { ...user, emailVerified: true, emailVerifiedAt: now };
       }
 
-      logger.info('User created by admin', { userId: user.id });
+      logger.info("User created by admin", { userId: user.id });
       return user;
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Create user error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Create user error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -173,51 +176,51 @@ export class AdminService {
     try {
       const user = await this.userRepository.findById(userId);
       if (!user) {
-        throw errors.notFound('User not found');
+        throw errors.notFound("User not found");
       }
 
       const updates: string[] = [];
       const bindings: any[] = [];
 
       if (data.email) {
-        updates.push('email = ?');
+        updates.push("email = ?");
         bindings.push(data.email.toLowerCase());
       }
 
       if (data.username) {
-        updates.push('username = ?');
+        updates.push("username = ?");
         bindings.push(data.username);
       }
 
       if (data.emailVerified !== undefined) {
-        updates.push('email_verified = ?');
+        updates.push("email_verified = ?");
         bindings.push(data.emailVerified ? 1 : 0);
         if (data.emailVerified) {
-          updates.push('email_verified_at = ?');
+          updates.push("email_verified_at = ?");
           bindings.push(Date.now());
         }
       }
 
       if (updates.length > 0) {
         const now = Date.now();
-        updates.push('updated_at = ?');
+        updates.push("updated_at = ?");
         bindings.push(now, userId);
 
         await this.config.db
-          .prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`)
+          .prepare(`UPDATE users SET ${updates.join(", ")} WHERE id = ?`)
           .bind(...bindings)
           .run();
 
-        logger.info('User updated by admin', { userId });
+        logger.info("User updated by admin", { userId });
       }
 
-      return await this.userRepository.findById(userId) as User;
+      return (await this.userRepository.findById(userId)) as User;
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Update user error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Update user error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -228,18 +231,21 @@ export class AdminService {
     try {
       const user = await this.userRepository.findById(userId);
       if (!user) {
-        throw errors.notFound('User not found');
+        throw errors.notFound("User not found");
       }
 
-      await this.config.db.prepare('DELETE FROM users WHERE id = ?').bind(userId).run();
+      await this.config.db
+        .prepare("DELETE FROM users WHERE id = ?")
+        .bind(userId)
+        .run();
 
-      logger.info('User deleted by admin', { userId, email: user.email });
+      logger.info("User deleted by admin", { userId, email: user.email });
     } catch (error) {
       if (AppError.isAppError(error)) {
         throw error;
       }
-      logger.error('Delete user error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Delete user error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -253,11 +259,11 @@ export class AdminService {
   }> {
     try {
       const totalResult = await this.config.db
-        .prepare('SELECT COUNT(*) as count FROM users')
+        .prepare("SELECT COUNT(*) as count FROM users")
         .first<{ count: number }>();
 
       const verifiedResult = await this.config.db
-        .prepare('SELECT COUNT(*) as count FROM users WHERE email_verified = 1')
+        .prepare("SELECT COUNT(*) as count FROM users WHERE email_verified = 1")
         .first<{ count: number }>();
 
       const totalUsers = totalResult?.count || 0;
@@ -269,8 +275,8 @@ export class AdminService {
         unverifiedUsers: totalUsers - verifiedUsers,
       };
     } catch (error) {
-      logger.error('Get statistics error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Get statistics error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 }

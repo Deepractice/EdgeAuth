@@ -4,8 +4,8 @@
  * Renders the login form for SSO authentication
  */
 
-import { escapeHtml } from '../renderer.js';
-import { baseTemplate } from './base.js';
+import { escapeHtml } from "../renderer.js";
+import { baseTemplate } from "./base.js";
 
 export interface LoginTemplateData {
   redirectUri: string;
@@ -24,7 +24,7 @@ export function loginTemplate(data: LoginTemplateData): string {
           </svg>
           ${escapeHtml(data.error)}
         </div>`
-          : ''
+          : ""
       }
 
       <form method="POST" action="/sso/login">
@@ -38,7 +38,7 @@ export function loginTemplate(data: LoginTemplateData): string {
             name="email"
             required
             autofocus
-            value="${escapeHtml(data.email || '')}"
+            value="${escapeHtml(data.email || "")}"
             placeholder="you@example.com"
           />
         </div>
@@ -60,7 +60,7 @@ export function loginTemplate(data: LoginTemplateData): string {
       </form>
 
       <div class="footer-text">
-        <p>Don't have an account? <a href="/sso/register${data.redirectUri ? `?redirect_uri=${encodeURIComponent(data.redirectUri)}` : ''}">Create one</a></p>
+        <p>Don't have an account? <a href="/sso/register${data.redirectUri ? `?redirect_uri=${encodeURIComponent(data.redirectUri)}` : ""}">Create one</a></p>
         <p class="terms">By signing in, you agree to our Terms of Service</p>
       </div>
     </div>
@@ -159,7 +159,7 @@ export function loginTemplate(data: LoginTemplateData): string {
   `;
 
   return baseTemplate({
-    title: 'Sign In',
+    title: "Sign In",
     content: formContent,
     styles,
   });

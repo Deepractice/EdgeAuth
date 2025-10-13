@@ -4,7 +4,11 @@
  * Cloudflare D1 (SQLite) implementation of OAuthClientRepository
  */
 
-import type { OAuthClient, OAuthClientRepository, GrantType } from 'edge-auth-domain';
+import type {
+  OAuthClient,
+  OAuthClientRepository,
+  GrantType,
+} from "~/domain/index.js";
 
 /**
  * D1 Database interface (from Cloudflare Workers)
@@ -116,52 +120,55 @@ export class D1OAuthClientRepository implements OAuthClientRepository {
     const values: unknown[] = [];
 
     if (data.name !== undefined) {
-      updates.push('name = ?');
+      updates.push("name = ?");
       values.push(data.name);
     }
     if (data.description !== undefined) {
-      updates.push('description = ?');
+      updates.push("description = ?");
       values.push(data.description || null);
     }
     if (data.redirectUris !== undefined) {
-      updates.push('redirect_uris = ?');
+      updates.push("redirect_uris = ?");
       values.push(JSON.stringify(data.redirectUris));
     }
     if (data.scopes !== undefined) {
-      updates.push('scopes = ?');
+      updates.push("scopes = ?");
       values.push(JSON.stringify(data.scopes));
     }
     if (data.grantTypes !== undefined) {
-      updates.push('grant_types = ?');
+      updates.push("grant_types = ?");
       values.push(JSON.stringify(data.grantTypes));
     }
     if (data.updatedAt !== undefined) {
-      updates.push('updated_at = ?');
+      updates.push("updated_at = ?");
       values.push(data.updatedAt);
     }
 
     if (updates.length === 0) {
       // No updates, just fetch and return
       const client = await this.findByIdWithSecret(id);
-      if (!client) throw new Error('Client not found');
+      if (!client) throw new Error("Client not found");
       return client;
     }
 
     values.push(id); // For WHERE clause
 
     await this.db
-      .prepare(`UPDATE oauth_clients SET ${updates.join(', ')} WHERE id = ?`)
+      .prepare(`UPDATE oauth_clients SET ${updates.join(", ")} WHERE id = ?`)
       .bind(...values)
       .run();
 
     const updated = await this.findByIdWithSecret(id);
-    if (!updated) throw new Error('Client not found after update');
+    if (!updated) throw new Error("Client not found after update");
 
     return updated;
   }
 
   async delete(id: string): Promise<void> {
-    await this.db.prepare(`DELETE FROM oauth_clients WHERE id = ?`).bind(id).run();
+    await this.db
+      .prepare(`DELETE FROM oauth_clients WHERE id = ?`)
+      .bind(id)
+      .run();
   }
 
   async list(): Promise<OAuthClient[]> {
@@ -179,7 +186,7 @@ export class D1OAuthClientRepository implements OAuthClientRepository {
     const result = await this.db
       .prepare(`SELECT 1 FROM oauth_clients WHERE id = ? LIMIT 1`)
       .bind(id)
-      .first<{ '1': number }>();
+      .first<{ "1": number }>();
 
     return result !== null;
   }

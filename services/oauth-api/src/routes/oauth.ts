@@ -2,9 +2,9 @@
  * OAuth 2.0 Authorization and Token Routes
  */
 
-import { Hono } from 'hono';
-import type { Env } from '../types';
-import { OAuthService } from '@edge-auth/core';
+import { Hono } from "hono";
+import type { Env } from "../types";
+import { OAuthService } from "@edge-auth/core";
 
 const oauthRoutes = new Hono<{ Bindings: Env }>();
 
@@ -31,25 +31,25 @@ function createOAuthService(env: Env): OAuthService {
  * - code_challenge: PKCE challenge (optional)
  * - code_challenge_method: S256 or plain (optional)
  */
-oauthRoutes.get('/authorize', async (c) => {
+oauthRoutes.get("/authorize", async (c) => {
   try {
-    const clientId = c.req.query('client_id');
-    const redirectUri = c.req.query('redirect_uri');
-    const responseType = c.req.query('response_type');
-    const scope = c.req.query('scope');
-    const state = c.req.query('state');
-    const codeChallenge = c.req.query('code_challenge');
-    const codeChallengeMethod = c.req.query('code_challenge_method') as
-      | 'S256'
-      | 'plain'
+    const clientId = c.req.query("client_id");
+    const redirectUri = c.req.query("redirect_uri");
+    const responseType = c.req.query("response_type");
+    const scope = c.req.query("scope");
+    const state = c.req.query("state");
+    const codeChallenge = c.req.query("code_challenge");
+    const codeChallengeMethod = c.req.query("code_challenge_method") as
+      | "S256"
+      | "plain"
       | undefined;
 
     // Validate required parameters
-    if (!clientId || !redirectUri || responseType !== 'code') {
+    if (!clientId || !redirectUri || responseType !== "code") {
       return c.json(
         {
-          error: 'invalid_request',
-          error_description: 'Missing or invalid required parameters',
+          error: "invalid_request",
+          error_description: "Missing or invalid required parameters",
         },
         400,
       );
@@ -61,8 +61,8 @@ oauthRoutes.get('/authorize', async (c) => {
     if (!client) {
       return c.json(
         {
-          error: 'invalid_client',
-          error_description: 'Client not found',
+          error: "invalid_client",
+          error_description: "Client not found",
         },
         401,
       );
@@ -76,9 +76,9 @@ oauthRoutes.get('/authorize', async (c) => {
 
     // For now, return JSON with instructions
     return c.json({
-      message: 'Authorization endpoint',
+      message: "Authorization endpoint",
       instructions:
-        'In production, this would show a consent page. For testing, use the /oauth/authorize/grant endpoint with a userId.',
+        "In production, this would show a consent page. For testing, use the /oauth/authorize/grant endpoint with a userId.",
       client_id: clientId,
       redirect_uri: redirectUri,
       scope: scope,
@@ -87,7 +87,7 @@ oauthRoutes.get('/authorize', async (c) => {
   } catch (err: any) {
     return c.json(
       {
-        error: 'server_error',
+        error: "server_error",
         error_description: err.message,
       },
       500,
@@ -107,17 +107,23 @@ oauthRoutes.get('/authorize', async (c) => {
  * - code_challenge (optional)
  * - code_challenge_method (optional)
  */
-oauthRoutes.post('/authorize/grant', async (c) => {
+oauthRoutes.post("/authorize/grant", async (c) => {
   try {
     const body = await c.req.json();
-    const { client_id, user_id, redirect_uri, scopes, code_challenge, code_challenge_method } =
-      body;
+    const {
+      client_id,
+      user_id,
+      redirect_uri,
+      scopes,
+      code_challenge,
+      code_challenge_method,
+    } = body;
 
     if (!client_id || !user_id || !redirect_uri || !scopes) {
       return c.json(
         {
-          error: 'invalid_request',
-          error_description: 'Missing required parameters',
+          error: "invalid_request",
+          error_description: "Missing required parameters",
         },
         400,
       );
@@ -129,8 +135,8 @@ oauthRoutes.post('/authorize/grant', async (c) => {
     if (!client) {
       return c.json(
         {
-          error: 'invalid_client',
-          error_description: 'Client not found',
+          error: "invalid_client",
+          error_description: "Client not found",
         },
         401,
       );
@@ -156,7 +162,7 @@ oauthRoutes.post('/authorize/grant', async (c) => {
   } catch (err: any) {
     return c.json(
       {
-        error: 'invalid_request',
+        error: "invalid_request",
         error_description: err.message,
       },
       400,
@@ -183,7 +189,7 @@ oauthRoutes.post('/authorize/grant', async (c) => {
  * - client_id
  * - client_secret
  */
-oauthRoutes.post('/token', async (c) => {
+oauthRoutes.post("/token", async (c) => {
   try {
     // Parse form data
     const body = await c.req.parseBody();
@@ -194,8 +200,8 @@ oauthRoutes.post('/token', async (c) => {
     if (!grantType || !clientId || !clientSecret) {
       return c.json(
         {
-          error: 'invalid_request',
-          error_description: 'Missing required parameters',
+          error: "invalid_request",
+          error_description: "Missing required parameters",
         },
         400,
       );
@@ -203,7 +209,7 @@ oauthRoutes.post('/token', async (c) => {
 
     const oauthService = createOAuthService(c.env);
 
-    if (grantType === 'authorization_code') {
+    if (grantType === "authorization_code") {
       const code = body.code as string;
       const redirectUri = body.redirect_uri as string;
       const codeVerifier = body.code_verifier as string | undefined;
@@ -211,8 +217,8 @@ oauthRoutes.post('/token', async (c) => {
       if (!code || !redirectUri) {
         return c.json(
           {
-            error: 'invalid_request',
-            error_description: 'Missing code or redirect_uri',
+            error: "invalid_request",
+            error_description: "Missing code or redirect_uri",
           },
           400,
         );
@@ -226,22 +232,24 @@ oauthRoutes.post('/token', async (c) => {
         codeVerifier,
       });
 
-      const expiresIn = Math.floor((tokens.accessToken.expiresAt - Date.now()) / 1000);
+      const expiresIn = Math.floor(
+        (tokens.accessToken.expiresAt - Date.now()) / 1000,
+      );
       return c.json({
         access_token: tokens.accessToken.token,
-        token_type: 'Bearer' as const,
+        token_type: "Bearer" as const,
         expires_in: Math.max(0, expiresIn),
         refresh_token: tokens.refreshToken?.token,
-        scope: tokens.accessToken.scopes.join(' '),
+        scope: tokens.accessToken.scopes.join(" "),
       });
-    } else if (grantType === 'refresh_token') {
+    } else if (grantType === "refresh_token") {
       const refreshToken = body.refresh_token as string;
 
       if (!refreshToken) {
         return c.json(
           {
-            error: 'invalid_request',
-            error_description: 'Missing refresh_token',
+            error: "invalid_request",
+            error_description: "Missing refresh_token",
           },
           400,
         );
@@ -253,17 +261,19 @@ oauthRoutes.post('/token', async (c) => {
         clientSecret,
       });
 
-      const expiresIn = Math.floor((result.accessToken.expiresAt - Date.now()) / 1000);
+      const expiresIn = Math.floor(
+        (result.accessToken.expiresAt - Date.now()) / 1000,
+      );
       return c.json({
         access_token: result.accessToken.token,
-        token_type: 'Bearer' as const,
+        token_type: "Bearer" as const,
         expires_in: Math.max(0, expiresIn),
-        scope: result.accessToken.scopes.join(' '),
+        scope: result.accessToken.scopes.join(" "),
       });
     } else {
       return c.json(
         {
-          error: 'unsupported_grant_type',
+          error: "unsupported_grant_type",
           error_description: `Grant type ${grantType} is not supported`,
         },
         400,
@@ -271,10 +281,13 @@ oauthRoutes.post('/token', async (c) => {
     }
   } catch (err: any) {
     // Map domain errors to OAuth error responses
-    if (err.message.includes('Invalid client') || err.message.includes('credentials')) {
+    if (
+      err.message.includes("Invalid client") ||
+      err.message.includes("credentials")
+    ) {
       return c.json(
         {
-          error: 'invalid_client',
+          error: "invalid_client",
           error_description: err.message,
         },
         401,
@@ -282,13 +295,13 @@ oauthRoutes.post('/token', async (c) => {
     }
 
     if (
-      err.message.includes('Invalid or expired') ||
-      err.message.includes('expired') ||
-      err.message.includes('revoked')
+      err.message.includes("Invalid or expired") ||
+      err.message.includes("expired") ||
+      err.message.includes("revoked")
     ) {
       return c.json(
         {
-          error: 'invalid_grant',
+          error: "invalid_grant",
           error_description: err.message,
         },
         400,
@@ -297,7 +310,7 @@ oauthRoutes.post('/token', async (c) => {
 
     return c.json(
       {
-        error: 'invalid_request',
+        error: "invalid_request",
         error_description: err.message,
       },
       400,
@@ -314,7 +327,7 @@ oauthRoutes.post('/token', async (c) => {
  * - client_id
  * - client_secret
  */
-oauthRoutes.post('/revoke', async (c) => {
+oauthRoutes.post("/revoke", async (c) => {
   try {
     const body = await c.req.parseBody();
     const token = body.token as string;
@@ -324,8 +337,8 @@ oauthRoutes.post('/revoke', async (c) => {
     if (!token || !clientId || !clientSecret) {
       return c.json(
         {
-          error: 'invalid_request',
-          error_description: 'Missing required parameters',
+          error: "invalid_request",
+          error_description: "Missing required parameters",
         },
         400,
       );
@@ -338,8 +351,8 @@ oauthRoutes.post('/revoke', async (c) => {
     if (!client || client.secret !== clientSecret) {
       return c.json(
         {
-          error: 'invalid_client',
-          error_description: 'Invalid client credentials',
+          error: "invalid_client",
+          error_description: "Invalid client credentials",
         },
         401,
       );
@@ -351,7 +364,7 @@ oauthRoutes.post('/revoke', async (c) => {
   } catch (err: any) {
     return c.json(
       {
-        error: 'invalid_request',
+        error: "invalid_request",
         error_description: err.message,
       },
       400,

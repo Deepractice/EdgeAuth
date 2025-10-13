@@ -4,4 +4,4 @@
  * Password hashing and cryptographic utilities
  */
 
-export * from './password.js';
+export * from "./password.js";

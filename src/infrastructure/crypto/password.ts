@@ -25,20 +25,20 @@ export async function hashPassword(password: string): Promise<string> {
   // Import password as crypto key
   const encoder = new TextEncoder();
   const passwordKey = await crypto.subtle.importKey(
-    'raw',
+    "raw",
     encoder.encode(password),
-    'PBKDF2',
+    "PBKDF2",
     false,
-    ['deriveBits'],
+    ["deriveBits"],
   );
 
   // Derive hash using PBKDF2
   const hashBuffer = await crypto.subtle.deriveBits(
     {
-      name: 'PBKDF2',
+      name: "PBKDF2",
       salt,
       iterations: PBKDF2_ITERATIONS,
-      hash: 'SHA-256',
+      hash: "SHA-256",
     },
     passwordKey,
     HASH_LENGTH * 8, // bits
@@ -58,11 +58,14 @@ export async function hashPassword(password: string): Promise<string> {
  * @param storedHash - Stored hash in format: salt:hash
  * @returns True if password matches
  */
-export async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
+export async function verifyPassword(
+  password: string,
+  storedHash: string,
+): Promise<boolean> {
   // Parse stored hash
-  const [saltBase64, hashBase64] = storedHash.split(':');
+  const [saltBase64, hashBase64] = storedHash.split(":");
   if (!saltBase64 || !hashBase64) {
-    throw new Error('Invalid password hash format');
+    throw new Error("Invalid password hash format");
   }
 
   // Decode salt
@@ -71,27 +74,29 @@ export async function verifyPassword(password: string, storedHash: string): Prom
   // Import password as crypto key
   const encoder = new TextEncoder();
   const passwordKey = await crypto.subtle.importKey(
-    'raw',
+    "raw",
     encoder.encode(password),
-    'PBKDF2',
+    "PBKDF2",
     false,
-    ['deriveBits'],
+    ["deriveBits"],
   );
 
   // Derive hash using same parameters
   const hashBuffer = await crypto.subtle.deriveBits(
     {
-      name: 'PBKDF2',
+      name: "PBKDF2",
       salt,
       iterations: PBKDF2_ITERATIONS,
-      hash: 'SHA-256',
+      hash: "SHA-256",
     },
     passwordKey,
     HASH_LENGTH * 8,
   );
 
   // Compare hashes using constant-time comparison
-  const computedHashBase64 = btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
+  const computedHashBase64 = btoa(
+    String.fromCharCode(...new Uint8Array(hashBuffer)),
+  );
 
   // Constant-time string comparison to prevent timing attacks
   return constantTimeEqual(computedHashBase64, hashBase64);

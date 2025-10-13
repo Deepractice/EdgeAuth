@@ -4,8 +4,8 @@
  * Renders the registration form for new users
  */
 
-import { escapeHtml } from '../renderer.js';
-import { baseTemplate } from './base.js';
+import { escapeHtml } from "../renderer.js";
+import { baseTemplate } from "./base.js";
 
 export interface RegisterTemplateData {
   redirectUri?: string;
@@ -25,14 +25,14 @@ export function registerTemplate(data: RegisterTemplateData): string {
           </svg>
           ${escapeHtml(data.error)}
         </div>`
-          : ''
+          : ""
       }
 
       <form method="POST" action="/sso/register">
         ${
           data.redirectUri
             ? `<input type="hidden" name="redirectUri" value="${escapeHtml(data.redirectUri)}" />`
-            : ''
+            : ""
         }
 
         <div class="form-group">
@@ -43,7 +43,7 @@ export function registerTemplate(data: RegisterTemplateData): string {
             name="email"
             required
             autofocus
-            value="${escapeHtml(data.email || '')}"
+            value="${escapeHtml(data.email || "")}"
             placeholder="you@example.com"
           />
         </div>
@@ -55,7 +55,7 @@ export function registerTemplate(data: RegisterTemplateData): string {
             id="username"
             name="username"
             required
-            value="${escapeHtml(data.username || '')}"
+            value="${escapeHtml(data.username || "")}"
             placeholder="johndoe"
           />
         </div>
@@ -79,7 +79,7 @@ export function registerTemplate(data: RegisterTemplateData): string {
       </form>
 
       <div class="footer-text">
-        <p>Already have an account? <a href="/sso/login${data.redirectUri ? `?redirect_uri=${encodeURIComponent(data.redirectUri)}` : ''}">Sign in</a></p>
+        <p>Already have an account? <a href="/sso/login${data.redirectUri ? `?redirect_uri=${encodeURIComponent(data.redirectUri)}` : ""}">Sign in</a></p>
         <p class="terms">By creating an account, you agree to our Terms of Service</p>
       </div>
     </div>
@@ -185,7 +185,7 @@ export function registerTemplate(data: RegisterTemplateData): string {
   `;
 
   return baseTemplate({
-    title: 'Create Account',
+    title: "Create Account",
     content: formContent,
     styles,
   });
