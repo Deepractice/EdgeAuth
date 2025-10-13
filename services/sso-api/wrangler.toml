@@ -4,11 +4,16 @@ main = "src/index.ts"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Local development
+[dev]
+port = 8791
+
 # D1 Database binding
 [[d1_databases]]
 binding = "DB"
 database_name = "edgeauth-db"
 database_id = "placeholder"
+migrations_dir = "../../migrations"
 
 # Routes
 [[routes]]
