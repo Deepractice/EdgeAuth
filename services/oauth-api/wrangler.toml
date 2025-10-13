@@ -19,6 +19,7 @@ vars = { OAUTH_ISSUER = "http://localhost:8788" }
 
 # Production
 [env.production]
+name = "edgeauth-oauth"
 vars = { OAUTH_ISSUER = "https://oauth.edgeauth.com" }
 
 [[env.production.d1_databases]]
