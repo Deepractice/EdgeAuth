@@ -50,12 +50,18 @@ auth.post("/login", async (c) => {
     // Generate JWT token
     const token = await generateToken(
       {
-        userId: user.id,
+        id: user.id,
         email: user.email,
         username: user.username,
+        emailVerified: user.email_verified === 1,
+        emailVerifiedAt: user.email_verified_at,
+        createdAt: user.created_at,
+        updatedAt: user.updated_at,
       },
-      c.env.JWT_SECRET,
-      86400, // 24 hours
+      {
+        secret: c.env.JWT_SECRET,
+        expiresIn: 86400, // 24 hours
+      },
     );
 
     logger.info("User logged in", {
@@ -108,7 +114,7 @@ auth.get("/me", async (c) => {
     const user = await c.env.DB.prepare(
       "SELECT id, email, username, email_verified, created_at FROM users WHERE id = ?",
     )
-      .bind(payload.userId)
+      .bind(payload.sub)
       .first<any>();
 
     if (!user) {
