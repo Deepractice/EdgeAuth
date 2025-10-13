@@ -16,7 +16,7 @@ export default function LoginPage() {
       setAuth(data.token, data.user);
 
       // Redirect to callback URL or default
-      const redirectUrl = searchParams.get("redirect_uri") || "/success";
+      const redirectUrl = searchParams.get("redirect_uri") || "/profile";
       window.location.href = redirectUrl;
     },
     onError: (error: Error) => {
