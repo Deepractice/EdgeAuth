@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { login } from '~/lib/api'
 import { useAuthStore } from '~/lib/store'
 import LoginForm from './LoginForm'
 
 export default function LoginPage() {
-  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const setAuth = useAuthStore((state) => state.setAuth)
   const [error, setError] = useState<string | null>(null)
