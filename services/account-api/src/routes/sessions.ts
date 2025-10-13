@@ -44,7 +44,7 @@ sessions.get("/sessions", async (c) => {
     const authHeader = c.req.header("Authorization");
     const userId = await authenticateRequest(authHeader, c.env.JWT_SECRET);
 
-    // Extract current session ID from JWT
+    // Extract current session ID from JWT (may not exist for old tokens)
     const token = authHeader!.substring(7);
     const payload = await verifyToken(token, c.env.JWT_SECRET);
     const currentSessionId = payload.sessionId || "";
@@ -55,8 +55,15 @@ sessions.get("/sessions", async (c) => {
 
     logger.info("Retrieved active sessions", {
       userId,
+      sessionIdInToken: payload.sessionId || "none",
       count: activeSessions.length,
     });
+
+    // If no sessionId in token and no sessions, return empty array
+    // This handles old tokens created before session tracking
+    if (!payload.sessionId && activeSessions.length === 0) {
+      logger.info("Old token detected with no sessions", { userId });
+    }
 
     return c.json(
       activeSessions.map((session) => ({

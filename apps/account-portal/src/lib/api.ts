@@ -163,7 +163,21 @@ export async function getSessions(token: string): Promise<Session[]> {
     throw new Error(error.message || "Failed to fetch sessions");
   }
 
-  return response.json();
+  const data = await response.json();
+
+  // Handle both wrapped {sessions: [...]} and unwrapped [...] formats
+  // This provides backward compatibility during deployment
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (data && Array.isArray(data.sessions)) {
+    return data.sessions;
+  }
+
+  // If neither format matches, return empty array
+  console.warn("Unexpected sessions response format:", data);
+  return [];
 }
 
 export async function logoutSession(
