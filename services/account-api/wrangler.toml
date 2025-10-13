@@ -15,5 +15,11 @@ database_id = "placeholder"
 pattern = "api.deepractice.ai/account/*"
 zone_name = "deepractice.ai"
 
+# Environment variables
+[vars]
+BASE_URL = "https://account.deepractice.ai"
+EMAIL_FROM = "noreply@deepractice.ai"
+EMAIL_FROM_NAME = "EdgeAuth"
+
 # Secrets (use: wrangler secret put JWT_SECRET)
 # Secrets (use: wrangler secret put PLUNK_API_KEY)
