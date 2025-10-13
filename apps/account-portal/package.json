@@ -1,5 +1,5 @@
 {
-  "name": "@edge-auth/sso-login",
+  "name": "@edge-auth/account-portal",
   "version": "0.1.0",
   "private": true,
   "type": "module",

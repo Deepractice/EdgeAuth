@@ -44,11 +44,13 @@ pnpm preview
 ## Environment Variables
 
 ### Development (`.env.development`)
+
 ```
 VITE_API_BASE_URL=http://localhost:8788
 ```
 
 ### Production (`.env.production`)
+
 ```
 VITE_API_BASE_URL=https://sso-api.auth.deepractice.ai
 ```
@@ -100,6 +102,7 @@ src/
 ### Branding
 
 Edit `src/components/LoginPage.tsx` to customize:
+
 - Logo
 - Colors
 - Title and description
@@ -108,6 +111,7 @@ Edit `src/components/LoginPage.tsx` to customize:
 ### Styling
 
 Edit `tailwind.config.js` to customize theme:
+
 - Colors
 - Fonts
 - Spacing
