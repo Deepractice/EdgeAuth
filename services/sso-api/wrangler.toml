@@ -1,4 +1,4 @@
-name = "edgeauth-sso"
+# No default name - only deploy to production environment
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
