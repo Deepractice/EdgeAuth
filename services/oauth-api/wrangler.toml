@@ -1,32 +1,20 @@
-# No default name - only deploy to production environment
+# EdgeAuth OAuth API
+name = "edgeauth-oauth"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-# D1 Database binding (single database for all tables)
+# D1 Database binding
 [[d1_databases]]
 binding = "DB"
 database_name = "edgeauth-db"
-database_id = "placeholder" # Replace with actual D1 database ID after creation
+database_id = "placeholder"
 
-# OAuth 2.0 Provider specific config
+# OAuth 2.0 Provider config
 [vars]
-OAUTH_ISSUER = "https://oauth.edgeauth.dev"
+OAUTH_ISSUER = "https://api.deepractice.ai/oauth"
 
-# Development
-[env.development]
-vars = { OAUTH_ISSUER = "http://localhost:8788" }
-
-# Production
-[env.production]
-name = "edgeauth-oauth"
-vars = { OAUTH_ISSUER = "https://api.deepractice.ai/oauth" }
-
-[[env.production.routes]]
+# Routes
+[[routes]]
 pattern = "api.deepractice.ai/oauth/*"
 zone_name = "deepractice.ai"
-
-[[env.production.d1_databases]]
-binding = "DB"
-database_name = "edgeauth-db"
-database_id = "placeholder"

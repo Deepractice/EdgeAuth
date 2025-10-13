@@ -1,34 +1,19 @@
-# No default name - only deploy to production environment
+# EdgeAuth Account API
+name = "edgeauth-account"
 main = "dist/index.js"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
-# D1 Database binding (single database for all tables)
+# D1 Database binding
 [[d1_databases]]
-binding = "DB"
-database_name = "edgeauth-db"
-database_id = "placeholder" # Replace with actual D1 database ID after creation
-
-# Environment Variables
-[vars]
-JWT_SECRET = "dev-secret-key-change-in-production-use-wrangler-secret"
-PLUNK_API_KEY = "dev-plunk-api-key-change-in-production"
-EMAIL_FROM = "noreply@example.com"
-EMAIL_FROM_NAME = "EdgeAuth"
-BASE_URL = "http://localhost:8787"
-
-# Production environment
-[env.production]
-name = "edgeauth-account"
-
-[[env.production.routes]]
-pattern = "api.deepractice.ai/account/*"
-zone_name = "deepractice.ai"
-
-[[env.production.d1_databases]]
 binding = "DB"
 database_name = "edgeauth-db"
 database_id = "placeholder"
 
-# Use: wrangler secret put JWT_SECRET --env production
-# Use: wrangler secret put PLUNK_API_KEY --env production
+# Routes
+[[routes]]
+pattern = "api.deepractice.ai/account/*"
+zone_name = "deepractice.ai"
+
+# Secrets (use: wrangler secret put JWT_SECRET)
+# Secrets (use: wrangler secret put PLUNK_API_KEY)

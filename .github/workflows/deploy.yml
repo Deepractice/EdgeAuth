@@ -81,40 +81,40 @@ jobs:
           # Set JWT_SECRET for all services
           for service in edgeauth-admin edgeauth-account edgeauth-sso edgeauth-oauth; do
             echo "Setting JWT_SECRET for $service..."
-            echo "$JWT_SECRET" | wrangler secret put JWT_SECRET --name $service --env production
+            echo "$JWT_SECRET" | wrangler secret put JWT_SECRET --name $service
           done
 
           # Set PLUNK_API_KEY for account-api (email service)
           echo "Setting PLUNK_API_KEY for edgeauth-account..."
-          echo "$PLUNK_API_KEY" | wrangler secret put PLUNK_API_KEY --name edgeauth-account --env production
+          echo "$PLUNK_API_KEY" | wrangler secret put PLUNK_API_KEY --name edgeauth-account
 
       - name: Deploy Admin API
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         working-directory: services/admin-api
-        run: wrangler deploy --env production
+        run: wrangler deploy
 
       - name: Deploy Account API
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         working-directory: services/account-api
-        run: wrangler deploy --env production
+        run: wrangler deploy
 
       - name: Deploy SSO API
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         working-directory: services/sso-api
-        run: wrangler deploy --env production
+        run: wrangler deploy
 
       - name: Deploy OAuth API
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         working-directory: services/oauth-api
-        run: wrangler deploy --env production
+        run: wrangler deploy
 
       - name: Deployment Summary
         run: |

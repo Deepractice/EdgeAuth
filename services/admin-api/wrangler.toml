@@ -1,29 +1,18 @@
-# No default name - only deploy to production environment
+# EdgeAuth Admin API
+name = "edgeauth-admin"
 main = "dist/index.js"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
-# D1 Database binding (single database for all tables)
+# D1 Database binding
 [[d1_databases]]
-binding = "DB"
-database_name = "edgeauth-db"
-database_id = "placeholder" # Replace with actual D1 database ID after creation
-
-# Environment Variables
-[vars]
-JWT_SECRET = "dev-secret-key-change-in-production-use-wrangler-secret"
-
-# Production environment
-[env.production]
-name = "edgeauth-admin"
-
-[[env.production.routes]]
-pattern = "api-internal.deepractice.ai/*"
-zone_name = "deepractice.ai"
-
-[[env.production.d1_databases]]
 binding = "DB"
 database_name = "edgeauth-db"
 database_id = "placeholder"
 
-# Use: wrangler secret put JWT_SECRET --env production
+# Routes
+[[routes]]
+pattern = "api-internal.deepractice.ai/*"
+zone_name = "deepractice.ai"
+
+# Secrets (use: wrangler secret put JWT_SECRET)
