@@ -64,3 +64,4 @@ wrangler.toml.local
 
 # Operations (local only, contains sensitive configs)
 operations/
+.dev.vars

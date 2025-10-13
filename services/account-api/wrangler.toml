@@ -9,6 +9,7 @@ compatibility_flags = ["nodejs_compat"]
 binding = "DB"
 database_name = "edgeauth-db"
 database_id = "placeholder"
+migrations_dir = "../../migrations"
 
 # Routes
 [[routes]]
