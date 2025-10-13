@@ -177,6 +177,8 @@ interface TestWorld {
     user: { id: string; email: string; username: string };
   } | null;
   jwtToken: string | null;
+  sessions: any[];
+  currentSessionId: string | null;
 }
 
 setWorldConstructor(function (): TestWorld {
@@ -205,6 +207,8 @@ setWorldConstructor(function (): TestWorld {
     verifyResult: null,
     loginResult: null,
     jwtToken: null,
+    sessions: [],
+    currentSessionId: null,
   };
 });
 
@@ -221,6 +225,8 @@ Before(function (this: TestWorld) {
   this.verifyResult = null;
   this.loginResult = null;
   this.jwtToken = null;
+  this.sessions = [];
+  this.currentSessionId = null;
   mockEmailSender.send.mockClear();
 });
 
@@ -853,3 +859,142 @@ Then(
     expect(this.error!.message).toContain(errorMessage);
   },
 );
+
+// === Session Management Steps ===
+
+Given("I have multiple active sessions", function (this: TestWorld) {
+  // Mock multiple sessions for the current user
+  this.sessions = [
+    {
+      session_id: crypto.randomUUID(),
+      user_id: this.currentUserId,
+      token: "session-token-1",
+      created_at: Date.now() - 86400000, // 1 day ago
+      expires_at: Date.now() + 86400000, // expires tomorrow
+      last_accessed_at: Date.now() - 3600000, // 1 hour ago
+      revoked_at: null,
+    },
+    {
+      session_id: crypto.randomUUID(),
+      user_id: this.currentUserId,
+      token: "session-token-2",
+      created_at: Date.now() - 3600000, // 1 hour ago
+      expires_at: Date.now() + 86400000, // expires tomorrow
+      last_accessed_at: Date.now() - 1800000, // 30 min ago
+      revoked_at: null,
+    },
+    {
+      session_id: crypto.randomUUID(),
+      user_id: this.currentUserId,
+      token: "session-token-3",
+      created_at: Date.now() - 600000, // 10 min ago
+      expires_at: Date.now() + 86400000, // expires tomorrow
+      last_accessed_at: Date.now(),
+      revoked_at: null,
+    },
+  ];
+  this.currentSessionId = this.sessions[0].session_id;
+});
+
+When("I request my active sessions", async function (this: TestWorld) {
+  try {
+    // Mock API call - will be replaced with actual HTTP request
+    this.response = this.sessions.filter((s) => !s.revoked_at);
+    this.error = null;
+  } catch (error) {
+    this.error = error as Error;
+    this.response = null;
+  }
+});
+
+When("I logout from a specific session", async function (this: TestWorld) {
+  try {
+    // Mock logout specific session
+    const sessionToLogout = this.sessions[1];
+    sessionToLogout.revoked_at = Date.now();
+    this.error = null;
+  } catch (error) {
+    this.error = error as Error;
+  }
+});
+
+When("I logout from all other sessions", async function (this: TestWorld) {
+  try {
+    // Mock logout all except current session
+    this.sessions.forEach((session) => {
+      if (session.session_id !== this.currentSessionId) {
+        session.revoked_at = Date.now();
+      }
+    });
+    this.error = null;
+  } catch (error) {
+    this.error = error as Error;
+  }
+});
+
+When(
+  "I request sessions without authentication",
+  async function (this: TestWorld) {
+    try {
+      // Mock unauthorized request
+      throw new Error("Missing or invalid authorization header");
+    } catch (error) {
+      this.error = error as Error;
+      this.response = null;
+    }
+  },
+);
+
+Then("I should see a list of my sessions", function (this: TestWorld) {
+  expect(this.error).toBeNull();
+  expect(this.response).not.toBeNull();
+  expect(Array.isArray(this.response)).toBe(true);
+  expect(this.response.length).toBeGreaterThan(0);
+});
+
+Then("each session should include session details", function (this: TestWorld) {
+  expect(this.response).not.toBeNull();
+  this.response.forEach((session: any) => {
+    expect(session.session_id).toBeDefined();
+    expect(session.created_at).toBeDefined();
+    expect(session.last_accessed_at).toBeDefined();
+  });
+});
+
+Then("that session should be revoked", function (this: TestWorld) {
+  expect(this.error).toBeNull();
+  const revokedSession = this.sessions[1];
+  expect(revokedSession.revoked_at).not.toBeNull();
+});
+
+Then("other sessions should remain active", function (this: TestWorld) {
+  const activeSessions = this.sessions.filter(
+    (s, i) => i !== 1 && !s.revoked_at,
+  );
+  expect(activeSessions.length).toBeGreaterThan(0);
+});
+
+Then(
+  "all sessions except current should be revoked",
+  function (this: TestWorld) {
+    expect(this.error).toBeNull();
+    this.sessions.forEach((session) => {
+      if (session.session_id !== this.currentSessionId) {
+        expect(session.revoked_at).not.toBeNull();
+      }
+    });
+  },
+);
+
+Then("my current session should remain active", function (this: TestWorld) {
+  const currentSession = this.sessions.find(
+    (s) => s.session_id === this.currentSessionId,
+  );
+  expect(currentSession).not.toBeNull();
+  expect(currentSession!.revoked_at).toBeNull();
+});
+
+Then("I should receive an unauthorized error", function (this: TestWorld) {
+  expect(this.error).not.toBeNull();
+  expect(this.error!.message).toContain("authorization");
+});

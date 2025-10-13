@@ -9,6 +9,7 @@ import { cors } from "hono/cors";
 import type { Env } from "./types.js";
 import account from "./routes/account.js";
 import auth from "./routes/auth.js";
+import sessions from "./routes/sessions.js";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -38,6 +39,8 @@ app.route("/account", account);
 // Mount auth routes directly under /account (not /account/auth)
 // This makes URLs cleaner: /account/login instead of /account/auth/login
 app.route("/account", auth);
+// Mount sessions routes under /account
+app.route("/account", sessions);
 
 // 404 handler
 app.notFound((c) => {

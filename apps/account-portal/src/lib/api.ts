@@ -82,3 +82,129 @@ export async function register(
 
   return response.json();
 }
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  username: string;
+  emailVerified: boolean;
+  createdAt: string;
+}
+
+export async function getProfile(token: string): Promise<UserProfile> {
+  const response = await fetch(`${API_BASE_URL}/profile`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized");
+    }
+    const error: ApiError = await response.json();
+    throw new Error(error.message || "Failed to fetch profile");
+  }
+
+  return response.json();
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export async function changePassword(
+  token: string,
+  data: ChangePasswordRequest,
+): Promise<{ message: string }> {
+  const response = await fetch(`${API_BASE_URL}/password`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized");
+    }
+    const error: ApiError = await response.json();
+    throw new Error(error.message || "Failed to change password");
+  }
+
+  return response.json();
+}
+
+export interface Session {
+  id: string;
+  createdAt: string;
+  lastAccessedAt: string;
+  expiresAt: string;
+  isCurrent: boolean;
+}
+
+export async function getSessions(token: string): Promise<Session[]> {
+  const response = await fetch(`${API_BASE_URL}/sessions`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized");
+    }
+    const error: ApiError = await response.json();
+    throw new Error(error.message || "Failed to fetch sessions");
+  }
+
+  return response.json();
+}
+
+export async function logoutSession(
+  token: string,
+  sessionId: string,
+): Promise<{ message: string }> {
+  const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized");
+    }
+    const error: ApiError = await response.json();
+    throw new Error(error.message || "Failed to logout session");
+  }
+
+  return response.json();
+}
+
+export async function logoutAllSessions(
+  token: string,
+): Promise<{ message: string }> {
+  const response = await fetch(`${API_BASE_URL}/sessions`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized");
+    }
+    const error: ApiError = await response.json();
+    throw new Error(error.message || "Failed to logout all sessions");
+  }
+
+  return response.json();
+}

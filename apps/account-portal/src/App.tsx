@@ -3,6 +3,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import VerifyEmailPage from "./components/VerifyEmailPage";
+import ProfileLayout from "./components/ProfileLayout";
+import PersonalInfo from "./components/PersonalInfo";
+import SecuritySettings from "./components/SecuritySettings";
+import ActiveSessions from "./components/ActiveSessions";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,6 +25,11 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/profile" element={<ProfileLayout />}>
+            <Route index element={<PersonalInfo />} />
+            <Route path="security" element={<SecuritySettings />} />
+            <Route path="sessions" element={<ActiveSessions />} />
+          </Route>
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
