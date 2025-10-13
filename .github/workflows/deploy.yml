@@ -56,7 +56,7 @@ jobs:
       - name: Update Wrangler Configs
         run: |
           # Update all wrangler.toml files with the database ID
-          for config in services/*/wrangler.toml; do
+          for config in wrangler.toml services/*/wrangler.toml; do
             echo "Updating $config..."
             sed -i "s/database_id = \"placeholder\".*/database_id = \"$DB_ID\"/" "$config"
           done

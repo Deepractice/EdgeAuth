@@ -1,0 +1,7 @@
+# EdgeAuth root wrangler configuration
+# This file is used for D1 migrations
+
+[[d1_databases]]
+binding = "DB"
+database_name = "edgeauth-db"
+database_id = "placeholder" # Will be replaced during deployment
