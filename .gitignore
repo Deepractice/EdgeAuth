@@ -61,3 +61,6 @@ wrangler.toml.local
 
 # Vitest
 .vitest/
+
+# Operations (local only, contains sensitive configs)
+operations/
