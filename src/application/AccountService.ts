@@ -5,21 +5,31 @@
  * This service combines domain logic, infrastructure, and external integrations.
  */
 
-import { errors, AppError } from '@deepracticex/error-handling';
-import { createLogger } from '../infrastructure/logger/index.js';
-import { UserService } from '../domain/user/service.js';
-import { D1UserRepository } from '../infrastructure/persistence/index.js';
-import { hashPassword, verifyPassword } from '../infrastructure/crypto/index.js';
-import { PlunkSender, emailVerificationTemplate, welcomeEmailTemplate } from '../infrastructure/mail/index.js';
-import { generateVerificationToken, verifyVerificationToken } from '../domain/verification/index.js';
-import type { User } from '../domain/user/types.js';
+import { errors, AppError } from "@deepracticex/error-handling";
+import { createLogger } from "../infrastructure/logger/index.js";
+import { UserService } from "../domain/user/service.js";
+import { D1UserRepository } from "../infrastructure/persistence/index.js";
+import {
+  hashPassword,
+  verifyPassword,
+} from "../infrastructure/crypto/index.js";
+import {
+  PlunkSender,
+  emailVerificationTemplate,
+  welcomeEmailTemplate,
+} from "../infrastructure/mail/index.js";
+import {
+  generateVerificationToken,
+  verifyVerificationToken,
+} from "../domain/verification/index.js";
+import type { User } from "../domain/user/types.js";
 
 const logger = createLogger({
-  name: 'account-service',
-  level: 'info',
+  name: "account-service",
+  level: "info",
   console: true,
   colors: true,
-  environment: 'cloudflare-workers',
+  environment: "cloudflare-workers",
 });
 
 /**
@@ -111,31 +121,44 @@ export class AccountService {
       // Send verification email
       await this.mailSender.send({
         to: user.email,
-        subject: 'Verify Your Email - EdgeAuth',
+        subject: "Verify Your Email - EdgeAuth",
         html: emailVerificationTemplate(user.username, verificationUrl),
       });
 
-      logger.info('User registered successfully', {
+      logger.info("User registered successfully", {
         userId: user.id,
         email: user.email,
         username: user.username,
       });
 
       return {
-        message: 'Registration successful. Please check your email to verify your account.',
+        message:
+          "Registration successful. Please check your email to verify your account.",
         email: user.email,
       };
     } catch (error) {
       if (AppError.isAppError(error)) {
-        logger.warn('Registration failed', {
+        logger.warn("Registration failed", {
           code: error.code,
           message: error.message,
         });
         throw error;
       }
 
-      logger.error('Registration error', { error });
-      throw errors.internal('Internal server error');
+      // Log detailed error information
+      const errorDetails =
+        error instanceof Error
+          ? {
+              name: error.name,
+              message: error.message,
+              stack: error.stack,
+            }
+          : { raw: String(error) };
+
+      logger.error("Registration error (non-AppError)", errorDetails);
+      throw errors.internal(
+        `Registration failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -149,31 +172,31 @@ export class AccountService {
   async verifyEmail(token: string): Promise<VerifyEmailResult> {
     try {
       if (!token) {
-        throw errors.validation('Verification token is required');
+        throw errors.validation("Verification token is required");
       }
 
       // Verify JWT token
       const payload = await verifyVerificationToken(
         token,
         this.config.jwtSecret,
-        'email_verification',
+        "email_verification",
       );
 
       // Get user
       const user = await this.userRepository.findById(payload.userId);
       if (!user) {
-        throw errors.notFound('User not found');
+        throw errors.notFound("User not found");
       }
 
       // Check if already verified
       if (user.emailVerified) {
-        logger.info('Email already verified', {
+        logger.info("Email already verified", {
           userId: user.id,
           email: user.email,
         });
 
         return {
-          message: 'Email address has already been verified',
+          message: "Email address has already been verified",
           alreadyVerified: true,
         };
       }
@@ -182,12 +205,12 @@ export class AccountService {
       const now = Date.now();
       await this.config.db
         .prepare(
-          'UPDATE users SET email_verified = 1, email_verified_at = ?, updated_at = ? WHERE id = ?',
+          "UPDATE users SET email_verified = 1, email_verified_at = ?, updated_at = ? WHERE id = ?",
         )
         .bind(now, now, user.id)
         .run();
 
-      logger.info('Email verified successfully', {
+      logger.info("Email verified successfully", {
         userId: user.id,
         email: user.email,
       });
@@ -195,25 +218,25 @@ export class AccountService {
       // Send welcome email
       await this.mailSender.send({
         to: user.email,
-        subject: 'Welcome to EdgeAuth!',
+        subject: "Welcome to EdgeAuth!",
         html: welcomeEmailTemplate(user.username),
       });
 
       return {
-        message: 'Email verified successfully! You can now log in.',
+        message: "Email verified successfully! You can now log in.",
         verified: true,
       };
     } catch (error) {
       if (AppError.isAppError(error)) {
-        logger.warn('Email verification failed', {
+        logger.warn("Email verification failed", {
           code: error.code,
           message: error.message,
         });
         throw error;
       }
 
-      logger.error('Email verification error', { error });
-      throw errors.internal('Internal server error');
+      logger.error("Email verification error", { error });
+      throw errors.internal("Internal server error");
     }
   }
 
@@ -240,24 +263,26 @@ export class AccountService {
   ): Promise<User> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw errors.notFound('User not found');
+      throw errors.notFound("User not found");
     }
 
     if (data.username) {
       // Check username availability
-      const usernameExists = await this.userRepository.usernameExists(data.username);
+      const usernameExists = await this.userRepository.usernameExists(
+        data.username,
+      );
       if (usernameExists) {
-        throw errors.conflict('Username already taken');
+        throw errors.conflict("Username already taken");
       }
 
       // Update username
       const now = Date.now();
       await this.config.db
-        .prepare('UPDATE users SET username = ?, updated_at = ? WHERE id = ?')
+        .prepare("UPDATE users SET username = ?, updated_at = ? WHERE id = ?")
         .bind(data.username, now, userId)
         .run();
 
-      logger.info('Profile updated', { userId, username: data.username });
+      logger.info("Profile updated", { userId, username: data.username });
 
       return {
         ...user,
@@ -283,18 +308,18 @@ export class AccountService {
   ): Promise<void> {
     // Get user with password
     const user = await this.config.db
-      .prepare('SELECT * FROM users WHERE id = ?')
+      .prepare("SELECT * FROM users WHERE id = ?")
       .bind(userId)
       .first<User & { password_hash: string }>();
 
     if (!user) {
-      throw errors.notFound('User not found');
+      throw errors.notFound("User not found");
     }
 
     // Verify current password
     const isValid = await verifyPassword(currentPassword, user.password_hash);
     if (!isValid) {
-      throw errors.unauthorized('Current password is incorrect');
+      throw errors.unauthorized("Current password is incorrect");
     }
 
     // Hash new password
@@ -303,11 +328,13 @@ export class AccountService {
     // Update password
     const now = Date.now();
     await this.config.db
-      .prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?')
+      .prepare(
+        "UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?",
+      )
       .bind(newPasswordHash, now, userId)
       .run();
 
-    logger.info('Password changed', { userId });
+    logger.info("Password changed", { userId });
   }
 
   /**
@@ -318,15 +345,15 @@ export class AccountService {
   async deleteAccount(userId: string): Promise<void> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw errors.notFound('User not found');
+      throw errors.notFound("User not found");
     }
 
     // TODO: Should also delete related data (tokens, sessions, etc.)
     await this.config.db
-      .prepare('DELETE FROM users WHERE id = ?')
+      .prepare("DELETE FROM users WHERE id = ?")
       .bind(userId)
       .run();
 
-    logger.info('Account deleted', { userId, email: user.email });
+    logger.info("Account deleted", { userId, email: user.email });
   }
 }
