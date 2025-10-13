@@ -68,9 +68,9 @@ sessions.get("/sessions", async (c) => {
     return c.json(
       activeSessions.map((session) => ({
         id: session.sessionId,
-        createdAt: new Date(session.createdAt * 1000).toISOString(),
-        lastAccessedAt: new Date(session.lastAccessedAt * 1000).toISOString(),
-        expiresAt: new Date(session.expiresAt * 1000).toISOString(),
+        createdAt: new Date(session.createdAt).toISOString(),
+        lastAccessedAt: new Date(session.lastAccessedAt).toISOString(),
+        expiresAt: new Date(session.expiresAt).toISOString(),
         isCurrent: session.sessionId === currentSessionId,
       })),
     );
