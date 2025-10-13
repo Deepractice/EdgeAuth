@@ -15,6 +15,7 @@ import {
 } from "../infrastructure/crypto/index.js";
 import {
   PlunkSender,
+  NoMailSender,
   emailVerificationTemplate,
   welcomeEmailTemplate,
 } from "../infrastructure/mail/index.js";
@@ -83,14 +84,33 @@ export class AccountService {
     this.config = config;
     this.userRepository = new D1UserRepository(config.db);
     this.userService = new UserService(this.userRepository);
-    // Use provided mailSender or create PlunkSender
-    this.mailSender =
-      config.mailSender ||
-      new PlunkSender(
-        config.plunkApiKey,
-        config.emailFrom,
-        config.emailFromName,
-      );
+    // Create appropriate mail sender based on configuration
+    this.mailSender = this.createMailSender(config);
+  }
+
+  /**
+   * Create appropriate mail sender based on configuration
+   * - Uses provided mailSender if available (for testing)
+   * - Uses NoMailSender if plunkApiKey is empty or starts with 'dev-' (local dev)
+   * - Uses PlunkSender for production
+   */
+  private createMailSender(config: AccountServiceConfig): MailSender {
+    // Use provided mail sender (for testing or custom implementations)
+    if (config.mailSender) {
+      return config.mailSender;
+    }
+
+    // Use NoMailSender for local development
+    if (!config.plunkApiKey || config.plunkApiKey.startsWith("dev-")) {
+      return new NoMailSender();
+    }
+
+    // Use PlunkSender for production
+    return new PlunkSender(
+      config.plunkApiKey,
+      config.emailFrom,
+      config.emailFromName,
+    );
   }
 
   /**
