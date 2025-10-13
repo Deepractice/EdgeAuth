@@ -37,6 +37,9 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
+          # Debug: Check token prefix
+          echo "Token starts with: ${CLOUDFLARE_API_TOKEN:0:10}..."
+
           # Check if database exists
           DB_LIST=$(wrangler d1 list --json)
           DB_ID=$(echo "$DB_LIST" | jq -r '.[] | select(.name == "edgeauth-db") | .uuid')
