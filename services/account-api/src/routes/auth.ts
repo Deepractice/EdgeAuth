@@ -1,5 +1,10 @@
 import { Hono } from "hono";
-import { verifyPassword, generateToken, verifyToken } from "@edge-auth/core";
+import {
+  verifyPassword,
+  generateToken,
+  verifyToken,
+  SSOService,
+} from "@edge-auth/core";
 import { AppError, errors } from "@deepracticex/error-handling";
 import { createLogger } from "@edge-auth/core";
 import type { Env } from "../types.js";
@@ -49,26 +54,52 @@ auth.post("/login", async (c) => {
       throw errors.unauthorized("Invalid credentials");
     }
 
-    // Generate JWT token
+    // Create user object
+    const userObj = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      emailVerified: user.email_verified === 1,
+      emailVerifiedAt: user.email_verified_at,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at,
+    };
+
+    // Generate JWT token first (without sessionId)
+    const tempToken = await generateToken(userObj, {
+      secret: c.env.JWT_SECRET,
+      expiresIn: 86400, // 24 hours
+    });
+
+    // Create SSO session
+    const ssoService = new SSOService({ db: c.env.DB });
+    const session = await ssoService.createSession({
+      userId: user.id,
+      token: tempToken,
+      expiresIn: 86400,
+    });
+
+    // Regenerate JWT token with sessionId
     const token = await generateToken(
-      {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        emailVerified: user.email_verified === 1,
-        emailVerifiedAt: user.email_verified_at,
-        createdAt: user.created_at,
-        updatedAt: user.updated_at,
-      },
+      userObj,
       {
         secret: c.env.JWT_SECRET,
         expiresIn: 86400, // 24 hours
       },
+      session.sessionId,
     );
+
+    // Update session with new token
+    await c.env.DB.prepare(
+      "UPDATE sso_sessions SET token = ? WHERE session_id = ?",
+    )
+      .bind(token, session.sessionId)
+      .run();
 
     logger.info("User logged in", {
       userId: user.id,
       email: user.email,
+      sessionId: session.sessionId,
     });
 
     return c.json({

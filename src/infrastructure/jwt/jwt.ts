@@ -54,6 +54,7 @@ async function createKey(secret: string): Promise<CryptoKey> {
 export async function generateToken(
   user: User,
   config: JWTConfig,
+  sessionId?: string,
 ): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
   const expiresIn = config.expiresIn || DEFAULT_JWT_EXPIRATION;
@@ -62,6 +63,7 @@ export async function generateToken(
     sub: user.id,
     email: user.email,
     username: user.username,
+    ...(sessionId && { sessionId }),
     iat: now,
     exp: now + expiresIn,
   };

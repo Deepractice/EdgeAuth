@@ -44,6 +44,11 @@ sessions.get("/sessions", async (c) => {
     const authHeader = c.req.header("Authorization");
     const userId = await authenticateRequest(authHeader, c.env.JWT_SECRET);
 
+    // Extract current session ID from JWT
+    const token = authHeader!.substring(7);
+    const payload = await verifyToken(token, c.env.JWT_SECRET);
+    const currentSessionId = payload.sessionId || "";
+
     // Get active sessions using SSOService
     const ssoService = new SSOService({ db: c.env.DB });
     const activeSessions = await ssoService.getActiveSessions(userId);
@@ -53,14 +58,15 @@ sessions.get("/sessions", async (c) => {
       count: activeSessions.length,
     });
 
-    return c.json({
-      sessions: activeSessions.map((session) => ({
-        session_id: session.sessionId,
-        created_at: session.createdAt,
-        last_accessed_at: session.lastAccessedAt,
-        expires_at: session.expiresAt,
+    return c.json(
+      activeSessions.map((session) => ({
+        id: session.sessionId,
+        createdAt: new Date(session.createdAt * 1000).toISOString(),
+        lastAccessedAt: new Date(session.lastAccessedAt * 1000).toISOString(),
+        expiresAt: new Date(session.expiresAt * 1000).toISOString(),
+        isCurrent: session.sessionId === currentSessionId,
       })),
-    });
+    );
   } catch (error) {
     if (AppError.isAppError(error)) {
       logger.warn("Failed to retrieve sessions", {

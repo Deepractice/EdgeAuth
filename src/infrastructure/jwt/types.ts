@@ -9,6 +9,7 @@ export interface JWTPayload {
   sub: string; // user ID
   email: string;
   username: string;
+  sessionId?: string; // SSO session ID (optional, for session tracking)
   iat: number; // issued at (Unix timestamp)
   exp: number; // expiration (Unix timestamp)
 }
