@@ -1,7 +1,7 @@
 import { Given, When, Then, Before, setWorldConstructor } from '@deepracticex/vitest-cucumber';
 import { expect } from 'vitest';
 import { UserService } from 'edgeauth/domain';
-import { hashPassword, generateToken, verifyToken } from 'edgeauth';
+import { hashPassword, generateToken, verifyToken } from '@edge-auth/core';
 import { AppError } from '@deepracticex/error-handling';
 
 // Mock repository for testing

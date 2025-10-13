@@ -4,7 +4,7 @@
 
 import { Hono } from 'hono';
 import type { Env } from '../types';
-import { OAuthService } from 'edgeauth';
+import { OAuthService } from '@edge-auth/core';
 
 const oauthRoutes = new Hono<{ Bindings: Env }>();
 

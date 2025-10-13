@@ -5,9 +5,9 @@
  */
 
 import { Hono } from 'hono';
-import { AdminService, verifyToken } from 'edgeauth';
+import { AdminService, verifyToken } from '@edge-auth/core';
 import { AppError, errors } from '@deepracticex/error-handling';
-import { createLogger } from 'edgeauth';
+import { createLogger } from '@edge-auth/core';
 import type { Env } from '../types.js';
 
 const logger = createLogger({

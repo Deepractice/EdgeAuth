@@ -1,5 +1,5 @@
 {
-  "name": "account-api",
+  "name": "@edge-auth/account-api",
   "version": "0.0.1",
   "description": "EdgeAuth User Account Self-Service API",
   "private": true,
@@ -17,7 +17,7 @@
   "dependencies": {
     "@deepracticex/error-handling": "^0.2.0",
     "@deepracticex/logger": "^0.2.0",
-    "edgeauth": "workspace:*",
+    "@edge-auth/core": "workspace:*",
     "hono": "^4.7.10"
   },
   "devDependencies": {
@@ -36,7 +36,7 @@
     "account",
     "registration",
     "profile",
-    "edgeauth"
+    "@edge-auth/core"
   ],
   "author": "Deepractice",
   "license": "Apache-2.0"

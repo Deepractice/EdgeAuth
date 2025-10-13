@@ -5,7 +5,7 @@
 import { Hono } from 'hono';
 import { errors } from '@deepracticex/error-handling';
 import type { Env } from '../types';
-import { SSOService } from 'edgeauth';
+import { SSOService } from '@edge-auth/core';
 
 const app = new Hono<{ Bindings: Env }>();
 

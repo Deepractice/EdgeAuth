@@ -10,7 +10,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../types.js';
 import { render, loginTemplate, registerTemplate, errorTemplate } from '../views/index.js';
-import { SSOService } from 'edgeauth';
+import { SSOService } from '@edge-auth/core';
 
 const app = new Hono<{ Bindings: Env }>();
 

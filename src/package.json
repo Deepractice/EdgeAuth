@@ -1,5 +1,5 @@
 {
-  "name": "edgeauth",
+  "name": "@edge-auth/core",
   "version": "0.0.1",
   "description": "EdgeAuth - Open-source authentication service built on Cloudflare's edge infrastructure",
   "private": true,

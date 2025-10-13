@@ -1,5 +1,5 @@
 {
-  "name": "sso-api",
+  "name": "@edge-auth/sso-api",
   "version": "0.0.1",
   "description": "EdgeAuth SSO API service",
   "private": true,
@@ -11,7 +11,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "edgeauth": "workspace:*",
+    "@edge-auth/core": "workspace:*",
     "hono": "^4.6.14"
   },
   "devDependencies": {

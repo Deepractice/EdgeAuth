@@ -1,5 +1,5 @@
 {
-  "name": "admin-api",
+  "name": "@edge-auth/admin-api",
   "version": "0.0.1",
   "description": "EdgeAuth Admin Management API service",
   "private": true,
@@ -15,7 +15,7 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
-    "edgeauth": "workspace:*",
+    "@edge-auth/core": "workspace:*",
     "hono": "^4.7.10"
   },
   "devDependencies": {
@@ -33,7 +33,7 @@
     "cloudflare-workers",
     "admin",
     "user-management",
-    "edgeauth"
+    "@edge-auth/core"
   ],
   "author": "Deepractice",
   "license": "Apache-2.0"

@@ -1,8 +1,8 @@
 import { Given, When, Then, Before, setWorldConstructor } from '@deepracticex/vitest-cucumber';
 import { expect, vi } from 'vitest';
-import { AccountService, type AccountServiceConfig, type RegisterResult, type VerifyEmailResult } from 'edgeauth';
+import { AccountService, type AccountServiceConfig, type RegisterResult, type VerifyEmailResult } from '@edge-auth/core';
 import { AppError } from '@deepracticex/error-handling';
-import type { User } from 'edgeauth';
+import type { User } from '@edge-auth/core';
 
 // Mock D1Database
 class MockD1Database {
