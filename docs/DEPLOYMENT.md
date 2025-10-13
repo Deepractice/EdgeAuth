@@ -48,22 +48,36 @@ EdgeAuth uses GitHub Actions for automated deployments. No manual deployment scr
 
 #### Setup
 
-1. **Configure GitHub Secrets** (Repository Settings → Secrets and variables → Actions):
+**Configure GitHub Secrets** (Repository Settings → Secrets and variables → Actions):
 
-   ```
-   CLOUDFLARE_API_TOKEN=<your-cloudflare-api-token>
-   GH_PAT=<your-github-personal-access-token>
-   ```
+1. **CLOUDFLARE_API_TOKEN** - Cloudflare API token with D1 and Workers permissions
 
-2. **Set Production Secrets** (via Cloudflare CLI):
+   How to get:
+   - Go to Cloudflare Dashboard → My Profile → API Tokens
+   - Create Token → Use template: "Edit Cloudflare Workers"
+   - Add permissions: Account.Cloudflare D1 (Edit), Account.Workers Scripts (Edit)
 
+2. **GH_PAT** - GitHub Personal Access Token
+
+   How to get:
+   - GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Generate new token with `repo` and `workflow` permissions
+
+3. **JWT_SECRET** - Secret key for JWT token signing
+
+   Generate:
    ```bash
-   wrangler secret put JWT_SECRET --env production
-   # Enter a secure random string when prompted
-
-   wrangler secret put PLUNK_API_KEY --env production
-   # Enter your Plunk API key for email service
+   openssl rand -base64 32
    ```
+
+4. **PLUNK_API_KEY** - Plunk email service API key
+
+   Get from: https://www.useplunk.com/dashboard
+
+**Add all secrets to GitHub:**
+```
+Repository Settings → Secrets and variables → Actions → New repository secret
+```
 
 #### Deployment Workflow
 

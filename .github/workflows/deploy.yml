@@ -67,6 +67,24 @@ jobs:
           echo "Applying database migrations..."
           wrangler d1 migrations apply edgeauth-db --remote
 
+      - name: Configure Secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PLUNK_API_KEY: ${{ secrets.PLUNK_API_KEY }}
+        run: |
+          echo "Configuring Worker secrets..."
+
+          # Set JWT_SECRET for all services
+          for service in edgeauth-admin edgeauth-account edgeauth-sso edgeauth-oauth; do
+            echo "Setting JWT_SECRET for $service..."
+            echo "$JWT_SECRET" | wrangler secret put JWT_SECRET --name $service --env production
+          done
+
+          # Set PLUNK_API_KEY for account-api (email service)
+          echo "Setting PLUNK_API_KEY for edgeauth-account..."
+          echo "$PLUNK_API_KEY" | wrangler secret put PLUNK_API_KEY --name edgeauth-account --env production
+
       - name: Deploy Admin API
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

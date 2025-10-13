@@ -79,15 +79,13 @@ pnpm install
 
 **Required GitHub Secrets:**
 ```bash
-CLOUDFLARE_API_TOKEN  # Cloudflare API token
-GH_PAT                # GitHub Personal Access Token
+CLOUDFLARE_API_TOKEN  # Cloudflare API token with D1 and Workers permissions
+GH_PAT                # GitHub Personal Access Token with repo and workflow permissions
+JWT_SECRET            # Secret key for JWT signing (generate with: openssl rand -base64 32)
+PLUNK_API_KEY         # Plunk email service API key
 ```
 
-**Production secrets (via Cloudflare):**
-```bash
-wrangler secret put JWT_SECRET --env production
-wrangler secret put PLUNK_API_KEY --env production
-```
+All secrets are automatically configured to Workers during deployment - no manual Cloudflare secret management needed!
 
 ### 💻 Local Development
 
