@@ -121,7 +121,15 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         working-directory: apps/sso-login
-        run: wrangler pages deploy dist --project-name=edgeauth-sso-login
+        run: |
+          # Check if Pages project exists, create if not
+          if ! wrangler pages project list 2>&1 | grep -q "edgeauth-sso-login"; then
+            echo "Creating Pages project edgeauth-sso-login..."
+            wrangler pages project create edgeauth-sso-login --production-branch=main
+          fi
+
+          # Deploy to Pages
+          wrangler pages deploy dist --project-name=edgeauth-sso-login --commit-dirty=true
 
       - name: Deployment Summary
         run: |
