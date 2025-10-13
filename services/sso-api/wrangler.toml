@@ -15,6 +15,12 @@ JWT_SECRET = "dev-secret-key-change-in-production-use-wrangler-secret"
 
 [env.production]
 name = "edgeauth-sso"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "edgeauth-db"
+database_id = "placeholder"
+
 # Use: wrangler secret put JWT_SECRET --env production
 
 [env.staging]

@@ -20,5 +20,11 @@ BASE_URL = "http://localhost:8787"
 # Production environment
 [env.production]
 name = "edgeauth-account"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "edgeauth-db"
+database_id = "placeholder"
+
 # Use: wrangler secret put JWT_SECRET --env production
 # Use: wrangler secret put PLUNK_API_KEY --env production
