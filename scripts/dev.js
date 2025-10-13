@@ -161,11 +161,11 @@ function checkDatabase() {
 function initializeDatabase() {
   try {
     const { execSync } = require("child_process");
-    const accountApiPath = join(ROOT_DIR, "services/account-api");
 
     log("Running database migrations...", colors.blue);
+    // Run from project root, same as production deployment
     execSync("wrangler d1 migrations apply edgeauth-db --local", {
-      cwd: accountApiPath,
+      cwd: ROOT_DIR,
       stdio: "inherit",
     });
 
@@ -174,7 +174,6 @@ function initializeDatabase() {
   } catch (error) {
     log(`\n✗ Failed to initialize database: ${error.message}`, colors.red);
     log("\nPlease run manually:", colors.yellow);
-    log("  cd services/account-api", colors.yellow);
     log("  wrangler d1 migrations apply edgeauth-db --local\n", colors.yellow);
     return false;
   }
