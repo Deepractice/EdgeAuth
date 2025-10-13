@@ -36,8 +36,10 @@ auth.post("/login", async (c) => {
       throw errors.unauthorized("Invalid credentials");
     }
 
-    // Check if email is verified
-    if (!user.email_verified) {
+    // Check if email is verified (skip check in local dev environment)
+    const isLocalDev =
+      !c.env.PLUNK_API_KEY || c.env.PLUNK_API_KEY.startsWith("dev-");
+    if (!user.email_verified && !isLocalDev) {
       throw errors.unauthorized("Please verify your email before logging in");
     }
 
