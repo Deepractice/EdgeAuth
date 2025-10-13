@@ -5,7 +5,7 @@ export function getToken(): string | null {
   return state.token;
 }
 
-export function setToken(token: string): void {
+export function setToken(_token: string): void {
   // This is handled by the store's setAuth method
   console.warn("Use useAuthStore.setAuth instead of setToken");
 }
