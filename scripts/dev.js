@@ -325,6 +325,22 @@ async function main() {
       `\n${colors.green}✓ All services started successfully!${colors.reset}\n`,
     );
 
+    // Print final URL summary
+    log(`${colors.blue}${"=".repeat(60)}${colors.reset}`);
+    log(`${colors.green}Running Services:${colors.reset}\n`);
+    servicesToStart.forEach((service) => {
+      log(
+        `  ${service.color}●${colors.reset} ${service.label.padEnd(20)} ${colors.cyan}http://localhost:${service.port}${colors.reset}`,
+      );
+    });
+    if (options.frontend) {
+      log(
+        `  ${FRONTEND.color}●${colors.reset} ${FRONTEND.label.padEnd(20)} ${colors.cyan}http://localhost:${FRONTEND.port}${colors.reset}`,
+      );
+    }
+    log(`${colors.blue}${"=".repeat(60)}${colors.reset}\n`);
+    log(`${colors.yellow}Press Ctrl+C to stop all services${colors.reset}\n`);
+
     // Handle graceful shutdown
     const shutdown = () => {
       log(`\n${colors.yellow}Shutting down services...${colors.reset}`);
