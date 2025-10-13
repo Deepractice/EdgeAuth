@@ -33,6 +33,13 @@ const logger = createLogger({
 });
 
 /**
+ * Mail Sender Interface
+ */
+export interface MailSender {
+  send(params: { to: string; subject: string; html: string }): Promise<void>;
+}
+
+/**
  * Account Service Configuration
  */
 export interface AccountServiceConfig {
@@ -42,6 +49,7 @@ export interface AccountServiceConfig {
   emailFrom: string;
   emailFromName: string;
   baseUrl: string;
+  mailSender?: MailSender; // Optional: for testing
 }
 
 /**
@@ -67,18 +75,21 @@ export interface VerifyEmailResult {
 export class AccountService {
   private readonly userRepository: D1UserRepository;
   private readonly userService: UserService;
-  private readonly mailSender: PlunkSender;
+  private readonly mailSender: MailSender;
   private readonly config: AccountServiceConfig;
 
   constructor(config: AccountServiceConfig) {
     this.config = config;
     this.userRepository = new D1UserRepository(config.db);
     this.userService = new UserService(this.userRepository);
-    this.mailSender = new PlunkSender(
-      config.plunkApiKey,
-      config.emailFrom,
-      config.emailFromName,
-    );
+    // Use provided mailSender or create PlunkSender
+    this.mailSender =
+      config.mailSender ||
+      new PlunkSender(
+        config.plunkApiKey,
+        config.emailFrom,
+        config.emailFromName,
+      );
   }
 
   /**

@@ -11,9 +11,15 @@ import {
   type AccountServiceConfig,
   type RegisterResult,
   type VerifyEmailResult,
+  type MailSender,
 } from "@edge-auth/core";
 import { AppError } from "@deepracticex/error-handling";
 import type { User } from "@edge-auth/core";
+
+// Mock email sender
+const mockEmailSender: MailSender = {
+  send: vi.fn().mockResolvedValue(undefined),
+};
 
 // Mock D1Database
 class MockD1Database {
@@ -128,11 +134,6 @@ class MockD1Database {
   }
 }
 
-// Mock email sender
-const mockEmailSender = {
-  send: vi.fn().mockResolvedValue(undefined),
-};
-
 // Test world context
 interface TestWorld {
   db: MockD1Database;
@@ -150,15 +151,6 @@ interface TestWorld {
 setWorldConstructor(function (): TestWorld {
   const db = new MockD1Database();
 
-  // Mock the mail sender module
-  vi.mock("@edge-auth/core", async (importOriginal) => {
-    const actual = await importOriginal<typeof import("@edge-auth/core")>();
-    return {
-      ...actual,
-      PlunkSender: vi.fn().mockImplementation(() => mockEmailSender),
-    };
-  });
-
   const config: AccountServiceConfig = {
     db: db as unknown as D1Database,
     jwtSecret: "test-secret-key-for-testing",
@@ -166,6 +158,7 @@ setWorldConstructor(function (): TestWorld {
     emailFrom: "test@example.com",
     emailFromName: "Test",
     baseUrl: "http://localhost:3000",
+    mailSender: mockEmailSender, // Inject mock mail sender for testing
   };
 
   return {
