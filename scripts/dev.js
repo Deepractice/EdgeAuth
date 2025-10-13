@@ -150,13 +150,34 @@ ${colors.yellow}Service Ports:${colors.reset}
 function checkDatabase() {
   const dbPath = join(ROOT_DIR, ".wrangler/state/v3/d1");
   if (!existsSync(dbPath)) {
-    log(
-      "\n⚠️  Local database not found. Run setup first:\n   pnpm run dev:setup\n",
-      colors.yellow,
-    );
-    return false;
+    log("\n⚠️  Local database not found.", colors.yellow);
+    log("Creating and initializing database...\n", colors.blue);
+    return initializeDatabase();
   }
   return true;
+}
+
+// Initialize database with migrations
+function initializeDatabase() {
+  try {
+    const { execSync } = require("child_process");
+    const accountApiPath = join(ROOT_DIR, "services/account-api");
+
+    log("Running database migrations...", colors.blue);
+    execSync("wrangler d1 migrations apply edgeauth-db --local", {
+      cwd: accountApiPath,
+      stdio: "inherit",
+    });
+
+    log("\n✓ Database initialized successfully!\n", colors.green);
+    return true;
+  } catch (error) {
+    log(`\n✗ Failed to initialize database: ${error.message}`, colors.red);
+    log("\nPlease run manually:", colors.yellow);
+    log("  cd services/account-api", colors.yellow);
+    log("  wrangler d1 migrations apply edgeauth-db --local\n", colors.yellow);
+    return false;
+  }
 }
 
 // Start a service
