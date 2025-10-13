@@ -18,7 +18,7 @@ name = "edgeauth-sso"
 
 [[env.production.routes]]
 pattern = "api.deepractice.ai/sso/*"
-custom_domain = true
+zone_name = "deepractice.ai"
 
 [[env.production.d1_databases]]
 binding = "DB"

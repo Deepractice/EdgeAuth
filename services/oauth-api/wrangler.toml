@@ -24,7 +24,7 @@ vars = { OAUTH_ISSUER = "https://api.deepractice.ai/oauth" }
 
 [[env.production.routes]]
 pattern = "api.deepractice.ai/oauth/*"
-custom_domain = true
+zone_name = "deepractice.ai"
 
 [[env.production.d1_databases]]
 binding = "DB"

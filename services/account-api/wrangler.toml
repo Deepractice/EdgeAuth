@@ -23,7 +23,7 @@ name = "edgeauth-account"
 
 [[env.production.routes]]
 pattern = "api.deepractice.ai/account/*"
-custom_domain = true
+zone_name = "deepractice.ai"
 
 [[env.production.d1_databases]]
 binding = "DB"
