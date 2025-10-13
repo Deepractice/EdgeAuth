@@ -36,10 +36,8 @@ jobs:
       - name: Create Database
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          # Debug: Check token prefix
-          echo "Token starts with: ${CLOUDFLARE_API_TOKEN:0:10}..."
-
           # Check if database exists
           DB_LIST=$(wrangler d1 list --json)
           DB_ID=$(echo "$DB_LIST" | jq -r '.[] | select(.name == "edgeauth-db") | .uuid')
@@ -66,6 +64,7 @@ jobs:
       - name: Apply Migrations
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           echo "Applying database migrations..."
           wrangler d1 migrations apply edgeauth-db --remote
@@ -73,6 +72,7 @@ jobs:
       - name: Configure Secrets
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           PLUNK_API_KEY: ${{ secrets.PLUNK_API_KEY }}
         run: |
@@ -91,24 +91,28 @@ jobs:
       - name: Deploy Admin API
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         working-directory: services/admin-api
         run: wrangler deploy --env production
 
       - name: Deploy Account API
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         working-directory: services/account-api
         run: wrangler deploy --env production
 
       - name: Deploy SSO API
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         working-directory: services/sso-api
         run: wrangler deploy --env production
 
       - name: Deploy OAuth API
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         working-directory: services/oauth-api
         run: wrangler deploy --env production
 
