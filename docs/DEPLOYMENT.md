@@ -1,13 +1,13 @@
 # EdgeAuth Deployment Guide
 
-This guide covers both production deployment and local development setup.
+This guide covers production deployment via GitHub Actions and local development setup.
 
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
 - [Production Deployment](#production-deployment)
 - [Local Development](#local-development)
-- [Manual Deployment](#manual-deployment)
+- [Database Management](#database-management)
 - [Troubleshooting](#troubleshooting)
 
 ## Prerequisites
@@ -17,7 +17,6 @@ This guide covers both production deployment and local development setup.
 - **Node.js** >= 20.0.0
 - **pnpm** >= 8.0.0
 - **wrangler** (Cloudflare CLI)
-- **jq** (JSON processor, for automated scripts)
 
 ### Install Tools
 
@@ -28,56 +27,98 @@ npm install -g pnpm
 # Install wrangler
 npm install -g wrangler
 
-# Install jq (macOS)
-brew install jq
-
-# Install jq (Linux)
-apt-get install jq
+# Or use pnpm
+pnpm add -g wrangler
 ```
 
 ### Cloudflare Account Setup
 
 1. Create a Cloudflare account at https://dash.cloudflare.com
-2. Log in with wrangler:
+2. Generate an API Token with D1 and Workers permissions
+3. Log in with wrangler (for local development):
    ```bash
    wrangler login
    ```
 
 ## Production Deployment
 
-### Automated Deployment (Recommended)
+### Automated Deployment via GitHub Actions
 
-Use the deployment script for a complete automated setup:
+EdgeAuth uses GitHub Actions for automated deployments. No manual deployment scripts needed!
 
-```bash
-# From EdgeAuth root directory
-pnpm deploy
+#### Setup
 
-# Or directly run the script
-node scripts/deploy.js
+1. **Configure GitHub Secrets** (Repository Settings → Secrets and variables → Actions):
+
+   ```
+   CLOUDFLARE_API_TOKEN=<your-cloudflare-api-token>
+   GH_PAT=<your-github-personal-access-token>
+   ```
+
+2. **Set Production Secrets** (via Cloudflare CLI):
+
+   ```bash
+   wrangler secret put JWT_SECRET --env production
+   # Enter a secure random string when prompted
+
+   wrangler secret put PLUNK_API_KEY --env production
+   # Enter your Plunk API key for email service
+   ```
+
+#### Deployment Workflow
+
+```
+1. Create release branch
+   └─ git checkout -b release/v0.1.0
+
+2. Update version in package.json
+   └─ "version": "0.1.0"
+
+3. Create PR to main
+   └─ Opens PR for review
+
+4. Merge PR
+   └─ Triggers Release workflow
+      ├─ Creates Git tag (v0.1.0)
+      └─ Creates GitHub Release
+
+5. Release published
+   └─ Triggers Deploy workflow
+      ├─ Creates/gets D1 database
+      ├─ Applies migrations
+      └─ Deploys 4 workers
 ```
 
-This script will:
-1. Check requirements (wrangler)
-2. Create D1 databases (if not exists)
-3. Update all wrangler.toml files with database IDs
-4. Execute migrations
-5. Build and deploy all workers
+#### What Happens During Deployment
 
-**Note**: This is a Node.js script, so it works cross-platform (Windows, macOS, Linux) without requiring bash or external tools like `jq`.
+The `deploy.yml` workflow automatically:
 
-### Post-Deployment Configuration
+1. **Creates Database** (if doesn't exist)
+   - Database name: `edgeauth-db`
+   - Checks if already exists before creating
 
-After deployment, set production secrets:
+2. **Applies Migrations**
+   ```bash
+   wrangler d1 migrations apply edgeauth-db --remote
+   ```
+   - Uses Cloudflare's native migration system
+   - Automatically tracks applied migrations
+   - Idempotent (safe to run multiple times)
 
-```bash
-# Set JWT secret
-wrangler secret put JWT_SECRET --env production
-# Enter your secure secret when prompted
+3. **Deploys Workers**
+   - `edgeauth-admin` - Admin API
+   - `edgeauth-account` - User registration & login
+   - `edgeauth-sso` - SSO sessions
+   - `edgeauth-oauth` - OAuth 2.0 provider
 
-# Set Plunk API key (for email)
-wrangler secret put PLUNK_API_KEY --env production
-```
+#### Manual Deployment
+
+You can manually trigger deployment:
+
+1. Go to Actions tab in GitHub
+2. Select "Deploy" workflow
+3. Click "Run workflow"
+4. Choose branch and run
 
 ### Verify Deployment
 
@@ -99,43 +140,40 @@ curl https://edgeauth-account.<your-subdomain>.workers.dev/health
 
 ## Local Development
 
-### Automated Setup (Recommended)
+### Automated Setup
 
-Use the local setup script:
+Use the setup script for complete local environment:
 
 ```bash
 # From EdgeAuth root directory
 pnpm setup:local
-
-# Or directly run the script
-node scripts/setup-local.js
 ```
 
 This script will:
 1. Install dependencies
 2. Build packages
-3. Create local D1 databases
-4. Execute migrations locally
-5. Create .dev.vars files with default values
+3. Create local D1 database
+4. Apply migrations using Cloudflare's native system
+5. Create `.dev.vars` files with default values
 
 ### Start Development Server
 
 Start any worker locally:
 
 ```bash
-# Account API
+# Account API (default port 8787)
 cd services/account-api
 wrangler dev
 
-# Admin API
+# Admin API (port 8788)
 cd services/admin-api
 wrangler dev --port 8788
 
-# SSO API
+# SSO API (port 8789)
 cd services/sso-api
 wrangler dev --port 8789
 
-# OAuth API
+# OAuth API (port 8790)
 cd services/oauth-api
 wrangler dev --port 8790
 ```
@@ -160,134 +198,124 @@ Local D1 databases are stored in:
 .wrangler/state/v3/d1/
 ```
 
-To reset local databases, delete this directory and run `./scripts/setup-local.sh` again.
-
-## Manual Deployment
-
-If you prefer to deploy manually without scripts:
-
-### Step 1: Create D1 Databases
-
+To reset local database:
 ```bash
-wrangler d1 create edgeauth-users
-wrangler d1 create edgeauth-sso
-wrangler d1 create edgeauth-oauth
-```
-
-Save the database IDs from the output.
-
-### Step 2: Update wrangler.toml Files
-
-Update the following files with your database IDs:
-
-- `services/admin-api/wrangler.toml` (all 3 databases)
-- `services/account-api/wrangler.toml` (users only)
-- `services/sso-api/wrangler.toml` (users + sso)
-- `services/oauth-api/wrangler.toml` (users + oauth)
-
-Replace `database_id = "placeholder"` with your actual IDs.
-
-### Step 3: Execute Migrations
-
-```bash
-# Users database
-wrangler d1 execute edgeauth-users --file=src/migrations/0001_create_users_table.sql
-wrangler d1 execute edgeauth-users --file=src/migrations/0003_add_email_verification.sql
-
-# SSO database
-wrangler d1 execute edgeauth-sso --file=src/migrations/0002_create_sso_sessions_table.sql
-
-# OAuth database
-wrangler d1 execute edgeauth-oauth --file=src/migrations/0004_create_oauth_tables.sql
-```
-
-### Step 4: Build and Deploy
-
-```bash
-# Build all packages
-pnpm build
-
-# Deploy each worker
-cd services/admin-api && wrangler deploy
-cd services/account-api && wrangler deploy
-cd services/sso-api && wrangler deploy
-cd services/oauth-api && wrangler deploy
+rm -rf .wrangler/state
+pnpm setup:local
 ```
 
 ## Database Management
 
+### Single Database Architecture
+
+EdgeAuth uses a single database (`edgeauth-db`) containing all tables:
+
+- `users` - User accounts
+- `sso_sessions` - SSO sessions
+- `oauth_clients` - OAuth clients
+- `authorization_codes` - OAuth authorization codes
+- `access_tokens` - OAuth access tokens
+- `refresh_tokens` - OAuth refresh tokens
+
+### Migrations
+
+Migrations are stored in `/migrations` and managed by Cloudflare's native system:
+
+```
+migrations/
+├── 0001_create_users_table.sql
+├── 0002_create_sso_sessions_table.sql
+└── 0003_create_oauth_tables.sql
+```
+
+**Key Features:**
+- Automatic tracking in `d1_migrations` table
+- Idempotent (safe to run multiple times)
+- Sequential execution by filename
+
 ### View Database Schema
 
 ```bash
-# List tables in a database
-wrangler d1 execute edgeauth-users --command "SELECT name FROM sqlite_master WHERE type='table';"
+# List tables
+wrangler d1 execute edgeauth-db --command "SELECT name FROM sqlite_master WHERE type='table';"
 
 # Describe a table
-wrangler d1 execute edgeauth-users --command "PRAGMA table_info(users);"
+wrangler d1 execute edgeauth-db --command "PRAGMA table_info(users);"
+
+# Check applied migrations
+wrangler d1 execute edgeauth-db --command "SELECT * FROM d1_migrations;"
 ```
 
 ### Query Database
 
 ```bash
 # Production
-wrangler d1 execute edgeauth-users --command "SELECT * FROM users LIMIT 10;"
+wrangler d1 execute edgeauth-db --command "SELECT * FROM users LIMIT 10;"
 
 # Local
-wrangler d1 execute edgeauth-users --local --command "SELECT * FROM users LIMIT 10;"
+wrangler d1 execute edgeauth-db --local --command "SELECT * FROM users LIMIT 10;"
 ```
 
 ### Backup Database
 
 ```bash
 # Export database to SQL file
-wrangler d1 export edgeauth-users --output=backup.sql
+wrangler d1 export edgeauth-db --output=backup.sql
 
 # Restore from backup
-wrangler d1 execute edgeauth-users --file=backup.sql
+wrangler d1 execute edgeauth-db --file=backup.sql
+```
+
+### Create New Migration
+
+```bash
+# Create new migration file
+wrangler d1 migrations create edgeauth-db <migration_name>
+
+# This creates: migrations/XXXX_<migration_name>.sql
+# Edit the file and add your SQL
+
+# Apply locally
+wrangler d1 migrations apply edgeauth-db --local
+
+# Apply to production (via GitHub Actions)
+# Commit and push - deployment workflow handles it
 ```
 
 ## Troubleshooting
 
-### Database Already Exists
+### Migration Issues
 
-If you see "database already exists" error:
+**Problem:** Migration already applied
 
+**Solution:** Cloudflare tracks migrations automatically. If you see this error, the migration was already applied. Use `IF NOT EXISTS` in your SQL to make migrations idempotent.
+
+**Check migration status:**
 ```bash
-# List existing databases
-wrangler d1 list
-
-# Get database ID
-wrangler d1 list --json | jq -r '.[] | select(.name == "edgeauth-users") | .uuid'
+wrangler d1 migrations list edgeauth-db
 ```
-
-### Migration Already Applied
-
-D1 doesn't track migration history. If you try to apply a migration twice, you may see errors. Use `CREATE TABLE IF NOT EXISTS` in migrations to avoid this.
 
 ### Worker Deployment Failed
 
-Check logs:
-
+**Check logs:**
 ```bash
 wrangler tail edgeauth-account
 ```
 
-View deployment errors:
-
+**View deployment errors:**
 ```bash
 wrangler deployments list edgeauth-account
 ```
 
 ### Local Database Issues
 
-Reset local databases:
-
+**Reset local database:**
 ```bash
 # Delete local state
 rm -rf .wrangler/state
 
 # Re-run setup
-./scripts/setup-local.sh
+pnpm setup:local
 ```
 
 ### Secret Not Set
@@ -302,33 +330,78 @@ wrangler secret list
 wrangler secret put JWT_SECRET
 ```
 
+### GitHub Actions Fails
+
+**Common issues:**
+
+1. **Missing CLOUDFLARE_API_TOKEN**
+   - Add in Repository Settings → Secrets
+
+2. **Insufficient permissions**
+   - API token needs D1 and Workers permissions
+
+3. **Migration fails**
+   - Check migration SQL syntax
+   - Ensure `IF NOT EXISTS` for idempotency
+
+**View workflow logs:**
+- Go to Actions tab in GitHub
+- Click on failed workflow
+- Check individual step logs
+
+## CI/CD Workflows
+
+### CI Workflow (`ci.yml`)
+
+Runs on every PR and push to main:
+- Lint
+- Type check
+- Tests
+- Build verification
+
+### Release Workflow (`release.yml`)
+
+Runs when `release/*` branch PR is merged:
+- Extracts version from package.json
+- Creates Git tag
+- Creates GitHub Release
+- Deletes release branch
+
+### Deploy Workflow (`deploy.yml`)
+
+Runs when GitHub Release is published:
+- Creates/gets D1 database
+- Updates wrangler configs with database ID
+- Applies migrations
+- Deploys all workers to production
+
 ## Architecture Notes
 
-### Centralized Migration Management
+### Why Single Database?
 
-All database migrations are stored in `/src/migrations`, not in individual service directories. This follows the **centralized schema management** principle where:
+Previously used 3 separate databases, but consolidated to single database because:
 
-- Admin API is responsible for managing all database schemas
-- Other services consume the databases but don't manage schema
-- All migrations are version-controlled in one place
-- Clear ownership and evolution tracking
+1. **Simpler Migration Management** - Use Cloudflare's native migration system
+2. **No Performance Impact** - SQLite has table-level isolation
+3. **Easier to Manage** - One database to backup, monitor, query
+4. **Idempotent Deployments** - Automatic migration tracking
 
-### Database Bindings
+### Migration Tracking
 
-Different workers have different database bindings:
+Cloudflare automatically creates a `d1_migrations` table:
 
-| Worker | Users DB | SSO DB | OAuth DB |
-|--------|----------|--------|----------|
-| admin-api | ✅ | ✅ | ✅ |
-| account-api | ✅ | ❌ | ❌ |
-| sso-api | ✅ | ✅ | ❌ |
-| oauth-api | ✅ | ❌ | ✅ |
+```sql
+CREATE TABLE d1_migrations (
+  id INTEGER PRIMARY KEY,
+  name TEXT UNIQUE,
+  applied_at INTEGER
+);
+```
 
-This follows the principle of **least privilege** - each worker only has access to databases it needs.
+Every migration is recorded, preventing duplicate execution.
 
 ## Next Steps
 
 - [API Documentation](./api/README.md)
 - [Architecture Overview](./ARCHITECTURE.md)
-- [Database Schema Details](./DATABASE_MANAGEMENT.md)
 - [Contributing Guide](../CONTRIBUTING.md)

@@ -3,11 +3,10 @@ main = "dist/index.js"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
-# D1 Database bindings
-# Account Worker only needs access to users database
+# D1 Database binding (single database for all tables)
 [[d1_databases]]
 binding = "DB"
-database_name = "edgeauth-users"
+database_name = "edgeauth-db"
 database_id = "placeholder" # Replace with actual D1 database ID after creation
 
 # Environment Variables

@@ -1,6 +1,6 @@
--- EdgeAuth OAuth 2.0 Database Schema
--- Cloudflare D1 (SQLite)
--- Database: edgeauth-oauth
+-- EdgeAuth OAuth 2.0 Tables
+-- Migration: 0003_create_oauth_tables
+-- Database: edgeauth-db (single database)
 
 -- OAuth Clients table
 CREATE TABLE IF NOT EXISTS oauth_clients (

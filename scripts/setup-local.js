@@ -75,40 +75,20 @@ function checkRequirements() {
   logSuccess('All requirements met');
 }
 
-// Setup local databases with migrations
-function setupLocalDatabases() {
-  logInfo('Setting up local D1 databases...');
+// Setup local database with migrations using Cloudflare's native system
+function setupLocalDatabase() {
+  logInfo('Setting up local D1 database...');
 
-  const services = [
-    {
-      name: 'admin-api',
-      migrations: [
-        { db: 'edgeauth-users', file: 'src/migrations/0001_create_users_table.sql' },
-        { db: 'edgeauth-users', file: 'src/migrations/0003_add_email_verification.sql' },
-        { db: 'edgeauth-sso', file: 'src/migrations/0002_create_sso_sessions_table.sql' },
-        { db: 'edgeauth-oauth', file: 'src/migrations/0004_create_oauth_tables.sql' },
-      ],
-    },
-  ];
-
-  // We use admin-api context since it has all database bindings
-  const adminApiDir = join(ROOT_DIR, 'services', 'admin-api');
-
-  logInfo('Applying migrations via admin-api context (has all DB bindings)...');
-
-  for (const migration of services[0].migrations) {
-    logInfo(`Executing ${migration.file} on ${migration.db}...`);
-    try {
-      execCommand(
-        `wrangler d1 execute ${migration.db} --local --file=../../${migration.file}`,
-        { cwd: adminApiDir }
-      );
-    } catch (error) {
-      logWarn(`Migration may have already been applied: ${migration.file}`);
-    }
+  try {
+    // Use Cloudflare's native migration system
+    logInfo('Applying migrations using wrangler migrations...');
+    execCommand('wrangler d1 migrations apply edgeauth-db --local');
+    logSuccess('All migrations applied successfully');
+  } catch (error) {
+    logWarn('Some migrations may have already been applied');
   }
 
-  logSuccess('All local databases configured');
+  logSuccess('Local database configured');
 }
 
 // Create .dev.vars files
@@ -184,8 +164,8 @@ async function main() {
     logSuccess('Build completed');
     console.log('');
 
-    // Setup local databases
-    setupLocalDatabases();
+    // Setup local database
+    setupLocalDatabase();
     console.log('');
 
     // Create .dev.vars files

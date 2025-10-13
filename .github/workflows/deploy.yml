@@ -1,0 +1,108 @@
+name: Deploy
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch: # Allow manual deployment
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare Workers
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Services
+        run: pnpm build
+
+      - name: Setup Wrangler
+        run: pnpm add -g wrangler
+
+      - name: Create Database
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          # Check if database exists
+          DB_LIST=$(wrangler d1 list --json)
+          DB_ID=$(echo "$DB_LIST" | jq -r '.[] | select(.name == "edgeauth-db") | .uuid')
+
+          if [ -z "$DB_ID" ]; then
+            echo "Creating database edgeauth-db..."
+            DB_OUTPUT=$(wrangler d1 create edgeauth-db --json)
+            DB_ID=$(echo "$DB_OUTPUT" | jq -r '.uuid')
+            echo "Database created with ID: $DB_ID"
+          else
+            echo "Database edgeauth-db already exists with ID: $DB_ID"
+          fi
+
+          echo "DB_ID=$DB_ID" >> $GITHUB_ENV
+
+      - name: Update Wrangler Configs
+        run: |
+          # Update all wrangler.toml files with the database ID
+          for config in services/*/wrangler.toml; do
+            echo "Updating $config..."
+            sed -i "s/database_id = \"placeholder\".*/database_id = \"$DB_ID\"/" "$config"
+          done
+
+      - name: Apply Migrations
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "Applying database migrations..."
+          wrangler d1 migrations apply edgeauth-db --remote
+
+      - name: Deploy Admin API
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        working-directory: services/admin-api
+        run: wrangler deploy --env production
+
+      - name: Deploy Account API
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        working-directory: services/account-api
+        run: wrangler deploy --env production
+
+      - name: Deploy SSO API
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        working-directory: services/sso-api
+        run: wrangler deploy --env production
+
+      - name: Deploy OAuth API
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        working-directory: services/oauth-api
+        run: wrangler deploy --env production
+
+      - name: Deployment Summary
+        run: |
+          echo "## ✅ Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Database:** edgeauth-db (\`$DB_ID\`)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Services Deployed:**" >> $GITHUB_STEP_SUMMARY
+          echo "- edgeauth-admin" >> $GITHUB_STEP_SUMMARY
+          echo "- edgeauth-account" >> $GITHUB_STEP_SUMMARY
+          echo "- edgeauth-sso" >> $GITHUB_STEP_SUMMARY
+          echo "- edgeauth-oauth" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Next Steps:**" >> $GITHUB_STEP_SUMMARY
+          echo "1. Verify secrets are set: \`JWT_SECRET\`, \`PLUNK_API_KEY\`" >> $GITHUB_STEP_SUMMARY
+          echo "2. Test API endpoints" >> $GITHUB_STEP_SUMMARY

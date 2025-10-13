@@ -71,15 +71,19 @@ pnpm install
 
 ### 🚀 Production Deployment
 
-**One-command deployment:**
+**Automated deployment via GitHub Actions:**
 
+1. Create a `release/v0.x.x` branch
+2. Merge to `main`
+3. Deployment happens automatically!
+
+**Required GitHub Secrets:**
 ```bash
-# Automated deployment (creates databases, runs migrations, deploys workers)
-pnpm deploy
+CLOUDFLARE_API_TOKEN  # Cloudflare API token
+GH_PAT                # GitHub Personal Access Token
 ```
 
-After deployment, configure production secrets:
-
+**Production secrets (via Cloudflare):**
 ```bash
 wrangler secret put JWT_SECRET --env production
 wrangler secret put PLUNK_API_KEY --env production
@@ -130,35 +134,36 @@ cd services/account-api && wrangler dev
 
 ## 📐 Architecture
 
-EdgeAuth uses a **centralized schema management** approach that eliminates the complexity of distributed microservices:
+EdgeAuth uses a **single database architecture** with Cloudflare's native migration system:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│              Admin Worker (Schema Owner)            │
-│  • Manages ALL database migrations                  │
-│  • User management APIs                             │
-│  • Binds: users + sso + oauth databases            │
-└─────────────────────────────────────────────────────┘
-                          │
-        ┌─────────────────┼─────────────────┐
-        ▼                 ▼                 ▼
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  SSO Worker  │  │ OAuth Worker │  │ Other Workers│
-│  • Auth flow │  │  • OAuth 2.0 │  │  • Business  │
-│  • Sessions  │  │  • Clients   │  │    logic     │
-└──────────────┘  └──────────────┘  └──────────────┘
+│              edgeauth-db (Single Database)          │
+│  • users table                                      │
+│  • sso_sessions table                               │
+│  • oauth_clients, tokens tables                     │
+└─────────────────────┬───────────────────────────────┘
+                      │
+        ┌─────────────┼─────────────────┐
+        ▼             ▼                 ▼
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+│ Admin Worker │ │  SSO Worker  │ │ OAuth Worker │
+│ • User CRUD  │ │  • Auth flow │ │  • OAuth 2.0 │
+│ • Binds: DB  │ │  • Binds: DB │ │  • Binds: DB │
+└──────────────┘ └──────────────┘ └──────────────┘
 ```
 
-### 🗄️ **Three Databases**
-- `edgeauth-users` - User accounts
-- `edgeauth-sso` - SSO sessions
-- `edgeauth-oauth` - OAuth clients and tokens
+### 🗄️ **Single Database**
+- `edgeauth-db` - All tables in one database
+  - `users` - User accounts
+  - `sso_sessions` - SSO sessions
+  - `oauth_clients`, `authorization_codes`, `access_tokens`, `refresh_tokens` - OAuth
 
 ### ✨ **Key Benefits**
-- ✅ No schema conflicts
-- ✅ No deployment dependencies
-- ✅ Clear responsibility boundaries
-- ✅ Easy to track schema evolution
+- ✅ Cloudflare native migrations (automatic tracking)
+- ✅ Idempotent deployments
+- ✅ Simplified management
+- ✅ No cross-database complexity
 
 📖 **[Read Full Architecture Docs →](docs/ARCHITECTURE.md)**
 
@@ -264,18 +269,18 @@ pnpm format:check
 
 ```
 EdgeAuth/
+├── migrations/            # Database migrations (Cloudflare native)
 ├── src/
 │   ├── core/              # Technical core (crypto, JWT, persistence)
 │   └── domain/            # Business logic (User, OAuth, SSO)
 ├── services/
-│   ├── admin-worker/      # Admin API + Schema management
-│   ├── oauth-worker/      # OAuth 2.0 Provider
-│   └── sso-worker/        # SSO authentication
-├── docs/
-│   ├── ARCHITECTURE.md    # Detailed architecture guide
-│   ├── DATABASE_MANAGEMENT.md  # Database strategy
-│   └── api/               # API specifications
-└── package.json           # Monorepo root
+│   ├── admin-api/         # Admin API
+│   ├── account-api/       # User registration & login
+│   ├── oauth-api/         # OAuth 2.0 Provider
+│   └── sso-api/           # SSO authentication
+├── .github/workflows/     # CI/CD pipelines
+├── docs/                  # Documentation
+└── scripts/               # Development scripts
 ```
 
 ---

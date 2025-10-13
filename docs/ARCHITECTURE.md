@@ -34,31 +34,36 @@ EdgeAuth/
 
 ## 🗄️ Database Architecture
 
-### Centralized Schema Management
+### Single Database with Cloudflare Native Migrations
 
-EdgeAuth uses an innovative **centralized schema management** approach to avoid distributed database conflicts:
+EdgeAuth uses a **single database architecture** with Cloudflare's native migration system:
 
-**Three D1 Databases:**
-- `edgeauth-users` - User tables
-- `edgeauth-sso` - SSO session tables
-- `edgeauth-oauth` - OAuth clients and tokens
+**One D1 Database:**
+- `edgeauth-db` - All tables in a single database
+  - `users` - User accounts
+  - `sso_sessions` - SSO sessions
+  - `oauth_clients`, `authorization_codes`, `access_tokens`, `refresh_tokens` - OAuth
 
-**Core Principle - Single Source of Truth:**
-- ✅ Migrations are centralized in `src/migrations/`
-- ❌ Service APIs have NO migrations
+**Core Principle - Cloudflare Native:**
+- ✅ Migrations in `/migrations/` (root directory, Cloudflare standard)
+- ✅ Automatic tracking via `d1_migrations` table
+- ✅ Idempotent deployments (safe to run multiple times)
 - **Benefits**:
-  - No schema conflicts
-  - No deployment order dependencies
-  - No version inconsistencies
-  - Clear responsibility boundaries
+  - Simplified migration management
+  - No cross-database complexity
+  - Native Cloudflare tooling support
+  - Automatic migration history
 
 ### Database Bindings
 
-| Service | DB Binding | SSO_DB Binding | OAUTH_DB Binding |
-|---------|------------|----------------|------------------|
-| Admin API | ✅ (R/W) | ✅ (R/W) | ✅ (R/W) |
-| SSO API | ✅ (R) | ✅ (R/W) | ❌ |
-| OAuth API | ❌ | ❌ | ✅ (R/W) |
+All services bind to the same database:
+
+| Service | DB Binding | Purpose |
+|---------|------------|---------|
+| Admin API | ✅ (R/W) | User management, full access |
+| Account API | ✅ (R/W) | User registration & login |
+| SSO API | ✅ (R/W) | SSO sessions |
+| OAuth API | ✅ (R/W) | OAuth flows |
 
 ## 📦 Core Packages
 
@@ -196,50 +201,62 @@ pnpm test:dev
 
 ### Deployment Workflow
 
-1. **Apply Migrations** (Centralized):
+**Automated via GitHub Actions:**
+
+1. **Create Release** (via `release.yml`):
+   - Merge `release/*` branch PR to main
+   - Automatically creates Git tag and GitHub Release
+
+2. **Deploy** (via `deploy.yml`, triggered by Release):
    ```bash
-   # Run migrations from src/migrations/
-   wrangler d1 execute edgeauth-users --file=src/migrations/000X_xxx.sql
+   # Create/get database
+   wrangler d1 create edgeauth-db
+
+   # Apply migrations (Cloudflare native)
+   wrangler d1 migrations apply edgeauth-db --remote
+
+   # Deploy all services
+   cd services/admin-api && wrangler deploy --env production
+   cd services/account-api && wrangler deploy --env production
+   cd services/sso-api && wrangler deploy --env production
+   cd services/oauth-api && wrangler deploy --env production
    ```
 
-2. **Deploy Services** (Any order):
-   ```bash
-   # Admin API
-   cd services/admin-api && wrangler deploy
-
-   # OAuth API
-   cd services/oauth-api && wrangler deploy
-
-   # SSO API
-   cd services/sso-api && wrangler deploy
-   ```
+**Key Features:**
+- Fully automated deployment
+- Idempotent (safe to rerun)
+- Automatic migration tracking
+- No manual steps required
 
 ## 🎯 Architectural Highlights
 
-### 1. Contradiction Resolution
+### 1. Architecture Evolution
 
-**Primary Contradiction**: Distributed schema management conflicts in microservices
-- Multiple workers trying to create the same tables
-- Deployment order dependencies
-- Version inconsistencies
+**Previous Approach**: Multiple databases with manual migration execution
+- 3 separate databases (users, sso, oauth)
+- Manual SQL file execution via `wrangler d1 execute`
+- No automatic migration tracking
+- Risk of duplicate execution
 
-**Solution**: Centralized schema management
-- Migrations in `src/migrations/` as single source of truth
-- Service APIs focus on business logic
-- Clear separation of concerns
+**Current Solution**: Single database with Cloudflare native migrations
+- 1 unified database (`edgeauth-db`)
+- Cloudflare's migration system with automatic tracking
+- Idempotent deployments
+- Simplified management
 
 **Benefits**:
-- Deployment order is flexible (migrations run independently)
-- Schema changes are tracked in one place
-- No coupling between services and schema
+- Automatic migration history in `d1_migrations` table
+- Safe to rerun deployments
+- Standard Cloudflare tooling
+- No custom migration tracking needed
 
 ### 2. Occam's Razor Principles
 
 **Simplicity Through**:
-- Direct D1 access (no HTTP overhead between workers)
+- Single database (no cross-database complexity)
+- Native migration system (no custom tracking)
+- Automated CI/CD (no manual deployment)
 - Code sharing via workspace packages (no duplication)
-- Flexible deployment (workers can deploy in any order)
-- Clear responsibility boundaries (no gray areas)
 
 ### 3. Clean Architecture
 
@@ -326,9 +343,10 @@ export default {
 ## 🎓 Best Practices
 
 1. **Schema Management**
-   - All migrations are centralized in `src/migrations/`
-   - Document table ownership in migration files
-   - Apply migrations before deploying services
+   - All migrations in `/migrations/` (Cloudflare standard location)
+   - Use `IF NOT EXISTS` for idempotency
+   - Descriptive migration names (e.g., `0001_create_users_table.sql`)
+   - Never modify applied migrations, create new ones
 
 2. **Code Organization**
    - One file per type (OOP style)
@@ -339,11 +357,13 @@ export default {
    - BDD for business logic (feature files)
    - Unit tests for technical logic
    - E2E tests for critical paths
+   - CI runs on every PR
 
-4. **Database Access**
-   - Workers bind directly to D1 databases
-   - Share logic via workspace packages
-   - No cross-database queries (D1 limitation)
+4. **Deployment**
+   - Use GitHub Actions for all deployments
+   - No manual production deployments
+   - Test locally with `pnpm setup:local`
+   - Follow release branch workflow
 
 ## 📚 Related Documentation
 

@@ -15,7 +15,6 @@
     "format:check": "prettier --check .",
     "clean": "turbo clean && rm -rf node_modules",
     "typecheck": "turbo typecheck",
-    "deploy": "node scripts/deploy.js",
     "setup:local": "node scripts/setup-local.js"
   },
   "keywords": [

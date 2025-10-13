@@ -3,15 +3,15 @@ main = "src/index.ts"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 
+# D1 Database binding (single database for all tables)
+[[d1_databases]]
+binding = "DB"
+database_name = "edgeauth-db"
+database_id = "placeholder" # Replace with actual D1 database ID after creation
+
 # OAuth 2.0 Provider specific config
 [vars]
 OAUTH_ISSUER = "https://oauth.edgeauth.dev"
-
-# D1 Database binding
-[[d1_databases]]
-binding = "DB"
-database_name = "edgeauth-oauth"
-database_id = "TO_BE_CONFIGURED"
 
 # Development
 [env.development]
