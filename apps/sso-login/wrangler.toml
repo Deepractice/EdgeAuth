@@ -2,5 +2,5 @@ name = "edgeauth-sso-login"
 compatibility_date = "2024-12-01"
 pages_build_output_dir = "dist"
 
-# Custom domain: sso.deepractice.ai
+# Custom domain: account.deepractice.ai
 # Note: Custom domains for Pages need to be configured via Dashboard or API after deployment
