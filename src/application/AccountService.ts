@@ -50,6 +50,7 @@ export interface AccountServiceConfig {
   emailFromName: string;
   baseUrl: string;
   mailSender?: MailSender; // Optional: for testing
+  verificationTokenExpiresIn?: number; // Optional: token expiration in seconds (default: 24 hours)
 }
 
 /**
@@ -123,7 +124,7 @@ export class AccountService {
         user.id,
         user.email,
         this.config.jwtSecret,
-        86400, // 24 hours
+        this.config.verificationTokenExpiresIn ?? 86400, // Default: 24 hours
       );
 
       // Build verification URL
