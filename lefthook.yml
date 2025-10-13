@@ -19,8 +19,11 @@ pre-commit:
       run: pnpm lint
 
 pre-push:
-  parallel: true
+  parallel: false
   commands:
+    install-check:
+      run: pnpm install --frozen-lockfile
+
     # Temporarily disabled - CI will catch these issues
     # typecheck:
     #   run: pnpm typecheck
