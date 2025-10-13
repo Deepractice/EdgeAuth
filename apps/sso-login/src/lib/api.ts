@@ -50,3 +50,31 @@ export async function verifyToken(token: string): Promise<LoginResponse['user']>
 
   return response.json()
 }
+
+export interface RegisterRequest {
+  email: string
+  username: string
+  password: string
+}
+
+export interface RegisterResponse {
+  message: string
+  requiresVerification: boolean
+}
+
+export async function register(data: RegisterRequest): Promise<RegisterResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+
+  if (!response.ok) {
+    const error: ApiError = await response.json()
+    throw new Error(error.message || 'Registration failed')
+  }
+
+  return response.json()
+}
