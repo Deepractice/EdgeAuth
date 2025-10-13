@@ -20,7 +20,7 @@ export interface ApiError {
 }
 
 export async function login(data: LoginRequest): Promise<LoginResponse> {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+  const response = await fetch(`${API_BASE_URL}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
 export async function verifyToken(
   token: string,
 ): Promise<LoginResponse["user"]> {
-  const response = await fetch(`${API_BASE_URL}/auth/me`, {
+  const response = await fetch(`${API_BASE_URL}/me`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
