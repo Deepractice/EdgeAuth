@@ -13,7 +13,6 @@ port = 8789
 binding = "DB"
 database_name = "edgeauth-db"
 database_id = "placeholder"
-migrations_dir = "../../migrations"
 
 # Routes
 [[routes]]

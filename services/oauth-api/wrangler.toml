@@ -13,7 +13,6 @@ port = 8790
 binding = "DB"
 database_name = "edgeauth-db"
 database_id = "placeholder"
-migrations_dir = "../../migrations"
 
 # OAuth 2.0 Provider config
 [vars]

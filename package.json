@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "turbo dev --filter=@edge-auth/account-api --filter=@edge-auth/admin-api --filter=@edge-auth/oauth-api --filter=@edge-auth/sso-api --filter=@edge-auth/account-portal",
+    "dev:setup": "cd services/account-api && wrangler d1 migrations apply edgeauth-db --local",
     "build": "turbo build",
     "test": "turbo test",
     "test:e2e": "turbo test",
