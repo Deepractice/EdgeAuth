@@ -4,7 +4,7 @@
  * Cloudflare D1 (SQLite) implementation of UserRepository
  */
 
-import type { User, UserRepository, UserWithPassword } from 'edge-auth-domain';
+import type { User, UserRepository, UserWithPassword } from "edge-auth-domain";
 
 /**
  * D1 Database interface (from Cloudflare Workers)
@@ -83,10 +83,19 @@ export class D1UserRepository implements UserRepository {
   async create(user: UserWithPassword): Promise<User> {
     await this.db
       .prepare(
-        `INSERT INTO users (id, email, username, password_hash, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO users (id, email, username, password_hash, email_verified, email_verified_at, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       )
-      .bind(user.id, user.email, user.username, user.passwordHash, user.createdAt, user.updatedAt)
+      .bind(
+        user.id,
+        user.email,
+        user.username,
+        user.passwordHash,
+        user.emailVerified ? 1 : 0,
+        user.emailVerifiedAt,
+        user.createdAt,
+        user.updatedAt,
+      )
       .run();
 
     return {
@@ -101,31 +110,50 @@ export class D1UserRepository implements UserRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    const row = await this.db.prepare(`SELECT * FROM users WHERE id = ?`).bind(id).first<UserRow>();
+    const row = await this.db
+      .prepare(`SELECT * FROM users WHERE id = ?`)
+      .bind(id)
+      .first<UserRow>();
 
     return row ? this.rowToUser(row) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const row = await this.db.prepare(`SELECT * FROM users WHERE email = ?`).bind(email).first<UserRow>();
+    const row = await this.db
+      .prepare(`SELECT * FROM users WHERE email = ?`)
+      .bind(email)
+      .first<UserRow>();
 
     return row ? this.rowToUser(row) : null;
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    const row = await this.db.prepare(`SELECT * FROM users WHERE username = ?`).bind(username).first<UserRow>();
+    const row = await this.db
+      .prepare(`SELECT * FROM users WHERE username = ?`)
+      .bind(username)
+      .first<UserRow>();
 
     return row ? this.rowToUser(row) : null;
   }
 
-  async findByEmailWithPassword(email: string): Promise<UserWithPassword | null> {
-    const row = await this.db.prepare(`SELECT * FROM users WHERE email = ?`).bind(email).first<UserRow>();
+  async findByEmailWithPassword(
+    email: string,
+  ): Promise<UserWithPassword | null> {
+    const row = await this.db
+      .prepare(`SELECT * FROM users WHERE email = ?`)
+      .bind(email)
+      .first<UserRow>();
 
     return row ? this.rowToUserWithPassword(row) : null;
   }
 
-  async findByUsernameWithPassword(username: string): Promise<UserWithPassword | null> {
-    const row = await this.db.prepare(`SELECT * FROM users WHERE username = ?`).bind(username).first<UserRow>();
+  async findByUsernameWithPassword(
+    username: string,
+  ): Promise<UserWithPassword | null> {
+    const row = await this.db
+      .prepare(`SELECT * FROM users WHERE username = ?`)
+      .bind(username)
+      .first<UserRow>();
 
     return row ? this.rowToUserWithPassword(row) : null;
   }
@@ -134,7 +162,7 @@ export class D1UserRepository implements UserRepository {
     const result = await this.db
       .prepare(`SELECT 1 FROM users WHERE email = ? LIMIT 1`)
       .bind(email)
-      .first<{ '1': number }>();
+      .first<{ "1": number }>();
 
     return result !== null;
   }
@@ -143,7 +171,7 @@ export class D1UserRepository implements UserRepository {
     const result = await this.db
       .prepare(`SELECT 1 FROM users WHERE username = ? LIMIT 1`)
       .bind(username)
-      .first<{ '1': number }>();
+      .first<{ "1": number }>();
 
     return result !== null;
   }

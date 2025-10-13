@@ -97,6 +97,20 @@ class MockD1Database {
               const [userId] = params;
               const user = self.users.get(userId);
               return user ? (user as T) : null;
+            } else if (
+              query.includes(
+                "SELECT * FROM users WHERE email = ? OR username = ?",
+              )
+            ) {
+              // Login query: find by email or username
+              const [email, username] = params;
+              const userByEmail = self.usersByEmail.get(email.toLowerCase());
+              if (userByEmail) return userByEmail as T;
+              // Search by username
+              const userByUsername = Array.from(self.users.values()).find(
+                (u) => u.username === username,
+              );
+              return userByUsername ? (userByUsername as T) : null;
             } else if (query.includes("SELECT * FROM users WHERE email")) {
               const [email] = params;
               const user = self.usersByEmail.get(email.toLowerCase());
@@ -158,6 +172,11 @@ interface TestWorld {
   error: AppError | Error | null;
   registerResult: RegisterResult | null;
   verifyResult: VerifyEmailResult | null;
+  loginResult: {
+    token: string;
+    user: { id: string; email: string; username: string };
+  } | null;
+  jwtToken: string | null;
 }
 
 setWorldConstructor(function (): TestWorld {
@@ -184,6 +203,8 @@ setWorldConstructor(function (): TestWorld {
     error: null,
     registerResult: null,
     verifyResult: null,
+    loginResult: null,
+    jwtToken: null,
   };
 });
 
@@ -198,6 +219,8 @@ Before(function (this: TestWorld) {
   this.error = null;
   this.registerResult = null;
   this.verifyResult = null;
+  this.loginResult = null;
+  this.jwtToken = null;
   mockEmailSender.send.mockClear();
 });
 
@@ -636,5 +659,197 @@ Then(
       user!.password_hash,
     );
     expect(isValid).toBe(true);
+  },
+);
+
+// === Login Steps ===
+
+Given("I verified my email", async function (this: TestWorld) {
+  if (this.currentUserId) {
+    const now = Date.now();
+    await this.db
+      .prepare(
+        "UPDATE users SET email_verified = 1, email_verified_at = ?, updated_at = ? WHERE id = ?",
+      )
+      .bind(now, now, this.currentUserId)
+      .run();
+
+    if (this.currentUser) {
+      this.currentUser.emailVerified = true;
+      this.currentUser.emailVerifiedAt = now;
+    }
+  }
+});
+
+Given("I did not verify my email", function (this: TestWorld) {
+  // Email is not verified by default after registration
+});
+
+Given(
+  "I registered with email {string} and username {string}",
+  async function (this: TestWorld, email: string, username: string) {
+    await this.accountService.register({
+      email,
+      username,
+      password: "SecurePass123",
+    });
+
+    const user = await this.db
+      .prepare("SELECT * FROM users WHERE email = ?")
+      .bind(email.toLowerCase())
+      .first<any>();
+
+    if (user) {
+      this.currentUserId = user.id;
+      this.currentUser = {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        emailVerified: user.email_verified === 1,
+        emailVerifiedAt: user.email_verified_at,
+        createdAt: user.created_at,
+        updatedAt: user.updated_at,
+      };
+    }
+  },
+);
+
+When(
+  "I login with email {string} and password {string}",
+  async function (this: TestWorld, email: string, password: string) {
+    const { verifyPassword, generateToken } = await import("@edge-auth/core");
+
+    try {
+      const user = await this.db
+        .prepare("SELECT * FROM users WHERE email = ? OR username = ? LIMIT 1")
+        .bind(email.toLowerCase(), email)
+        .first<any>();
+
+      if (!user) {
+        throw new Error("Invalid credentials");
+      }
+
+      if (user.email_verified !== 1) {
+        throw new Error("Please verify your email before logging in");
+      }
+
+      const isValid = await verifyPassword(password, user.password_hash);
+      if (!isValid) {
+        throw new Error("Invalid credentials");
+      }
+
+      const token = await generateToken(
+        {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          emailVerified: user.email_verified === 1,
+          emailVerifiedAt: user.email_verified_at,
+          createdAt: user.created_at,
+          updatedAt: user.updated_at,
+        },
+        {
+          secret: "test-secret-key-for-testing",
+          expiresIn: 86400,
+        },
+      );
+
+      this.loginResult = {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+        },
+      };
+      this.jwtToken = token;
+      this.error = null;
+    } catch (error) {
+      this.error = error as Error;
+      this.loginResult = null;
+    }
+  },
+);
+
+When(
+  "I login with username {string} and password {string}",
+  async function (this: TestWorld, username: string, password: string) {
+    const { verifyPassword, generateToken } = await import("@edge-auth/core");
+
+    try {
+      const user = await this.db
+        .prepare("SELECT * FROM users WHERE email = ? OR username = ? LIMIT 1")
+        .bind(username.toLowerCase(), username)
+        .first<any>();
+
+      if (!user) {
+        throw new Error("Invalid credentials");
+      }
+
+      if (user.email_verified !== 1) {
+        throw new Error("Please verify your email before logging in");
+      }
+
+      const isValid = await verifyPassword(password, user.password_hash);
+      if (!isValid) {
+        throw new Error("Invalid credentials");
+      }
+
+      const token = await generateToken(
+        {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          emailVerified: user.email_verified === 1,
+          emailVerifiedAt: user.email_verified_at,
+          createdAt: user.created_at,
+          updatedAt: user.updated_at,
+        },
+        {
+          secret: "test-secret-key-for-testing",
+          expiresIn: 86400,
+        },
+      );
+
+      this.loginResult = {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+        },
+      };
+      this.jwtToken = token;
+      this.error = null;
+    } catch (error) {
+      this.error = error as Error;
+      this.loginResult = null;
+    }
+  },
+);
+
+Then("the login should succeed", function (this: TestWorld) {
+  expect(this.error).toBeNull();
+  expect(this.loginResult).not.toBeNull();
+});
+
+Then("I should receive a JWT token", function (this: TestWorld) {
+  expect(this.jwtToken).not.toBeNull();
+  expect(typeof this.jwtToken).toBe("string");
+});
+
+Then("I should receive my user information", function (this: TestWorld) {
+  expect(this.loginResult).not.toBeNull();
+  expect(this.loginResult!.user).not.toBeNull();
+  expect(this.loginResult!.user.id).toBeDefined();
+  expect(this.loginResult!.user.email).toBeDefined();
+  expect(this.loginResult!.user.username).toBeDefined();
+});
+
+Then(
+  "the login should fail with {string}",
+  function (this: TestWorld, errorMessage: string) {
+    expect(this.error).not.toBeNull();
+    expect(this.error!.message).toContain(errorMessage);
   },
 );
