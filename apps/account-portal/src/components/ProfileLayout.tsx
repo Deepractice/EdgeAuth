@@ -1,31 +1,16 @@
 import { useEffect, useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { isAuthenticated, getToken } from "../lib/auth";
-import { getProfile } from "../lib/api";
-import Header from "./Header";
+import { isAuthenticated } from "../lib/auth";
 
 export default function ProfileLayout() {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const token = getToken();
 
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login");
     }
   }, [navigate]);
-
-  const { data: profile } = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      if (!token) {
-        throw new Error("No token found");
-      }
-      return getProfile(token);
-    },
-    enabled: isAuthenticated(),
-  });
 
   const navItems = [
     { path: "/profile", label: "Personal Info", icon: "📋" },
@@ -35,9 +20,6 @@ export default function ProfileLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <Header username={profile?.username} />
-
       {/* Mobile menu button */}
       <div className="lg:hidden bg-white shadow-sm p-4 flex justify-between items-center">
         <h1 className="text-xl font-semibold">Profile</h1>
