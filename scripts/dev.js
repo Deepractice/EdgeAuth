@@ -13,7 +13,7 @@
  *   node scripts/dev.js --no-frontend      # Start all backend, skip frontend
  */
 
-import { spawn } from "child_process";
+import { spawn, execSync } from "child_process";
 import { existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -160,8 +160,6 @@ function checkDatabase() {
 // Initialize database with migrations
 function initializeDatabase() {
   try {
-    const { execSync } = require("child_process");
-
     log("Running database migrations...", colors.blue);
     // Run from project root, same as production deployment
     execSync("wrangler d1 migrations apply edgeauth-db --local", {
