@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { AccountService } from "@edge-auth/core";
+import { AccountService, NoMailSender } from "@edge-auth/core";
 import { AppError, errors } from "@deepracticex/error-handling";
 import { createLogger } from "@edge-auth/core";
 import type { Env } from "../types.js";
@@ -26,13 +26,20 @@ account.post("/register", async (c) => {
       password: string;
     }>();
 
+    // Use NoMailSender for local dev if PLUNK_API_KEY is not set
+    const mailSender =
+      !c.env.PLUNK_API_KEY || c.env.PLUNK_API_KEY.startsWith("dev-")
+        ? new NoMailSender()
+        : undefined; // Use default PlunkSender
+
     const accountService = new AccountService({
       db: c.env.DB,
       jwtSecret: c.env.JWT_SECRET,
-      plunkApiKey: c.env.PLUNK_API_KEY,
+      plunkApiKey: c.env.PLUNK_API_KEY || "not-used",
       emailFrom: c.env.EMAIL_FROM,
       emailFromName: c.env.EMAIL_FROM_NAME,
       baseUrl: c.env.BASE_URL,
+      mailSender,
     });
 
     const result = await accountService.register({
@@ -71,13 +78,20 @@ account.get("/verify-email", async (c) => {
       throw errors.validation("Verification token is required");
     }
 
+    // Use NoMailSender for local dev if PLUNK_API_KEY is not set
+    const mailSender =
+      !c.env.PLUNK_API_KEY || c.env.PLUNK_API_KEY.startsWith("dev-")
+        ? new NoMailSender()
+        : undefined;
+
     const accountService = new AccountService({
       db: c.env.DB,
       jwtSecret: c.env.JWT_SECRET,
-      plunkApiKey: c.env.PLUNK_API_KEY,
+      plunkApiKey: c.env.PLUNK_API_KEY || "not-used",
       emailFrom: c.env.EMAIL_FROM,
       emailFromName: c.env.EMAIL_FROM_NAME,
       baseUrl: c.env.BASE_URL,
+      mailSender,
     });
 
     const result = await accountService.verifyEmail(token);
