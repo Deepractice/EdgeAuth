@@ -176,9 +176,16 @@ function startService(service, type = "backend") {
     });
 
     let started = false;
+    let actualPort = service.port; // Track actual port
 
     process.stdout.on("data", (data) => {
       const output = data.toString();
+
+      // Extract actual port from output
+      const portMatch = output.match(/localhost:(\d+)/);
+      if (portMatch) {
+        actualPort = parseInt(portMatch[1]);
+      }
 
       // Check if service is ready
       if (!started) {
@@ -188,9 +195,10 @@ function startService(service, type = "backend") {
           output.includes("server running")
         ) {
           started = true;
+          service.actualPort = actualPort; // Store actual port
           logService(
             service,
-            `${colors.green}✓${colors.reset} Ready on http://localhost:${service.port}`,
+            `${colors.green}✓${colors.reset} Ready on http://localhost:${actualPort}`,
           );
           resolve(process);
         }
@@ -329,13 +337,15 @@ async function main() {
     log(`${colors.blue}${"=".repeat(60)}${colors.reset}`);
     log(`${colors.green}Running Services:${colors.reset}\n`);
     servicesToStart.forEach((service) => {
+      const port = service.actualPort || service.port;
       log(
-        `  ${service.color}●${colors.reset} ${service.label.padEnd(20)} ${colors.cyan}http://localhost:${service.port}${colors.reset}`,
+        `  ${service.color}●${colors.reset} ${service.label.padEnd(20)} ${colors.cyan}http://localhost:${port}${colors.reset}`,
       );
     });
     if (options.frontend) {
+      const port = FRONTEND.actualPort || FRONTEND.port;
       log(
-        `  ${FRONTEND.color}●${colors.reset} ${FRONTEND.label.padEnd(20)} ${colors.cyan}http://localhost:${FRONTEND.port}${colors.reset}`,
+        `  ${FRONTEND.color}●${colors.reset} ${FRONTEND.label.padEnd(20)} ${colors.cyan}http://localhost:${port}${colors.reset}`,
       );
     }
     log(`${colors.blue}${"=".repeat(60)}${colors.reset}\n`);
