@@ -127,7 +127,7 @@ importers:
       '@deepracticex/logger':
         specifier: ^0.2.0
         version: 0.2.0
-      edgeauth:
+      '@edge-auth/core':
         specifier: workspace:*
         version: link:../../src
       hono:
@@ -164,7 +164,7 @@ importers:
 
   services/admin-api:
     dependencies:
-      edgeauth:
+      '@edge-auth/core':
         specifier: workspace:*
         version: link:../../src
       hono:
@@ -201,7 +201,7 @@ importers:
 
   services/oauth-api:
     dependencies:
-      edgeauth:
+      '@edge-auth/core':
         specifier: workspace:*
         version: link:../../src
       hono:
@@ -238,7 +238,7 @@ importers:
 
   services/sso-api:
     dependencies:
-      edgeauth:
+      '@edge-auth/core':
         specifier: workspace:*
         version: link:../../src
       hono:
