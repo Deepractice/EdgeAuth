@@ -20,7 +20,11 @@ vars = { OAUTH_ISSUER = "http://localhost:8788" }
 # Production
 [env.production]
 name = "edgeauth-oauth"
-vars = { OAUTH_ISSUER = "https://oauth.edgeauth.com" }
+vars = { OAUTH_ISSUER = "https://api.deepractice.ai/oauth" }
+
+[[env.production.routes]]
+pattern = "api.deepractice.ai/oauth/*"
+custom_domain = true
 
 [[env.production.d1_databases]]
 binding = "DB"

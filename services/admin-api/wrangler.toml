@@ -17,6 +17,10 @@ JWT_SECRET = "dev-secret-key-change-in-production-use-wrangler-secret"
 [env.production]
 name = "edgeauth-admin"
 
+[[env.production.routes]]
+pattern = "api-internal.deepractice.ai/*"
+custom_domain = true
+
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "edgeauth-db"

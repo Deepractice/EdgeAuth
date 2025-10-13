@@ -16,6 +16,10 @@ JWT_SECRET = "dev-secret-key-change-in-production-use-wrangler-secret"
 [env.production]
 name = "edgeauth-sso"
 
+[[env.production.routes]]
+pattern = "api.deepractice.ai/sso/*"
+custom_domain = true
+
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "edgeauth-db"

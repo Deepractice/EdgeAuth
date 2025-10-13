@@ -21,6 +21,10 @@ BASE_URL = "http://localhost:8787"
 [env.production]
 name = "edgeauth-account"
 
+[[env.production.routes]]
+pattern = "api.deepractice.ai/account/*"
+custom_domain = true
+
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "edgeauth-db"
