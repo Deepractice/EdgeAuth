@@ -9,7 +9,7 @@ export default function RegisterPage() {
 
   const registerMutation = useMutation({
     mutationFn: register,
-    onSuccess: (data) => {
+    onSuccess: () => {
       setSuccess(true)
       setError(null)
     },
