@@ -190,7 +190,10 @@ function startService(service, type = "backend") {
     logService(service, "Starting...");
 
     const cmd = type === "backend" ? "wrangler" : "vite";
-    const args = type === "backend" ? ["dev"] : [];
+    const args =
+      type === "backend"
+        ? ["dev", "--persist-to", join(ROOT_DIR, ".wrangler/state")]
+        : [];
 
     const process = spawn(cmd, args, {
       cwd,
