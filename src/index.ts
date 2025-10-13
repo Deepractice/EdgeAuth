@@ -14,6 +14,10 @@ export type { User } from "./domain/user/types.js";
 export { verifyToken, generateToken } from "./infrastructure/jwt/index.js";
 export { hashPassword, verifyPassword } from "./infrastructure/crypto/index.js";
 
+// Mail infrastructure
+export { NoMailSender } from "./infrastructure/mail/index.js";
+export type { MailSender } from "./infrastructure/mail/index.js";
+
 // Logger infrastructure
 export { createLogger } from "./infrastructure/logger/index.js";
 export type { Logger, LoggerConfig } from "./infrastructure/logger/index.js";
