@@ -116,6 +116,13 @@ jobs:
         working-directory: services/oauth-api
         run: wrangler deploy
 
+      - name: Deploy SSO Login (Frontend)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        working-directory: apps/sso-login
+        run: wrangler pages deploy dist --project-name=edgeauth-sso-login
+
       - name: Deployment Summary
         run: |
           echo "## ✅ Deployment Successful" >> $GITHUB_STEP_SUMMARY
@@ -127,6 +134,7 @@ jobs:
           echo "- edgeauth-account" >> $GITHUB_STEP_SUMMARY
           echo "- edgeauth-sso" >> $GITHUB_STEP_SUMMARY
           echo "- edgeauth-oauth" >> $GITHUB_STEP_SUMMARY
+          echo "- edgeauth-sso-login (Pages)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Next Steps:**" >> $GITHUB_STEP_SUMMARY
           echo "1. Verify secrets are set: \`JWT_SECRET\`, \`PLUNK_API_KEY\`" >> $GITHUB_STEP_SUMMARY

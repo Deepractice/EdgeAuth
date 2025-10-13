@@ -2,8 +2,7 @@ name = "edgeauth-sso-login"
 compatibility_date = "2024-12-01"
 pages_build_output_dir = "dist"
 
-[env.production]
-name = "edgeauth-sso-login"
-routes = [
-  { pattern = "login.auth.deepractice.ai", zone_name = "deepractice.ai" }
-]
+# Production domain
+[[routes]]
+pattern = "sso.deepractice.ai"
+custom_domain = true
