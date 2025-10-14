@@ -44,29 +44,31 @@
   },
   "packageManager": "pnpm@10.15.1",
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251011.0",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@deepracticex/config-preset": "^0.1.0",
+    "@deepracticex/vitest-cucumber": "^1.2.0",
     "@eslint/js": "^9.37.0",
     "@types/node": "^22.10.6",
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "execa": "^9.6.0",
     "lefthook": "^1.13.6",
     "prettier": "^3.6.2",
+    "tsup": "^8.5.0",
     "turbo": "^2.5.8",
     "typescript": "^5.9.3",
-    "vitest": "^2.0.0"
+    "vitest": "^3.2.4",
+    "wrangler": "^4.42.2"
   },
   "dependencies": {
-    "@cloudflare/workers-types": "^4.20251011.0",
     "@deepracticex/error-handling": "^0.2.0",
     "@deepracticex/logger": "^1.0.0",
-    "hono": "^4.9.11",
-    "tsup": "^8.5.0",
-    "wrangler": "^4.42.2"
+    "hono": "^4.9.11"
   }
 }

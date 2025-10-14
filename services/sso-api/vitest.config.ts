@@ -1,5 +1,5 @@
 import { defineConfig } from "vitest/config";
-import { vitestCucumber } from "@deepracticex/vitest-cucumber-plugin";
+import { vitestCucumber } from "@deepracticex/vitest-cucumber/plugin";
 import { resolve } from "path";
 
 export default defineConfig({
