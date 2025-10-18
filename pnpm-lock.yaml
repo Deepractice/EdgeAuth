@@ -28,10 +28,10 @@ importers:
         version: 20.0.0
       "@deepracticex/config-preset":
         specifier: ^0.1.0
-        version: 0.1.0(@deepracticex/vitest-cucumber-plugin@1.2.0(vitest@3.2.4))(@types/node@22.18.10)(@typescript-eslint/eslint-plugin@8.46.0(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint-plugin-prettier@5.5.4(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(tsup@8.5.0(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3))(typescript@5.9.3)(vitest@3.2.4)
+        version: 0.1.0(@deepracticex/vitest-cucumber-plugin@1.2.2(vitest@3.2.4))(@types/node@22.18.10)(@typescript-eslint/eslint-plugin@8.46.0(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint-plugin-prettier@5.5.4(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(tsup@8.5.0(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3))(typescript@5.9.3)(vitest@3.2.4)
       "@deepracticex/vitest-cucumber":
-        specifier: ^1.2.0
-        version: 1.2.0(vitest@3.2.4)
+        specifier: ^1.2.2
+        version: 1.2.2(vitest@3.2.4)
       "@eslint/js":
         specifier: ^9.37.0
         version: 9.37.0
@@ -189,7 +189,7 @@ importers:
         version: 4.20251011.0
       "@deepracticex/config-preset":
         specifier: ^0.1.0
-        version: 0.1.0(@deepracticex/vitest-cucumber-plugin@1.2.0(vitest@3.2.4))(@types/node@22.18.10)(@typescript-eslint/eslint-plugin@8.46.0(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint-plugin-prettier@5.5.4(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(tsup@8.5.0(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3))(typescript@5.9.3)(vitest@3.2.4)
+        version: 0.1.0(@deepracticex/vitest-cucumber-plugin@1.2.2(vitest@3.2.4))(@types/node@22.18.10)(@typescript-eslint/eslint-plugin@8.46.0(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint-plugin-prettier@5.5.4(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(tsup@8.5.0(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3))(typescript@5.9.3)(vitest@3.2.4)
       "@vitest/coverage-v8":
         specifier: ^3.2.4
         version: 3.2.4(vitest@3.2.4)
@@ -761,18 +761,18 @@ packages:
         integrity: sha512-VIh6p7qLV5+BRJsBdGqMRgcu6EiMRkn+fz8V7/nY6fHM98pgUn5fjCATCPHDfCBxLZsmbikVuZHYWewfVzEN2w==,
       }
 
-  "@deepracticex/vitest-cucumber-plugin@1.2.0":
+  "@deepracticex/vitest-cucumber-plugin@1.2.2":
     resolution:
       {
-        integrity: sha512-PkINolNBjri0DcSK1MDFy02m20u0aP+fZZto8uVrnytUoPPY3crfUGNzU09M8UFT5ioPWhMiOFlHQ2qXVW0Pug==,
+        integrity: sha512-TPkcWcX5DV/Ce1Ss64MymHPWpk648JiwRqxuWj57RYO2weiZiD6lgb5vdPOLusnpGIpS88WJqRJYBiLmHjtbqQ==,
       }
     peerDependencies:
       vitest: ^2.0.0 || ^3.0.0
 
-  "@deepracticex/vitest-cucumber@1.2.0":
+  "@deepracticex/vitest-cucumber@1.2.2":
     resolution:
       {
-        integrity: sha512-9bXGtYjP6buWItpcyJLEZ9LsHvEXisQYNZyEMsR2tzdzDieaCCUXeVTIPtCQPFITJFPwyXiNCvQZtn8v5oSEJA==,
+        integrity: sha512-4W2T6pnLinTv0ImQrO2DKhS4W0ODeTWtINHozdsbdGjbXe+gsoJ/iNT31oypEtKEcUNSe6ajpaXukOWlE/Z9QA==,
       }
     peerDependencies:
       vitest: ^2.0.0 || ^3.0.0
@@ -5174,12 +5174,12 @@ snapshots:
       reflect-metadata: 0.2.2
       uuid: 10.0.0
 
-  "@deepracticex/config-preset@0.1.0(@deepracticex/vitest-cucumber-plugin@1.2.0(vitest@3.2.4))(@types/node@22.18.10)(@typescript-eslint/eslint-plugin@8.46.0(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint-plugin-prettier@5.5.4(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(tsup@8.5.0(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3))(typescript@5.9.3)(vitest@3.2.4)":
+  "@deepracticex/config-preset@0.1.0(@deepracticex/vitest-cucumber-plugin@1.2.2(vitest@3.2.4))(@types/node@22.18.10)(@typescript-eslint/eslint-plugin@8.46.0(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint-plugin-prettier@5.5.4(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)(tsup@8.5.0(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3))(typescript@5.9.3)(vitest@3.2.4)":
     dependencies:
       "@commitlint/cli": 19.8.1(@types/node@22.18.10)(typescript@5.9.3)
       "@commitlint/config-conventional": 19.8.1
     optionalDependencies:
-      "@deepracticex/vitest-cucumber-plugin": 1.2.0(vitest@3.2.4)
+      "@deepracticex/vitest-cucumber-plugin": 1.2.2(vitest@3.2.4)
       "@typescript-eslint/eslint-plugin": 8.46.0(@typescript-eslint/parser@8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
       "@typescript-eslint/parser": 8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
       eslint: 9.37.0(jiti@2.6.1)
@@ -5206,16 +5206,16 @@ snapshots:
       pino: 9.13.1
       pino-pretty: 13.1.2
 
-  "@deepracticex/vitest-cucumber-plugin@1.2.0(vitest@3.2.4)":
+  "@deepracticex/vitest-cucumber-plugin@1.2.2(vitest@3.2.4)":
     dependencies:
       "@cucumber/gherkin": 30.0.4
       "@cucumber/messages": 26.0.1
       glob: 11.0.3
       vitest: 3.2.4(@types/node@22.18.10)(@vitest/ui@3.2.4)(jiti@2.6.1)
 
-  "@deepracticex/vitest-cucumber@1.2.0(vitest@3.2.4)":
+  "@deepracticex/vitest-cucumber@1.2.2(vitest@3.2.4)":
     dependencies:
-      "@deepracticex/vitest-cucumber-plugin": 1.2.0(vitest@3.2.4)
+      "@deepracticex/vitest-cucumber-plugin": 1.2.2(vitest@3.2.4)
       vitest: 3.2.4(@types/node@22.18.10)(@vitest/ui@3.2.4)(jiti@2.6.1)
 
   "@emnapi/runtime@1.5.0":
